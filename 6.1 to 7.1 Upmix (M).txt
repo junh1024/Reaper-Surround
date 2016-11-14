@@ -1,0 +1,35 @@
+desc:Upmix 6.1 to 7.1. Assumes L R C LFE CS LS RS. 70% level = equal power (-3dB) spread to 2 speakers each
+
+slider1:70<0,100,1>Center Level (%)
+slider2:70<0,100,1>Surround Level (%)
+
+slider4:0<-100,100,1>Rear/Side Balance (%)
+
+@init
+// this is stuff that happens once (or if the samplerate changes, etc)
+
+@slider
+// gain = 2^(slider1/6); // convert from dB to a multiplier
+depth_temp=( ( (  slider4/2 )+ 50 ) *$pi)/200; //map -100 to 100 to 0>half pi
+C_level= slider1/100; //map -100 to 100 to 0>half pi
+S_level= slider2/100; //map -100 to 100 to 0>half pi
+
+// @block
+// this happens per-block, not really that important for this app
+
+@sample
+C_temp=spl4*C_level;
+//surround gain
+LS_temp=spl5*S_level;
+RS_temp=spl6*S_level;
+
+//Spread LS RS to Back 4
+spl6 = cos( depth_temp - ($pi/2)  )*LS_temp;
+spl7 = cos( depth_temp - ($pi/2)  )*RS_temp;
+spl4 = cos( depth_temp )*LS_temp;
+spl5 = cos( depth_temp )*RS_temp; 
+
+spl4 +=C_temp;
+spl5 +=C_temp;
+
+

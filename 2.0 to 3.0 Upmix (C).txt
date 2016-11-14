@@ -1,0 +1,19 @@
+desc:Based on DTS Neural Upmix (Common). Useful after upscalers that don't have these controls.
+
+slider1:100<0,100,2>Center Level Control
+
+@init
+
+@slider
+// gain = 2^(slider1/6); // convert from dB to a multiplier
+// depth_temp=(slider1*$pi)/200; //depth scaled from 0-100 to 0>half pi
+// R_width_coeff=slider2/100;
+
+@sample
+C_temp = (spl0+spl1)*.70106;
+L_temp = (spl0-spl1)*.5;
+
+spl2=C_temp*(slider1/100);
+
+spl0= (spl0+spl1)*0.5*(1-(slider1/100)) + L_temp  ;
+spl1=  (spl0+spl1)*0.5*(1-(slider1/100)) - L_temp ;

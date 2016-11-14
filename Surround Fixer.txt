@@ -1,0 +1,50 @@
+desc:iudfgyodirufy
+
+slider1:0<-12,12,1>Pre Gain (dB)
+slider2:3<-12,12,1>Width (dB)
+
+
+// the first number is the default value, the numbers in the <> are min val,
+// max val, and step.
+
+@init
+// this is stuff that happens once (or if the samplerate changes, etc)
+
+@slider
+// this happens when a slider changes
+
+// so we'll set our multiplier to be used later
+// so realistically this happens once or when the user changes shit.
+// we store our volume multiplier in 'vol', for use per-sample. 
+// in theory the sample code below could have this directly...
+gain = 2^(slider1/6); // convert from dB to a multiplier
+widthgain= 2^(slider2/6); 
+@block
+// this happens per-block, not really that important for this app
+
+@sample
+// this happens per-sample. spl0 is the left channel, spl1 is the right,
+// and if your track has more than 2 channels, spl2, spl3, etc..
+
+
+
+// pregain,encode,widthgain,decode
+
+tmp4=spl4*gain;
+tmp5=spl5*gain;
+
+tmp0 = ( spl0 + tmp4 ) * 0.5    ;
+tmp1 = ( spl0 - tmp4 ) * 0.5    ;
+tmp4 = ( spl1 + tmp5 ) * 0.5    ;
+tmp5 = ( spl1 - tmp5 ) * 0.5    ;
+
+
+tmp1=tmp1*widthgain;
+tmp5=tmp5*widthgain;
+
+
+
+spl0 = tmp0 + tmp1;
+spl4 = tmp0 - tmp1;
+spl1 = tmp4 + tmp5;
+spl5 = tmp4 - tmp5;

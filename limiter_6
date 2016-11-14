@@ -1,0 +1,15 @@
+// This effect Copyright (C) 2004 and later Cockos Incorporated
+// License: GPL - http://www.gnu.org/licenses/gpl.html
+desc: hard limiter
+slider1:0<-120,60,1>max vol (dB)
+
+@slider
+mv=2 ^ (slider1/6);
+
+@sample
+  spl0=min(max(spl0,-mv),mv);
+  spl1=min(max(spl1,-mv),mv);
+  spl2=min(max(spl2,-mv),mv);
+  spl3=min(max(spl3,-mv),mv);
+  spl4=min(max(spl4,-mv),mv);
+  spl5=min(max(spl5,-mv),mv);

@@ -1,0 +1,41 @@
+desc:Based on DTS Neural Upmix (Common). Useful after upscalers that don't have these controls.
+
+slider1:100<0,100,2>Center Level Control
+slider2:4000<1000,10000,1000>rear LP freq  (Hz)
+
+@init
+shape = 0.2 //filter shape (0=sharp, 1=dull)
+// @slider
+// gain = 2^(slider1/6); // convert from dB to a multiplier
+// depth_temp=(slider1*$pi)/200; //depth scaled from 0-100 to 0>half pi
+// R_width_coeff=slider2/100;
+
+@slider
+  damp=0.01+shape*20;
+  c = 1/tan($pi*slider2/srate);
+  fk = 1 / (1 + c*(c+damp));
+  fa1 = 2 * (1 - c*c) * fk;
+  fa0 = (1 + c*(c-damp)) * fk;
+  //damp!=oldamp ? fd1l=fd2l=fd1r=fd2r=0;
+  oldamp=damp;
+
+@sample
+mid= spl0+spl1;
+side=spl0-spl1;
+
+spl0 = (0.20*mid) + (side*0.3) + (mid *0.25*(1-(slider1/100))) ; 
+spl1 = (0.20*mid) - (side*0.3) + (mid *0.25*(1-(slider1/100)) ); 
+spl2 = mid * 0.5 * (slider1/100); 
+
+// spl3 = 0; unneeded?
+
+//some code from lowpass
+
+spl4 = 0.5*side; //preupscale
+
+fd0l = (fk*spl4) - (fa1*fd1l) - (fa0*fd2l);//LPing the rear(s)
+spl4 = fd0l + fd1l + fd1l + fd2l;
+fd2l = fd1l;//previous buffers etc
+fd1l = fd0l;
+
+spl5 = spl4;

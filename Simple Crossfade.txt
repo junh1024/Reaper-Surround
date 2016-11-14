@@ -1,0 +1,16 @@
+desc:Simple Crossfade.txt 4ch in, 2ch out. Use a bus or something.
+
+slider1:0<-100,100,1>A/B Balance
+
+@init
+// this is stuff that happens once (or if the samplerate changes, etc)
+
+@slider
+// gain = 2^(slider1/6); // convert from dB to a multiplier
+fader_temp=( ( (  slider1/2 )+ 50 ) *$pi)/200; //map -100 to 100 to 0>half pi
+
+@sample
+spl0 = (cos( fader_temp )*spl0)+(cos( fader_temp - ($pi/2)  )*spl2);
+spl1 = (cos( fader_temp )*spl1)+(cos( fader_temp - ($pi/2)  )*spl3); 
+spl2=0; //mute ch3-4
+spl3=0;

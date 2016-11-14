@@ -1,0 +1,42 @@
+desc:Based on DTS Neural Upmix (Common). Useful after upscalers that don't have these controls.
+
+slider1:0<-100,100,1>Depth
+slider2:100<0,100,10>Rear Width
+
+@init
+// this is stuff that happens once (or if the samplerate changes, etc)
+
+@slider
+// gain = 2^(slider1/6); // convert from dB to a multiplier
+depth_temp=(slider1*$pi)/200; //depth scaled from 0-100 to 0>half pi
+R_width_coeff=slider2/100;
+// @block
+// this happens per-block, not really that important for this app
+
+@sample
+
+
+//Depth
+(  slider1 >= 0 )?  (
+  spl0 += cos( depth_temp - ($pi/2)  )*spl4;
+  spl4 = cos( depth_temp )*spl4;
+
+  spl1 += cos( depth_temp - ($pi/2)  )*spl5;
+  spl5 = cos( depth_temp )*spl5;
+):
+(
+  spl4 += cos( depth_temp + ($pi/2) )*spl0; //reversed order is important
+  spl0 = cos( depth_temp   )*spl0;
+  spl5 += cos( depth_temp + ($pi/2) )*spl1; //reversed order is important
+  spl1 = cos( depth_temp   )*spl1;
+);
+
+
+
+//Rear width
+R_M=(spl4+spl5)*0.5;
+R_S=(spl4-spl5)*0.5*R_width_coeff;
+
+spl4=R_M+R_S;
+spl5=R_M-R_S;
+

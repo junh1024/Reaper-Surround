@@ -1,0 +1,18 @@
+// This effect Copyright (C) 2004 and later Cockos Incorporated
+// License: GPL - http://www.gnu.org/licenses/gpl.html
+// based on the algorithm in Steve Harris's plug-in package: http://plugin.org.uk/
+// Un-DCs 6 channels
+
+desc:DC offset removal
+
+@init
+itm0=itm1=otm0=otm1=itm2=itm3=otm2=otm3=itm4=itm5=otm4=otm5=0;
+//coeff=0.999;
+
+@sample
+otm0=0.999*otm0 + spl0 - itm0; itm0=spl0; spl0=otm0;
+otm1=0.999*otm1 + spl1 - itm1; itm1=spl1; spl1=otm1;
+otm2=0.999*otm2 + spl2 - itm2; itm2=spl2; spl2=otm2;
+otm3=0.999*otm3 + spl3 - itm3; itm3=spl3; spl3=otm3;
+otm4=0.999*otm4 + spl4 - itm4; itm4=spl4; spl4=otm4;
+otm5=0.999*otm5 + spl5 - itm5; itm5=spl5; spl5=otm5;

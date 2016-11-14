@@ -1,0 +1,23 @@
+desc:Simple upmix from 5.1 to 7.1 via volume-compensated spread.
+
+slider2:0<-100,100,1>Rear/Side Balance
+
+@init
+// this is stuff that happens once (or if the samplerate changes, etc)
+
+@slider
+// gain = 2^(slider1/6); // convert from dB to a multiplier
+depth_temp=( ( (  slider2/2 )+ 50 ) *$pi)/200; //map -100 to 100 to 0>half pi
+
+// @block
+// this happens per-block, not really that important for this app
+
+@sample
+
+//Reversed order is important
+
+spl6 = cos( depth_temp - ($pi/2)  )*spl4;
+spl7 = cos( depth_temp - ($pi/2)  )*spl5;
+spl4 = cos( depth_temp )*spl4;
+spl5 = cos( depth_temp )*spl5; 
+

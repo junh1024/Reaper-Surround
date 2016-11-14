@@ -1,0 +1,51 @@
+desc:Downmix based on Steinberg MixConvert
+
+slider1:100<0,100,10>Front Width
+slider2:100<0,100,10>Rear Width
+slider3:0<0,1,1{On,Off}>DPL I Downmix (reverse polarity of SR)
+slider4:100<0,200,1>L/R Gain (dB)
+slider5:100<0,200,1>C Gain (dB)
+slider6:100<0,200,1>Rear Gain (dB)
+
+@init
+// this is stuff that happens once (or if the samplerate changes, etc)
+
+@slider
+// gain = 2^(slider1/6); // convert from dB to a multiplier
+F_width_coeff=slider1/100;
+R_width_coeff=slider2/100;
+
+@sample
+//Front width
+F_M=(spl0+spl1)*0.5;
+F_S=(spl0-spl1)*0.5*F_width_coeff;
+
+spl0=F_M+F_S;
+spl1=F_M-F_S;
+
+//Rear width
+R_M=(spl4+spl5)*0.5;
+R_S=(spl4-spl5)*0.5*R_width_coeff;
+
+spl4=R_M+R_S;
+spl5=R_M-R_S;
+
+//DPL
+slider3 == 0 ? spl5 = spl5*-1;
+
+//Levels
+spl0 *=(slider4/100); 
+spl1 *=(slider4/100); 
+spl2 *=(slider5/100); 
+spl3 =0; 
+spl4 *=(slider6/100); 
+spl5 *=(slider6/100);
+
+//DOwnmix
+spl0 = spl0+(spl2*0.7071)+spl4; 
+spl1 = spl1+(spl2*0.7071)+spl5; 
+spl2 =0; 
+spl3 =0; 
+spl4 =0; 
+spl5 =0;
+
