@@ -1,4 +1,4 @@
-desc:Width decreaser by mixing LR into C
+desc:Makes 15.1 height by shifting the side 6 of 7.1 upwards.
 
 slider1:0<0,100,1>Height
 
@@ -11,8 +11,6 @@ slider1:0<0,100,1>Height
 
 ell_coeff = 1-(slider1/100);//bottom coefficient
 top_coeff = slider1/100; //top coefficint
-
-
 
 @sample 
 
@@ -34,4 +32,3 @@ spl4 = spl4 * ell_coeff;
 spl5 = spl5 * ell_coeff;
 spl6 = spl6 * ell_coeff;
 spl7 = spl7 * ell_coeff;
-
