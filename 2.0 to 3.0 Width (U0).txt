@@ -1,0 +1,24 @@
+desc:Width decreaser by mixing LR into C
+
+slider1:100<0,100,1>Width
+
+@init
+
+@slider
+// gain = 2^(slider1/6); // convert from dB to a multiplier
+// depth_temp=(slider1*$pi)/200; //depth scaled from 0-100 to 0>half pi
+// R_width_coeff=slider2/100;
+
+temp1 = slider1*0.9 ; //map 0-100 to 0-90deg
+temp2 = temp1*$pi /180 ; //convert from degrees to rads
+temp3 = sin(temp2)  ; //sin to got coefficient to multiply sides with
+
+temp4 = 90 - temp1; //
+temp5 = temp4*$pi /180; //to rads
+temp6 = sin(temp5);//corff for center
+@sample 
+
+spl2 = (spl0+spl1) * temp6  *0.7071;
+     
+spl0 = spl0 *temp3 ;
+spl1 = spl1 *temp3 ;
