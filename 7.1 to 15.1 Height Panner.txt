@@ -17,8 +17,8 @@ top_coeff = slider1/100; //top coefficint
 //need top first otherwise it gets silenced
 spl8 = spl0 * top_coeff;
 spl9 = spl1 * top_coeff;
-spl10= 0;
-spl11= 0;
+//spl10= 0;
+//spl11= 0;
 spl12= spl4 * top_coeff;
 spl13= spl5 * top_coeff;
 spl14= spl6 * top_coeff;
@@ -26,8 +26,8 @@ spl15= spl7 * top_coeff;
 
 spl0 = spl0 * ell_coeff;
 spl1 = spl1 * ell_coeff;
-spl2 = 0;
-spl3 = 0;
+//spl2 = 0;
+//spl3 = 0;
 spl4 = spl4 * ell_coeff;
 spl5 = spl5 * ell_coeff;
 spl6 = spl6 * ell_coeff;

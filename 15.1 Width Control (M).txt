@@ -1,0 +1,65 @@
+desc:Makes 15.1 height by shifting the side 6 of 7.1 upwards.
+
+slider1:100<0,100,1>ELL Width
+slider2:0<-3,3,0.1>Pan law (dB)
+slider3:100<0,100,1>Top Width
+slider4:0<-3,3,0.1>Pan law (dB)
+slider5:0<0,1,1{On,Off}>Matrix (reverse polarity of top)
+
+@init
+
+@slider
+ell_W = slider1/100; //linear width in % of ear level layer
+ell_P = 2^(slider2/6); //convert from dB to a multiplier. This is a compensation to increase the vol of M when width is decreased. Its more of a width law but eh
+
+top_W = slider3/100;
+top_P = 2^(slider4/6);
+
+// depth_temp=(slider1*$pi)/200; //depth scaled from 0-100 to 0>half pi
+// R_width_coeff=slider2/100;
+
+top_coeff = slider3/100;
+
+@sample 
+
+//need top first otherwise it gets silenced
+// spl8 = spl0 * top_coeff;
+// spl9 = spl1 * top_coeff;
+// spl12= spl4 * top_coeff;
+// spl13= spl5 * top_coeff;
+// spl14= spl6 * top_coeff;
+// spl15= spl7 * top_coeff;
+
+front_M =(spl0+spl1)*0.5;
+front_S =(spl0-spl1)*0.5; 
+back_M  =(spl4+spl5)*0.5;
+back_S  =(spl4-spl5)*0.5; 
+side_M  =(spl6+spl7)*0.5;
+side_S  =(spl6-spl7)*0.5; 
+
+//quite complicated, as we only want the pan law to apply only when the width is reduced.
+spl0 = front_M + (front_M * (1-ell_W)*(ell_P-1))+ (front_S * ell_W);
+spl1 = front_M + (front_M * (1-ell_W)*(ell_P-1))- (front_S * ell_W);
+spl4 = back_M  + (back_M  * (1-ell_W)*(ell_P-1))+ (back_S  * ell_W);
+spl5 = back_M  + (back_M  * (1-ell_W)*(ell_P-1))- (back_S  * ell_W);
+spl6 = side_M  + (side_M  * (1-ell_W)*(ell_P-1))+ (side_S  * ell_W);
+spl7 = side_M  + (side_M  * (1-ell_W)*(ell_P-1))- (side_S  * ell_W);
+
+top_front_M =(spl8+spl9)*0.5;
+top_front_S =(spl8-spl9)*0.5; 
+top_back_M  =(spl12+spl13)*0.5;
+top_back_S  =(spl12-spl13)*0.5; 
+top_side_M  =(spl14+spl15)*0.5;
+top_side_S  =(spl14-spl15)*0.5; 
+
+spl8 = top_front_M + (top_front_M * (1-top_W)*(top_P-1))+ (top_front_S * top_W);
+spl9 = top_front_M + (top_front_M * (1-top_W)*(top_P-1))- (top_front_S * top_W);
+spl12= top_back_M  + (top_back_M  * (1-top_W)*(top_P-1))+ (top_back_S  * top_W);
+spl13= top_back_M  + (top_back_M  * (1-top_W)*(top_P-1))- (top_back_S  * top_W);
+spl14= top_side_M  + (top_side_M  * (1-top_W)*(top_P-1))+ (top_side_S  * top_W);
+spl15= top_side_M  + (top_side_M  * (1-top_W)*(top_P-1))- (top_side_S  * top_W);
+
+
+slider5 == 0 ? spl9 =  spl9*-1;
+slider5 == 0 ? spl13 = spl3*-1;
+slider5 == 0 ? spl15 = spl15*-1;
