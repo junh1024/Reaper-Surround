@@ -1,6 +1,6 @@
 desc:Width decreaser by mixing LR into C
 
-slider1:100<0,100,1>Width
+slider1:100<0,100,2>Width
 slider2:0<-3,3,0.1>Pan law (dB)
 
 @init

@@ -1,6 +1,6 @@
 desc:Makes 15.1 height by shifting the side 6 of 7.1 upwards.
 
-slider1:0<0,100,1>Height
+slider1:0<0,100,2>Height
 
 @init
 
