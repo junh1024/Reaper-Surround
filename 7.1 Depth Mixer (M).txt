@@ -1,0 +1,22 @@
+desc:Width decreaser by mixing LR into C
+
+slider1:100<0,100,2>Depth
+slider2:0<-3,3,0.1>Pan law (dB)
+
+@init
+
+@slider
+gain = 2^(slider2/6); // convert from dB to a multiplier
+
+temp0=slider1/100; //convert from slider to coefficient for sides
+temp1 = 1-temp0; //for C
+
+@sample
+
+spl6 = (spl0+spl4) * temp1  * gain; //*0.7071 for constant theoretical gain
+spl7 = (spl1+spl5) * temp1  * gain; //*0.7071 for constant theoretical gain
+     
+spl0 = spl0 *temp0 ;
+spl1 = spl1 *temp0 ;
+spl4 = spl4 *temp0 ;
+spl5 = spl5 *temp0 ;
