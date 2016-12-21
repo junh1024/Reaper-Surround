@@ -61,5 +61,5 @@ spl15= top_side_M  + (top_side_M  * (1-top_W)*(top_P-1))- (top_side_S  * top_W);
 
 
 slider5 == 0 ? spl9 =  spl9*-1;
-slider5 == 0 ? spl13 = spl3*-1;
+slider5 == 0 ? spl13 = spl13*-1;
 slider5 == 0 ? spl15 = spl15*-1;

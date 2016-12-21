@@ -1,11 +1,11 @@
 desc:Makes 15.1 height by shifting the side 6 of 7.1 upwards.
 
-slider1:100<0,100,1>ELL Width
+slider1:0<0,1,1{Furse-Malham,ACN}>Channel Order
 
 @init
-Z_coeff=-0.2
-@slider
+Z_coeff=-0.19
 
+@slider
 
 @sample 
 //downmix C
@@ -30,8 +30,39 @@ Y+=(spl8*0.1147)+(spl9*-0.1147)+(spl14*0.2294)+(spl15*-0.2294)+(spl12*0.1147) +(
 Z= (spl8*Z_coeff)+(spl9*-Z_coeff)+(spl14*Z_coeff)+(spl15*Z_coeff)+(spl12*Z_coeff) +(spl13*Z_coeff)  ;
 Z-=(spl10+spl11)*Z_coeff; //bottom layer  
 
+slider1==0 ?
+(
 spl0=W  ;
 spl1=X  ;
 spl2=Y  ;
 spl3=Z  ;
+
+)
+:
+(
+spl0=W*0.8 ;
+spl1=Y  ;
+spl2=Z  ;
+spl3=X  ;
+);
+
+
+
+
+spl4 = 0;
+spl5 = 0;
+spl6 = 0;
+spl7 = 0;
+spl8 = 0;
+spl9 = 0;
+spl10 = 0;
+spl11 = 0;
+spl12= 0;
+spl13= 0;
+spl14= 0;
+spl15= 0;
+
+
+//spl2 = 0;
+//spl3 = 0;
 
