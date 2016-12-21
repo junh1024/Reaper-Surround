@@ -1,0 +1,101 @@
+ desc:Makes 15.1 height by shifting the side 6 of 7.1 upwards.
+
+slider1:0<0,1,1{Furse-Malham,ACN}>Channel Order
+slider2:1<0,1,1{No,Yes}>Downmix ELL
+slider3:0<0,1,1{No,Yes}>(De)-Matrix Height
+slider4:1<0,2,0.1>W Gain
+slider5:1<0,2,0.1>X Gain
+slider6:1<0,2,0.1>Y Gain
+slider7:1<0,2,0.1>Z Gain
+
+@init
+Z_coeff=-0.1987
+
+@slider
+
+@sample 
+//De/Matrix
+slider3 == 0 ? (
+spl9 =  spl9*-1;
+spl13 = spl13*-1;
+spl15 = spl15*-1;
+);
+
+W=0; X=0; Y=0; Z=0;
+
+//bottom layer                                                                                             
+W+=(spl10*0.2357)+(spl11*0.2357)   ;
+X+=(spl10*0.1987)+(spl11*0.1987)   ;
+Y+=(spl10*0.1147)+(spl11*-0.1147)  ;
+
+//toplayer
+W+=(spl8*0.2357)+(spl9*0.2357)+ (spl14*0.2357)+(spl15*0.2357)+ (spl12*0.2357) +(spl13*0.2357)      ;
+X+=(spl8*0.1987)+(spl9*0.1987)+ (spl14*0)+     (spl15*0)+      (spl12*-0.1987)+(spl13*-0.1987)     ;
+Y+=(spl8*0.1147)+(spl9*-0.1147)+(spl14*0.2294)+(spl15*-0.2294)+(spl12*0.1147) +(spl13*-0.1147)     ;
+Z= (spl8*Z_coeff)+(spl9*-Z_coeff)+(spl14*Z_coeff)+(spl15*Z_coeff)+(spl12*Z_coeff) +(spl13*Z_coeff)  ;
+Z-=(spl10+spl11)*Z_coeff; //bottom layer  
+
+
+
+
+//Downmix ELL
+slider2 == 1?(
+//downmix C
+spl0+=spl2*0.7071  ;
+spl1+=spl2*0.7071  ;
+spl2=0;
+//ell
+W+=(spl0*0.2357)+(spl1*0.2357)+ (spl6*0.2357)+(spl7*0.2357)+ (spl4*0.2357) +(spl5*0.2357)           ;
+X+=(spl0*0.1987)+(spl1*0.1987)+ (spl6*0)+     (spl7*0)+      (spl4*-0.1987)+(spl5*-0.1987)          ;
+Y+=(spl0*0.1147)+(spl1*-0.1147)+(spl6*0.2294)+(spl7*-0.2294)+(spl4*0.1147) +(spl5*-0.1147)          ;
+
+spl4 = 0;
+spl5 = 0;
+spl6 = 0;
+spl7 = 0;
+
+spl8 = 0;
+spl9 = 0;
+spl10 = 0;
+spl11 = 0;
+
+);
+
+W*=slider4;
+X*=slider5;
+Y*=slider6;
+Z*=slider7;
+
+//Channel order - ACN
+slider1 == 1 ? (
+old_X=X;
+old_Y=Y;
+old_Z=Z;
+
+X=old_Y;
+Y=old_Z;
+Z=old_X;
+);
+
+//stream output
+
+//Downmix ELL
+slider2 == 1?(
+spl0=W  ;
+spl1=X  ;
+spl2=Y;
+spl3=Z;
+)
+:
+( //dont downmix ELL
+spl8  = W;
+spl9  = X;
+spl10 = Y;
+spl11 = Z;
+);
+
+spl12= 0;
+spl13= 0;
+spl14= 0;
+spl15= 0;
+

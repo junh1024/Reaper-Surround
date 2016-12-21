@@ -4,7 +4,7 @@ slider1:100<0,100,1>ELL Width
 slider2:0<-3,3,0.1>Pan law (dB)
 slider3:100<0,100,1>Top Width
 slider4:0<-3,3,0.1>Pan law (dB)
-slider5:0<0,1,1{On,Off}>Matrix (reverse polarity of top)
+slider5:1<0,1,1{Off,On}>Matrix (reverse polarity of top)
 
 @init
 
@@ -45,6 +45,7 @@ spl5 = back_M  + (back_M  * (1-ell_W)*(ell_P-1))- (back_S  * ell_W);
 spl6 = side_M  + (side_M  * (1-ell_W)*(ell_P-1))+ (side_S  * ell_W);
 spl7 = side_M  + (side_M  * (1-ell_W)*(ell_P-1))- (side_S  * ell_W);
 
+//M/S encode
 top_front_M =(spl8+spl9)*0.5;
 top_front_S =(spl8-spl9)*0.5; 
 top_back_M  =(spl12+spl13)*0.5;
@@ -52,6 +53,7 @@ top_back_S  =(spl12-spl13)*0.5;
 top_side_M  =(spl14+spl15)*0.5;
 top_side_S  =(spl14-spl15)*0.5; 
 
+//M/S decode
 spl8 = top_front_M + (top_front_M * (1-top_W)*(top_P-1))+ (top_front_S * top_W);
 spl9 = top_front_M + (top_front_M * (1-top_W)*(top_P-1))- (top_front_S * top_W);
 spl12= top_back_M  + (top_back_M  * (1-top_W)*(top_P-1))+ (top_back_S  * top_W);
@@ -59,7 +61,9 @@ spl13= top_back_M  + (top_back_M  * (1-top_W)*(top_P-1))- (top_back_S  * top_W);
 spl14= top_side_M  + (top_side_M  * (1-top_W)*(top_P-1))+ (top_side_S  * top_W);
 spl15= top_side_M  + (top_side_M  * (1-top_W)*(top_P-1))- (top_side_S  * top_W);
 
-
-slider5 == 0 ? spl9 =  spl9*-1;
-slider5 == 0 ? spl13 = spl13*-1;
-slider5 == 0 ? spl15 = spl15*-1;
+//Matrix
+slider5 == 0 ? (
+spl9 =  spl9*-1;
+spl13 = spl13*-1;
+spl15 = spl15*-1;
+);
