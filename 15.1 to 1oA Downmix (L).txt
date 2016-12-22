@@ -15,7 +15,7 @@ Z_coeff=-0.1987
 
 @sample 
 //De/Matrix
-slider3 == 0 ? (
+slider3 == 1 ? (
 spl9 =  spl9*-1;
 spl13 = spl13*-1;
 spl15 = spl15*-1;

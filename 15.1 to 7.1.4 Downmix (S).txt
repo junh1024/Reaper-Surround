@@ -1,0 +1,35 @@
+desc:Simple 15.1 to 7.1 Downmix
+slider1:0<0,1,1{On,Off}>Top downmix
+@init
+top_P=1.11  ;
+top_W=0.9   ;
+
+@sample 
+
+//downmix bottom
+slider5 == 0 ? spl0 += spl10   ;
+slider5 == 0 ? spl1 += spl11   ;
+
+//width/shape correction, downmixing hex into quad. pt1: encoding M/S
+top_front_M =(spl8+spl9)*0.5;
+top_front_S =(spl8-spl9)*0.5; 
+top_back_M  =(spl12+spl13)*0.5;
+top_back_S  =(spl12-spl13)*0.5; 
+
+//pt2: decoding M/S
+spl8 = (top_front_M * top_P)+ (top_front_S * top_W);
+spl9 = (top_front_M * top_P)- (top_front_S * top_W);
+spl12= (top_back_M  * top_P)+ (top_back_S  * top_W);
+spl13= (top_back_M  * top_P)- (top_back_S  * top_W);
+
+//side, -3dB into front & back quad, could be wrong?
+spl8 +=(spl14)*0.7071;
+spl9 +=(spl15)*0.7071;
+spl12+=(spl14)*0.7071;
+spl13+=(spl15)*0.7071;
+
+//spl10= 0;
+//spl11= 0;
+
+spl14= 0;
+spl15= 0;
