@@ -8,10 +8,7 @@ top_W=0.9   ;
 height_downmix_coeff=0.5; //or could be 0.7 idk
 
 @sample 
-//downmix C
-spl0+=spl2*0.7071  ;
-spl1+=spl2*0.7071  ;
-spl2=0;
+
 
 //De/Matrix
 slider2 == 1 ? (
@@ -21,8 +18,10 @@ spl15 = spl15*-1;
 );
 
 //downmix bottom
-slider5 == 0 ? spl0 += spl10   ;
-slider5 == 0 ? spl1 += spl11   ;
+spl0 += spl10   ;
+spl1 += spl11   ;
+
+slider1==0?( //714
 
 //width/shape correction, downmixing hex into quad. pt1: encoding M/S
 top_front_M =(spl8+spl9)*0.5;
@@ -36,14 +35,25 @@ top_FR= (top_front_M * top_P)- (top_front_S * top_W);
 top_BL= (top_back_M  * top_P)+ (top_back_S  * top_W);
 top_BR= (top_back_M  * top_P)- (top_back_S  * top_W);
 
-slider1==0?(
 //downmix height side into top quad
 spl8 = top_FL+(spl14* height_downmix_coeff);
 spl9 = top_FR+(spl15* height_downmix_coeff);
 spl12= top_BL+(spl14* height_downmix_coeff);
 spl13= top_BR+(spl15* height_downmix_coeff);
+spl14=0;
+spl15=0;
 ):
-(
+( //602
+//downmix C
+spl0+=spl2*0.7071  ;
+spl1+=spl2*0.7071  ;
+spl2=0;
+
+top_FL=spl8   ;
+top_FR=spl9   ;
+top_BL=spl12  ;
+top_BR=spl13  ;
+
 //downmix height quad into ELL quad
 spl0 += top_FL * height_downmix_coeff ;
 spl1 += top_FR * height_downmix_coeff ;
@@ -55,8 +65,11 @@ spl14+= top_FL * height_downmix_coeff ;
 spl15+= top_FR * height_downmix_coeff ;
 spl14+= top_BL * height_downmix_coeff ;
 spl15+= top_BR * height_downmix_coeff ;
-)
 
-//or maybe height should go into C LFE ELL?
-spl14= 0;
-spl15= 0;
+spl8=0  ;
+spl9=0  ;
+spl12=0 ;
+spl13=0 ;
+
+);
+
