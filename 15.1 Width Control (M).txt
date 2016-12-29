@@ -62,7 +62,7 @@ spl14= top_side_M  + (top_side_M  * (1-top_W)*(top_P-1))+ (top_side_S  * top_W);
 spl15= top_side_M  + (top_side_M  * (1-top_W)*(top_P-1))- (top_side_S  * top_W);
 
 //Matrix
-slider5 == 0 ? (
+slider5 == 1 ? (
 spl9 =  spl9*-1;
 spl13 = spl13*-1;
 spl15 = spl15*-1;

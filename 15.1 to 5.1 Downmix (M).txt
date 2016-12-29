@@ -1,0 +1,63 @@
+desc:15.1 to 5.1 Downmix
+
+slider1:0<0,1,1{No,Yes}>(De)-Matrix Height
+slider2:0<-100,100,1>Top Side Depth (+ve is front)
+slider3:0<-100,100,1>Side Depth (+ve is front)
+slider4:100<0,100,10>Rear Width
+
+@init
+top_P=1.11  ;
+top_W=0.9   ;
+
+@slider
+R_width_coeff=slider4/100;
+Top_Side_Depth=(slider2+100 )/ 200;
+ELL_Side_Depth=(slider3+100 )/ 200;
+
+@sample 
+
+//De/Matrix Height
+slider1 == 1 ? (
+spl9 =  spl9*-1;
+spl13 = spl13*-1;
+spl15 = spl15*-1;
+);
+
+//Rear width
+R_M=(spl4+spl5)*0.5;
+R_S=(spl4-spl5)*0.5*R_width_coeff;
+
+spl4=R_M+R_S;
+spl5=R_M-R_S;
+
+//height side depth
+spl8 +=(spl14)*   Top_Side_Depth;
+spl9 +=(spl15)*   Top_Side_Depth;
+spl12+=(spl14)*(1-Top_Side_Depth);
+spl13+=(spl15)*(1-Top_Side_Depth);
+
+//ELL side depth
+spl0 +=(spl6)*  ELL_Side_Depth;
+spl1 +=(spl7)*  ELL_Side_Depth;
+spl4+=(spl6)*(1-ELL_Side_Depth);
+spl5+=(spl7)*(1-ELL_Side_Depth);
+
+///downmixxx
+spl0 += spl8 + spl10; //top C & LFE are a L & R of a new bottom layer
+spl1 += spl9 + spl11;
+spl4 += spl12;
+spl5 += spl13;
+spl6 += spl14;
+spl7 += spl15;
+
+
+spl6=0;
+spl7=0;
+spl8 =0;
+spl9 =0;
+spl10= 0;
+spl11= 0;
+spl12=0;
+spl13=0;
+spl14= 0;
+spl15= 0;

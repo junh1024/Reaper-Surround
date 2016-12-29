@@ -1,4 +1,4 @@
-desc:Simple 15.1 to 7.x Downmix, UNFINISHED
+desc:Simple 15.1 to 7.x Downmix
 slider1:0<0,1,1{7.1.4,6.2 height}>Downmix Type
 slider2:0<0,1,1{No,Yes}>(De)-Matrix Height
 
@@ -10,7 +10,7 @@ height_downmix_coeff=0.5; //or could be 0.7 idk
 @sample 
 
 
-//De/Matrix
+//De/Matrix Height
 slider2 == 1 ? (
 spl9 =  spl9*-1;
 spl13 = spl13*-1;
