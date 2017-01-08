@@ -1,0 +1,34 @@
+desc: 
+//based on http://www.blueripplesound.com/decoding
+
+slider1:0<0,1,1{Encode,Decode}>Mode
+
+@sample
+
+slider1==0?(
+
+// Z=spl3;
+
+W=(spl0*0.3536)+(spl1*0.3536	)+(spl4*0.3536	)+(spl5*0.3536 );
+X=(spl0*0.1768)+(spl1*0.1768	)+(spl4*-0.1768	)+(spl5*-0.1768);
+Y=(spl0*0.1768)+(spl1*-0.1768	)+(spl4*0.1768	)+(spl5*-0.1768);
+
+spl0=W;
+spl1=X;
+spl2=Y;
+spl4=0;
+spl5=0;
+
+)
+:(W=spl0;
+X=spl1;
+Y=spl2;
+
+spl0=	(W*0.3536 )+( X*		0.1768	)+(Y*	0.1768   ) ;
+spl1=	(W*0.3536 )+( X*		0.1768	)+(Y*	-0.1768  ) ;
+spl4=	(W*0.3536 )+( X*		-0.1768	)+(Y*	0.1768   ) ;
+spl5=	(W*0.3536 )+( X*		-0.1768	)+(Y*	-0.1768  ) ;
+
+);
+
+

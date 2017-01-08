@@ -1,0 +1,34 @@
+desc:15.1 to 5.1 Downmix
+
+slider1:10<-100,100,1>Side Depth (+ve is front)
+slider2:50<0,100,10>Rear Width
+slider3:0<-3,3,0.1>Pan law (dB)
+
+@init
+top_P=1.11  ;
+top_W=0.9   ;
+
+@slider
+R_width_coeff=slider2/100;
+ELL_Side_Depth=(slider1+100 )/ 200;
+
+
+gain = 2^(slider3/6); // convert from dB to a multiplier
+
+@sample 
+
+
+spl3 = (spl4+spl5) *( 1- R_width_coeff )* gain; //*0.7071 for constant theoretical gain
+spl4 = spl4 *R_width_coeff ;
+spl5 = spl5 *R_width_coeff ;
+
+// ELL side depth
+spl0 +=(spl6)*  ELL_Side_Depth;
+spl1 +=(spl7)*  ELL_Side_Depth;
+spl4 +=(spl6)*(1-ELL_Side_Depth);
+spl5 +=(spl7)*(1-ELL_Side_Depth);
+
+
+
+spl6=0;
+spl7=0;

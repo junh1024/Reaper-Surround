@@ -1,0 +1,38 @@
+desc: codec test
+
+slider1:0<0,1,1{Encode,Decode}>Mode
+slider2:1<0,2,0.05>Z depth
+
+@sample
+
+//encode
+
+// W=whole
+// X=Width DIffrence
+// Z=Depth difference
+
+// spl0=channel 1, Front Left
+// spl5=channel 6, Back RIght
+
+slider1==0?(
+W=(spl0*0.5)+(spl1*0.5	)+(spl4*0.5)+(spl5*0.5);
+X=(spl0*0.5)+(spl1*-0.5	)+(spl4*0.5)+(spl5*-0.5);
+Z=(spl0*0.5)+(spl1*0.5	)+(spl4*-0.5)+(spl5*-0.5);
+
+spl0=W;
+spl1=X;
+spl2=Z;
+spl4=0;
+spl5=0;
+)
+:(W=spl0; //decode
+X=spl1;
+Z=spl2*slider2;
+
+spl0=	(W*0.5 )+( X*		0.5)+(Z*	0.5  ) ;
+spl1=	(W*0.5 )+( X*		-0.5)+(Z*	0.5  ) ;
+spl4=	(W*0.5 )+( X*		0.5	)+(Z*	-0.5  ) ;
+spl5=	(W*0.5 )+( X*		-0.5	)+(Z*	-0.5  ) ;
+
+spl2=0;
+);
