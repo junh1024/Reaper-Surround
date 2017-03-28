@@ -1,4 +1,4 @@
-desc:Based on DTS Neural Upmix (Common). Useful after upscalers that don't have these controls.
+desc:Based on DTS Neural Upmix (Medium)
 
 slider1:100<0,100,2>Center Level Control
 slider2:4000<1000,10000,1000>rear LP freq  (Hz)

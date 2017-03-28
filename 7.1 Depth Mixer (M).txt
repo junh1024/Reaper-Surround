@@ -1,4 +1,4 @@
-desc:Width decreaser by mixing LR into C
+desc:Mixes front/back into side of 7.1
 
 slider1:100<0,100,2>Depth
 slider2:0<-3,3,0.1>Pan law (dB)

@@ -1,7 +1,7 @@
 desc:Based on DTS Neural Upmix (Common). Useful after upscalers that don't have these controls.
 
 slider1:100<0,100,2>Center Level Control
-slider2:4000<1000,10000,1000>rear LP freq  (Hz)
+slider2:4000<1000,10000,500>rear LP freq  (Hz)
 
 @init
 shape = 0.2 //filter shape (0=sharp, 1=dull)
@@ -20,11 +20,11 @@ shape = 0.2 //filter shape (0=sharp, 1=dull)
   oldamp=damp;
 
 @sample
-mid= spl0+spl1;
-side=spl0-spl1;
+mid = 0.7*(spl0+spl1);
+side= 0.7*(spl0-spl1);
 
-spl0 = (0.70*mid) + (side*0.3); 
-spl1 = (0.70*mid) - (side*0.3); 
+spl0 = (0.70*mid) + (side*0.2); 
+spl1 = (0.70*mid) - (side*0.2); 
 // spl2 = mid * 0.5 * (slider1/100); 
 
 // spl3 = 0; unneeded?
