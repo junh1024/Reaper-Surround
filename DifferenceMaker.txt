@@ -1,0 +1,6 @@
+desc: Outputs the difference between channel sets ch1+2 and 3+4 on 1+2, 3+4 left untouched.
+
+@sample
+spl0=-(spl2-spl0);
+spl1=-(spl3-spl1);
+

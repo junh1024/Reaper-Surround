@@ -1,0 +1,19 @@
+desc:Double M/S Encoder/Decoder (Works on ch1+2,5+6)
+
+slider1:0<0,1,1{Encode,Decode}>Operation Mode
+
+@slider
+mod = slider1
+
+@sample
+spl0orig=spl0;
+spl1orig=spl1;
+spl4orig=spl4;
+spl5orig=spl5;
+
+
+mod == 0 ? spl0 = ( spl0orig + spl1orig ) * 0.5 : spl0 = spl0orig + spl1orig;
+mod == 0 ? spl1 = ( spl0orig - spl1orig ) * 0.5 : spl1 = spl0orig - spl1orig;
+mod == 0 ? spl4 = ( spl4orig + spl5orig ) * 0.5 : spl4 = spl4orig + spl5orig;
+mod == 0 ? spl5 = ( spl4orig - spl5orig ) * 0.5 : spl5 = spl4orig - spl5orig;
+
