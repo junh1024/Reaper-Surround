@@ -1,0 +1,17 @@
+desc: based on http://www.blueripplesound.com/decoding v3
+
+//W originally .7072 w/o 0.75 adjustment
+
+@sample
+W=spl0  ;
+X=spl1  ;
+Y=spl2  ;
+  
+spl0=0.7956*W+ 0.4332*X+   0.4332*Y ;
+spl1=0.7956*W+ 0.4332*X+  -0.4332*Y ;
+spl4=0.7956*W+-0.4332*X+   0.4332*Y ;
+spl5=0.7956*W+-0.4332*X+  -0.4332*Y ;
+
+spl2=0;
+spl3=0;
+

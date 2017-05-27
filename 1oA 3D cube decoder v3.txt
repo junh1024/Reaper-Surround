@@ -1,0 +1,23 @@
+desc: based on http://www.blueripplesound.com/decoding v3
+@init
+gain=4;
+W_coeff  =0.1768*gain;
+dir_coeff=0.0722*gain;
+
+@sample
+W=spl0 *0.75 ;
+X=spl1  ;
+Y=spl2  ;
+Z=spl3  ;
+  
+spl0=W_coeff*W+ dir_coeff*X+   dir_coeff*Y+  -dir_coeff *Z ;
+spl1=W_coeff*W+ dir_coeff*X+  -dir_coeff*Y+  -dir_coeff *Z ;
+spl2=0;
+spl3=0;
+spl4=W_coeff*W+-dir_coeff*X+   dir_coeff*Y+  -dir_coeff *Z ;
+spl5=W_coeff*W+-dir_coeff*X+  -dir_coeff*Y+  -dir_coeff *Z ;
+spl8=W_coeff*W+ dir_coeff*X+   dir_coeff*Y+  dir_coeff  *Z ;
+spl9=W_coeff*W+ dir_coeff*X+  -dir_coeff*Y+  dir_coeff  *Z ;
+spl12=W_coeff*W+-dir_coeff*X+   dir_coeff*Y+  dir_coeff  *Z ;
+spl13=W_coeff*W+-dir_coeff*X+  -dir_coeff*Y+  dir_coeff  *Z ;
+

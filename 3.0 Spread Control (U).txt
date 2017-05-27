@@ -1,0 +1,25 @@
+desc: Spread the front 3 into each other.
+
+slider1:100<0,100,2>Spread
+
+@slider
+width_coeff=slider1/100; 
+
+
+@slider
+// gain = 2^(slider1/6); // convert from dB to a multiplier
+// depth_temp=(slider1*$pi)/200; //depth scaled from 0-100 to 0>half pi
+// R_width_coeff=slider2/100;
+
+@sample
+C_temp = (spl0+spl1)*.70106;
+L_temp = (spl0-spl1)*.5;
+
+C_temp=C_temp*(slider1/100);
+
+spl0=  (spl0+spl1)*0.5*(1-(slider1/100)) + L_temp +0.707*(spl2*width_coeff) ;
+spl1=  (spl0+spl1)*0.5*(1-(slider1/100)) - L_temp +0.707*(spl2*width_coeff) ;
+
+
+spl2 = spl2*(1-width_coeff)+ C_temp;
+

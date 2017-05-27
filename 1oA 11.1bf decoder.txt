@@ -1,0 +1,27 @@
+desc: based on http://www.blueripplesound.com/decoding v5
+
+//W originally .7072 w/o 0.75 adjustment
+
+@sample
+W=spl0  ;
+X=spl1  ;
+Y=spl2  ;
+Z=spl3  ;
+  
+spl0=0.3978*W+ 0.2166*X+   0.2166*Y;
+spl1=0.3978*W+ 0.2166*X+  -0.2166*Y;
+spl2=0;
+spl3=0;
+//bk
+spl4=0.3978*W+-0.2166*X+   0.2166*Y ;
+spl5=0.3978*W+-0.2166*X+  -0.2166*Y ;
+//tf
+spl8=0.3978*W+ 0.2166*X+   0.2166*Y+  0.2166  *Z ;
+spl9=0.3978*W+ 0.2166*X+  -0.2166*Y+  0.2166  *Z ;
+//bottom
+spl10=0.3978*W+ 0.2166*X+   0.1444*Y+  -0.2166 *Z ; //reduced depth cuz no botm bk
+spl11=0.3978*W+ 0.2166*X+  -0.1444*Y+  -0.2166 *Z ;
+//tb
+spl12=0.3978*W+-0.2166*X+   0.2166*Y+  0.2166  *Z ;
+spl13=0.3978*W+-0.2166*X+  -0.2166*Y+  0.2166  *Z ;
+

@@ -9,7 +9,7 @@ slider6:1<0,2,0.1>Y Gain
 slider7:1<0,2,0.1>Z Gain
 
 @init
-Z_coeff=-0.1987
+Z_coeff=0.1987
 
 @slider
 
@@ -32,7 +32,7 @@ Y+=(spl10*0.1147)+(spl11*-0.1147)  ;
 W+=(spl8*0.2357)+(spl9*0.2357)+ (spl14*0.2357)+(spl15*0.2357)+ (spl12*0.2357) +(spl13*0.2357)      ;
 X+=(spl8*0.1987)+(spl9*0.1987)+ (spl14*0)+     (spl15*0)+      (spl12*-0.1987)+(spl13*-0.1987)     ;
 Y+=(spl8*0.1147)+(spl9*-0.1147)+(spl14*0.2294)+(spl15*-0.2294)+(spl12*0.1147) +(spl13*-0.1147)     ;
-Z= (spl8*Z_coeff)+(spl9*-Z_coeff)+(spl14*Z_coeff)+(spl15*Z_coeff)+(spl12*Z_coeff) +(spl13*Z_coeff)  ;
+Z= (spl8*Z_coeff)+(spl9*Z_coeff)+(spl14*Z_coeff)+(spl15*Z_coeff)+(spl12*Z_coeff) +(spl13*Z_coeff)  ;
 Z-=(spl10+spl11)*Z_coeff; //bottom layer  
 
 
