@@ -1,6 +1,6 @@
 desc: Spread the front 3 into each other.
 
-slider1:100<0,100,2>Spread
+slider1:30<0,100,2>Spread
 
 @slider
 width_coeff=slider1/100; 
@@ -12,13 +12,17 @@ width_coeff=slider1/100;
 // R_width_coeff=slider2/100;
 
 @sample
-C_temp = (spl0+spl1)*.70106;
-L_temp = (spl0-spl1)*.5;
+
+Mid=spl0+spl1;
+Side=spl0-spl1;
+
+C_temp = (mid)*.707;
+L_temp = (side)*.5;
 
 C_temp=C_temp*(slider1/100);
 
-spl0=  (spl0+spl1)*0.5*(1-(slider1/100)) + L_temp +0.707*(spl2*width_coeff) ;
-spl1=  (spl0+spl1)*0.5*(1-(slider1/100)) - L_temp +0.707*(spl2*width_coeff) ;
+spl0=  (mid)*0.5*(1-(width_coeff)) + L_temp +0.707*(spl2*width_coeff) ;
+spl1=  (mid)*0.5*(1-(width_coeff)) - L_temp +0.707*(spl2*width_coeff) ;
 
 
 spl2 = spl2*(1-width_coeff)+ C_temp;
