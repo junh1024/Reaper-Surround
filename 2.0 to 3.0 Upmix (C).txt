@@ -1,4 +1,4 @@
-desc:Based on DTS Neural Upmix (Common). Useful after upscalers that don't have these controls.
+desc: Upmix to 3.0 by M/S
 
 slider1:100<0,100,2>Center Level Control
 
