@@ -12,8 +12,27 @@ def undoable(message):
 	finally:
 		RPR_Undo_EndBlock2(0, message, -1)
 
+
+debug = True #disable for using
+
 def msg(m):
-	RPR_ShowConsoleMsg(m)
+	if 'debug' in globals():
+		RPR_ShowConsoleMsg(m)
+
+
+L=-0.15 #initial Left pan, everything else is derived modularly. Change to taste.
+R=-L
+LW=2*L
+RW=-LW
+LC=(2*L)/3
+RC=-LC
+
+# msg(L)
+# msg(R)
+# msg(LW)
+# msg(RW)
+# msg(LC)
+# msg(RC)
 
 with undoable("Set Pan According To Track SUffiX"):
 
@@ -30,12 +49,15 @@ with undoable("Set Pan According To Track SUffiX"):
 			RPR_SetMediaTrackInfo_Value(trackId, "C_MAINSEND_OFFS", 0)
 		# RPR_SetMediaTrackInfo_Value(trackId, "D_PAN", 0.15)
 		
+		if(suffix in globals()): #if a suffix is one of the global preset pans
+			RPR_SetMediaTrackInfo_Value(trackId, "D_PAN", eval(suffix)) #set it according to the pan designated by the suffix. REFLECTION USED!
+		
 		if(suffix[0] == 'S'): #anything rear/surround
 			RPR_SetMediaTrackInfo_Value(trackId, "C_MAINSEND_OFFS", 4) #set rear/surround
 
-		# if(suffix == 'SL'): #anything rear/surround
-			# RPR_SetMediaTrackInfo_Value(trackId, "C_MAINSEND_OFFS", 4) #set rear/surround
+		if(suffix == 'SL'): #set SL pan
+			RPR_SetMediaTrackInfo_Value(trackId, "D_PAN", -1)
 
-		# if(suffix == 'SR'): #anything rear/surround
-			# RPR_SetMediaTrackInfo_Value(trackId, "C_MAINSEND_OFFS", 4) #set rear/surround
+		if(suffix == 'SR'): #set SR pan
+			RPR_SetMediaTrackInfo_Value(trackId, "D_PAN", 1)
 
