@@ -41,8 +41,11 @@ RR=C=0 #last 2 of naRR,center pans
 # msg(RC)
 
 with undoable("Set Pan According To Track Suffix"):
-	for i in range(RPR_CountTracks(0)): #for all tracks, get track
-		trackId = RPR_GetTrack(0, i)
+	# for i in range(RPR_CountTracks(0)): #for all tracks, get track
+		# trackId = RPR_GetTrack(0, i)
+
+	for i in range(RPR_CountSelectedTracks(0)): #for selected tracks, get track
+		trackId = RPR_GetSelectedTrack(0, i)
 		
 		suffix = str(RPR_GetSetMediaTrackInfo_String(trackId, "P_NAME", "", False )[3] )[-2:].lstrip().upper() #get actual track name, last 2 chars, remove whitespace)
 		
