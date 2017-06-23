@@ -9,8 +9,8 @@ slider1:0<0,100,2>Height
 // depth_temp=(slider1*$pi)/200; //depth scaled from 0-100 to 0>half pi
 // R_width_coeff=slider2/100;
 
-ell_coeff = 1-(slider1/100);//bottom coefficient
-top_coeff = slider1/100; //top coefficint
+ell_coeff = 1-(slider1/100);//ell coefficient
+top_coeff = slider1/100; //top coefficient
 
 @sample 
 

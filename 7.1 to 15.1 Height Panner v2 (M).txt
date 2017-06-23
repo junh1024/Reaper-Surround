@@ -1,0 +1,51 @@
+desc:Makes 15.1 height by shifting the side 6 of 7.1 up or down wards. V2 includes downwards control.
+
+slider1:0<-100,100,5>Height (+ve up, -ve down)
+slider2:0<0,100,5>Vertical Spread (+ve bigger)
+
+@init
+
+@slider
+
+ell_coeff = 1-( abs( slider1/100));//ell coefficient
+vert_coeff =  1- ell_coeff ;  //vert coefficient
+
+spread_coeff=slider2/100; 
+
+@sample 
+(  slider1 >= 0 )?  (
+//need top first otherwise it gets silenced
+spl8 = spl0 * vert_coeff;
+spl9 = spl1 * vert_coeff;
+
+spl12= spl4 * vert_coeff;
+spl13= spl5 * vert_coeff;
+spl14= spl6 * vert_coeff;
+spl15= spl7 * vert_coeff;
+
+spl0 = spl0 * ell_coeff;
+spl1 = spl1 * ell_coeff;
+
+spl4 = spl4 * ell_coeff;
+spl5 = spl5 * ell_coeff;
+spl6 = spl6 * ell_coeff;
+spl7 = spl7 * ell_coeff;
+)
+:
+(
+spl10= spl0 * vert_coeff;
+spl11= spl1 * vert_coeff;
+spl0 = spl0 * ell_coeff;
+spl1 = spl1 * ell_coeff; 
+);
+
+
+
+//TF
+spl8 += 0.707*(spl0*spread_coeff);
+spl9 += 0.707*(spl1*spread_coeff);
+spl10+= 0.707*(spl0*spread_coeff);
+spl11+= 0.707*(spl1*spread_coeff);
+
+spl0 = spl0*(1-spread_coeff); //ell
+spl1 = spl1*(1-spread_coeff); //ell
