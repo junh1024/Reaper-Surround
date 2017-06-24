@@ -9,10 +9,9 @@ slider1:500<100,10000,100>Frequency (Hz)
 cDenorm=10^-30;
 
 @slider
-freqLP = slider1;
-b1LP = -exp(-2.0*$pi*freqLP/srate);
+// freqLP = slider1;
+b1LP = -exp(-2.0*$pi*slider1/srate);
 a0LP = 1.0+b1LP;
-// b1LP = xLP;
 
 @sample
 
