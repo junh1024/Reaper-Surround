@@ -1,0 +1,37 @@
+desc: This is a 2-band splitter that works in 6channel (12ch out)
+//Original author: (C) 2006, Michael Gruhn.
+//License excerpt:...USE OF...CODE... IS ONLY GRANTED, IF USED IN ... THE AUTHOR'S INTENTION,  AND...ACKNOWLEDGEMENT
+//So I guess this counts?
+
+slider1:200<0,22000,1>Frequency (Hz)
+// slider2:2000<0,22000,1>Frequency (Hz)
+
+@init
+cDenorm=10^-30;
+
+@slider
+// freqHP = max(min(slider2,srate),slider4);
+// xHP = exp(-2.0*$pi*freqHP/srate);
+// a0HP = 1.0-xHP;
+// b1HP = -xHP;
+
+freqLP = slider1;
+xLP = exp(-2.0*$pi*freqLP/srate);
+a0LP = 1.0-xLP;
+b1LP = -xLP;
+
+@sample
+
+s0 = spl0;
+s1 = spl1;
+
+spl0 = (tmplLP = a0LP*s0 - b1LP*tmplLP + cDenorm);
+spl1 = (tmprLP = a0LP*s1 - b1LP*tmprLP + cDenorm);
+
+// spl4 = s0 - (tmplHP = a0HP*s0 - b1HP*tmplHP + cDenorm);
+// spl5 = s1 - (tmprHP = a0HP*s1 - b1HP*tmprHP + cDenorm);
+
+spl2 = s0 - spl0 - spl4;
+spl3 = s1 - spl1 - spl5;
+
+
