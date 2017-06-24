@@ -31,7 +31,7 @@ spl1 = (tmprLP = a0LP*s1 - b1LP*tmprLP + cDenorm);
 // spl4 = s0 - (tmplHP = a0HP*s0 - b1HP*tmplHP + cDenorm);
 // spl5 = s1 - (tmprHP = a0HP*s1 - b1HP*tmprHP + cDenorm);
 
-spl2 = s0 - spl0 - spl4;
-spl3 = s1 - spl1 - spl5;
+spl2 = s0 - spl0;
+spl3 = s1 - spl1;
 
 
