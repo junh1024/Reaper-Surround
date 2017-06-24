@@ -10,9 +10,9 @@ cDenorm=10^-30;
 
 @slider
 freqLP = slider1;
-xLP = -exp(-2.0*$pi*freqLP/srate);
-a0LP = 1.0+xLP;
-b1LP = xLP;
+b1LP = -exp(-2.0*$pi*freqLP/srate);
+a0LP = 1.0+b1LP;
+// b1LP = xLP;
 
 @sample
 
