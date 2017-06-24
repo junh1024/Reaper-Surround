@@ -3,16 +3,16 @@ desc: This is a 2-band splitter that works in 6channel (12ch out)
 //License excerpt:...USE OF...CODE... IS ONLY GRANTED, IF USED IN ... THE AUTHOR'S INTENTION,  AND...ACKNOWLEDGEMENT
 //So I guess this counts?
 
-slider1:200<0,22000,1>Frequency (Hz)
+slider1:500<100,10000,100>Frequency (Hz)
 
 @init
 cDenorm=10^-30;
 
 @slider
 freqLP = slider1;
-xLP = exp(-2.0*$pi*freqLP/srate);
-a0LP = 1.0-xLP;
-b1LP = -xLP;
+xLP = -exp(-2.0*$pi*freqLP/srate);
+a0LP = 1.0+xLP;
+b1LP = xLP;
 
 @sample
 
