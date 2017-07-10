@@ -1,0 +1,126 @@
+ desc:Extra Large 15.1 to 7.1 Downmix
+
+slider1:100<0,100,1>ELL Width
+slider2:100<0,100,1>Height Width
+slider3:1<0,1,1{On,Off}>(Matrix Height)
+
+slider4:0<0,100,1>Center Width
+slider5:0<0,100,2>Bottom into C
+
+slider6:0<-100,100,2>ELL Side Depth
+slider7:0<-100,100,2>Top Side Depth
+
+//Height/ELL into front (copy from 51d)
+
+@init
+polarity=1;
+
+
+@slider
+ELL_W=slider1/100   ;
+top_W=slider2/100   ;
+slider3 == 1 ? polarity = -1 : polarity = 1;
+width_coeff=slider4/100; 
+
+center_coeff =slider5/100; //convert from slider to coefficient
+slider_coeff = 1-center_coeff;
+
+Top_Side_Depth=(abs(slider7 ))/ 100;
+ELL_Side_Depth=(abs(slider6 ))/ 100;
+
+
+@sample 
+
+front_M =(spl0 +spl1)*0.5;
+front_S =(spl0 -spl1)*0.5; 
+back_M  =(spl4+spl5)*0.5;
+back_S  =(spl4-spl5)*0.5; 
+side_M  =(spl6+spl7)*0.5;
+side_S  =(spl6-spl7)*0.5; 
+
+spl0=(front_M)+ (front_S * ELL_W) ;
+spl1=(front_M)- (front_S * ELL_W) ;
+spl4=(back_M )+ (back_S  * ELL_W) ;
+spl5=(back_M )- (back_S  * ELL_W) ;
+spl6=(side_M )+ (side_S  * ELL_W) ;
+spl7=(side_M )- (side_S  * ELL_W) ;
+
+//need top first otherwise bottom gets silenced, convert top to M/S
+top_front_M =(spl8 +spl9 )*0.5;
+top_front_S =(spl8 -spl9 )*0.5; 
+top_back_M  =(spl12+spl13)*0.5;
+top_back_S  =(spl12-spl13)*0.5; 
+top_side_M  =(spl14+spl15)*0.5;
+top_side_S  =(spl14-spl15)*0.5; 
+
+//decode M/S with polarity
+spl8 = ( (top_front_M)+ (top_front_S * top_W) ) ;
+spl9 = ( (top_front_M)- (top_front_S * top_W) ) *polarity;
+spl12= ( (top_back_M )+ (top_back_S  * top_W) ) ;
+spl13= ( (top_back_M )- (top_back_S  * top_W) ) *polarity;
+spl14= ( (top_side_M )+ (top_side_S  * top_W) ) ;
+spl15= ( (top_side_M )- (top_side_S  * top_W) ) *polarity;
+
+
+//Width, C into LR
+spl0 = spl0+0.707*(spl2*width_coeff);
+spl1 = spl1+0.707*(spl2*width_coeff);
+spl2 = spl2*(1-width_coeff);
+
+//Btm into C
+spl2 += (spl10+spl11) * center_coeff ; 
+     
+spl10 = spl10 *slider_coeff ;
+spl11 = spl11 *slider_coeff ;
+
+//Top side depth
+slider7>0?(
+spl8 +=(spl14)*   Top_Side_Depth;
+spl9 +=(spl15)*   Top_Side_Depth;
+
+spl14=(spl14)*(1-Top_Side_Depth);
+spl15=(spl15)*(1-Top_Side_Depth);
+)
+:
+(
+spl12 +=(spl14)*   Top_Side_Depth;
+spl13 +=(spl15)*   Top_Side_Depth;
+
+spl14=(spl14)*(1-Top_Side_Depth);
+spl15=(spl15)*(1-Top_Side_Depth);
+);
+
+
+slider6>0?(
+//ELL side depth
+spl0 +=(spl6)*   ELL_Side_Depth;
+spl1 +=(spl7)*   ELL_Side_Depth;
+spl6=  (spl6)*(1-ELL_Side_Depth);
+spl7=  (spl7)*(1-ELL_Side_Depth);
+)
+:
+(
+spl4 +=(spl6)*  ELL_Side_Depth;
+spl5 +=(spl7)*  ELL_Side_Depth;
+spl6= (spl6)*(1-ELL_Side_Depth);
+spl7= (spl7)*(1-ELL_Side_Depth);
+);
+
+
+//downmix
+spl0 += spl8 + spl10; //top C & LFE are a L & R of a new bottom layer
+spl1 += spl9 + spl11;
+spl4 += spl12;
+spl5 += spl13;
+spl6 += spl14;
+spl7 += spl15;
+
+//silence
+spl8 = 0;
+spl9 = 0;
+spl10= 0;
+spl11= 0;
+spl12= 0;
+spl13= 0;
+spl14= 0;
+spl15= 0;
