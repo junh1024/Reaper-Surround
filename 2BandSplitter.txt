@@ -1,9 +1,9 @@
-desc: This is a 2-band splitter that works in 6channel (12ch out)
+desc: This is a 2-band splitter. 7.1 in, 15.1 out.
 //Original author: (C) 2006, Michael Gruhn.
 //License excerpt:...USE OF...CODE... IS ONLY GRANTED, IF USED IN ... THE AUTHOR'S INTENTION,  AND...ACKNOWLEDGEMENT
 //So I guess this counts?
 
-slider1:500<500,5000,10>Frequency (Hz)
+slider1:500<500,15000,10>Frequency (Hz)
 
 @init
 // cDenorm=0;
@@ -20,5 +20,27 @@ s1 = spl1;
 spl0 = (tmplLP = a0LP*s0 - b1LP*tmplLP);
 spl1 = (tmprLP = a0LP*s1 - b1LP*tmprLP);
 
-spl2 = s0 - spl0;
-spl3 = s1 - spl1;
+spl8 += s0 - spl0;
+spl9 += s1 - spl1;
+
+//
+
+s4= spl4;
+s5 = spl5;
+
+spl4 = (tmplLP = a0LP*s4 - b1LP*tmplLP);
+spl5 = (tmprLP = a0LP*s5 - b1LP*tmprLP);
+
+spl12 += s4 - spl4;
+spl13 += s5 - spl5;
+
+//
+
+s6= spl6;
+s7 = spl7;
+
+spl6 = (tmplLP = a0LP*s6 - b1LP*tmplLP);
+spl7 = (tmprLP = a0LP*s7 - b1LP*tmprLP);
+
+spl14 += s6 - spl6;
+spl15 += s7 - spl7;
