@@ -1,4 +1,4 @@
-desc:Makes 15.1 height by shifting the side 6 of 7.1 upwards.
+ desc:Downmix 15.1 to 1oA
 
 slider1:0<0,1,1{Furse-Malham,ACN}>Channel Order
 

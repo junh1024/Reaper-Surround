@@ -7,8 +7,8 @@ top_W=0.9   ;
 @sample 
 
 //downmix bottom
-slider5 == 0 ? spl0 += spl10   ;
-slider5 == 0 ? spl1 += spl11   ;
+slider1 == 0 ? spl0 += spl10   ;
+slider1 == 0 ? spl1 += spl11   ;
 
 //width/shape correction, downmixing hex into quad. pt1: encoding M/S
 top_front_M =(spl8+spl9)*0.5;
@@ -28,8 +28,11 @@ spl9 +=(spl15)*0.7071;
 spl12+=(spl14)*0.7071;
 spl13+=(spl15)*0.7071;
 
-//spl10= 0;
-//spl11= 0;
+spl10= spl12;
+spl11= spl13;
+
+spl12= 0;
+spl13= 0;
 
 spl14= 0;
 spl15= 0;

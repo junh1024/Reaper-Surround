@@ -1,6 +1,9 @@
- desc:Makes 15.1 height by shifting the side 6 of 7.1 upwards.
+desc:Downmix 15.1 to FuMa 1.2oA (WXYZR Fuma)
+//Really, this is a big hack, but there's nothing free that does remotely the same thing.
+//thx Bruce Wiggins for 1oA Hex & Aaron Heller (ADT) for 2oA R coefficients
 
-slider1:0<0,1,1{Furse-Malham,ACN}>Channel Order
+
+slider1:0<0,1,1{Furse-Malham,Not ACN}>Channel Order (disabled)
 slider2:1<0,1,1{No,Yes}>Downmix ELL
 slider3:0<0,1,1{No,Yes}>(De)-Matrix Height
 slider4:1<0,2,0.1>W Gain
@@ -9,7 +12,11 @@ slider6:1<0,2,0.1>Y Gain
 slider7:1<0,2,0.1>Z Gain
 
 @init
-Z_coeff=0.1987
+Z_coeff=0.1987;
+R_coeff=0.158; 
+// X is larger than R by 1.257785693x
+// X is larger than U by 2.515571387
+// R=-.158 for ELL ,+.0790 for Height
 
 @slider
 
@@ -28,16 +35,25 @@ W+=(spl10*0.2357)+(spl11*0.2357)   ;
 X+=(spl10*0.1987)+(spl11*0.1987)   ;
 Y+=(spl10*0.1147)+(spl11*-0.1147)  ;
 
+Z=(spl10+spl11)*Z_coeff;
+R=(spl10+spl11)*(R_coeff/2);
+
+U= (spl10+spl11)*(R_coeff/4);
+
 //toplayer
 W+=(spl8*0.2357)+(spl9*0.2357)+ (spl14*0.2357)+(spl15*0.2357)+ (spl12*0.2357) +(spl13*0.2357)      ;
 X+=(spl8*0.1987)+(spl9*0.1987)+ (spl14*0)+     (spl15*0)+      (spl12*-0.1987)+(spl13*-0.1987)     ;
 Y+=(spl8*0.1147)+(spl9*-0.1147)+(spl14*0.2294)+(spl15*-0.2294)+(spl12*0.1147) +(spl13*-0.1147)     ;
-Z= (spl8*Z_coeff)+(spl9*Z_coeff)+(spl14*Z_coeff)+(spl15*Z_coeff)+(spl12*Z_coeff) +(spl13*Z_coeff)  ;
-Z-=(spl10+spl11)*Z_coeff; //bottom layer  
+Z+= (spl8*Z_coeff)+(spl9*Z_coeff)+(spl14*Z_coeff)+(spl15*Z_coeff)+(spl12*Z_coeff) +(spl13*Z_coeff)  ;
 
 
+R+=(spl8+spl9+ spl14+spl15+ spl12 +spl13 )*(R_coeff/2);
+U+=((spl8+spl9+ spl14+spl15) *(R_coeff/4) ) +((spl12 +spl13 )*(R_coeff/-2));
 
 
+// R=-.158 for ELL ,+.0790 for Height
+// U=
+// V=
 //Downmix ELL
 slider2 == 1?(
 //downmix C
@@ -48,6 +64,12 @@ spl2=0;
 W+=(spl0*0.2357)+(spl1*0.2357)+ (spl6*0.2357)+(spl7*0.2357)+ (spl4*0.2357) +(spl5*0.2357)           ;
 X+=(spl0*0.1987)+(spl1*0.1987)+ (spl6*0)+     (spl7*0)+      (spl4*-0.1987)+(spl5*-0.1987)          ;
 Y+=(spl0*0.1147)+(spl1*-0.1147)+(spl6*0.2294)+(spl7*-0.2294)+(spl4*0.1147) +(spl5*-0.1147)          ;
+
+R+=(spl0+spl1+spl6+spl7+spl4+spl5)         *(-R_coeff);
+// U+=((spl0+spl1+spl6+spl7) * (R_coeff/2)) + ((spl4+spl5) *(-R_coeff));
+
+// U=
+// V=
 
 spl4 = 0;
 spl5 = 0;
@@ -67,15 +89,15 @@ Y*=slider6;
 Z*=slider7;
 
 //Channel order - ACN
-slider1 == 1 ? (
-old_X=X;
-old_Y=Y;
-old_Z=Z;
+// slider1 == 1 ? (
+// old_X=X;
+// old_Y=Y;
+// old_Z=Z;
 
-X=old_Y;
-Y=old_Z;
-Z=old_X;
-);
+// X=old_Y;
+// Y=old_Z;
+// Z=old_X;
+// );
 
 //stream output
 
@@ -85,6 +107,10 @@ spl0=W  ;
 spl1=X  ;
 spl2=Y;
 spl3=Z;
+spl4=R;
+//spl5=S;
+// spl6=T;
+// spl7=U;
 )
 :
 ( //dont downmix ELL
