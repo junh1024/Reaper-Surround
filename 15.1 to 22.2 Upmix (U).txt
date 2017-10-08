@@ -1,0 +1,67 @@
+desc: Simple 15.1 to 22.2 upmix. Chan order courtesy of blue ripple.
+
+// 1. Front Left
+// 2. Front Right
+// 3. Front Centre
+// 4. LFE Left
+// 5. Back Left
+// 6. Back Right
+// 7. Front Left/Centre
+// 8. Front Right/Centre
+// 9. Back Centre
+// 10. LFE Right
+// 11. Side Left
+// 12. Side Right
+// 13. Top Front Left
+// 14. Top Front Right
+// 15. Top Front Centre
+// 16. Top Centre
+// 17. Top Back Left
+// 18. Top Back Right
+// 19. Top Side Left
+// 20. Top Side Right
+// 21. Top Back Centre
+// 22. Bottom Front Centre
+// 23. Bottom Front Left
+// 24. Bottom Front Right
+
+@sample
+//Order of ops v.important
+spl21=spl10*0.7; //. Bottom Front Centre
+spl22=spl11*0.7; //. Bottom Front Left
+spl23=spl21+spl22; //. Bottom Front Right
+
+
+spl18=spl14 *.7;//. Top Side Left
+spl19=spl15 *.7;//. Top Side Right
+spl15=spl18+spl19; //. Top Centre
+
+spl16=spl12; //. Top Back Left
+spl17=spl13; //. Top Back Right
+
+spl12=spl8*.7; //. Top Front Left
+spl13=spl9*.7; //. Top Front Right
+spl14=(spl12+spl13); //. Top Front Centre
+
+spl20=spl16+spl17; //. Top Back Centre
+
+
+
+spl10=spl6; //. Side Left
+spl11=spl7; //. Side Right
+
+spl0 =spl0*0.7;  // Front Left
+spl1 =spl1*0.7;  // Front Right
+spl2 =spl2; // Front Centre
+spl3 =spl3*0.7; // LFE Left
+spl4 =spl4*0.7; // Back Left
+spl5 =spl5*0.7; // Back Right
+spl6 =spl0; // Front Left/Centre
+spl7 =spl1; // Front Right/Centre
+spl8 =(spl4+spl5); // Back Centre
+spl9 =spl3; //. LFE Right
+
+
+
+
+
