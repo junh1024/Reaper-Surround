@@ -4,7 +4,7 @@ desc: FuMa
 
 slider1:0<-180,180,1>Angle*
 slider2:0<0,90,1>Elevation (height)*
-slider3:60<0,180,1>Width*
+slider3:60<0,180,1>Width*//non functional
 
 // @init
 // C_F=;
@@ -14,26 +14,52 @@ slider3:60<0,180,1>Width*
 A=slider1*($pi/-180);
 E=slider2*($pi/180);
 
+//precalculate some coeffs reduces CPU
 cos_A=cos(A);
 sin_A=sin(A);
 cos_E=cos(E);
 sin_E=sin(E);
 
+//calculate pan coeffs reduces CPU further. These now only happen per slider instead of per sample.
+W_coeff=sqrt(1/2)                                         ;
+X_coeff=cos_A*cos_E                                       ;
+Y_coeff=sin_A*cos_E                                       ;
+Z_coeff=sin_E                                             ;
+R_coeff=(1/2)*(3*sin_E*sin_E-1)                           ;
+S_coeff=cos_A*sin(2*E)                                    ;
+T_coeff=sin_A*sin(2*E)                                    ;
+U_coeff=cos(2*A)*cos_E*cos_E                              ;
+V_coeff=sin(2*A)*cos_E*cos_E                              ;
+K_coeff=(1/2)*sin_E*(5*sin_E*sin_E-3)                     ;
+L_coeff=sqrt(135/256)*cos_A*cos_E*(5*sin_E*sin_E-1)       ;
+M_coeff=sqrt(135/256)*sin_A*cos_E*(5*sin_E*sin_E-1)       ;
+N_coeff=sqrt(27/4)*cos(2*A)*sin_E*cos_E*cos_E             ;
+O_coeff=sqrt(27/4)*sin(2*A)*sin_E*cos_E*cos_E             ;
+P_coeff=cos(3*A)*cos_E*cos_E*cos_E                        ;
+Q_coeff=sin(3*A)*cos_E*cos_E*cos_E                        ;
+
 @sample
-in1=spl0+spl1;
-spl0=sqrt(1/2)                                             *in1;
-spl1 =cos_A*cos_E                                        *in1;
-spl2 =sin_A*cos_E                                        *in1;
-spl3 =sin_E                                              *in1;
-spl4 =(1/2)*(3*sin_E*sin_E-1)                              *in1;
-spl5 =cos_A*sin(2*E)                                       *in1;
-spl6 =sin_A*sin(2*E)                                       *in1;
-spl7 =cos(2*A)*cos_E*cos_E                                 *in1;
-spl8 =sin(2*A)*cos_E*cos_E                                 *in1;
-spl9 =(1/2)*sin_E*(5*sin_E*sin_E-3)                        *in1;
-spl10 =sqrt(135/256)*cos_A*cos_E*(5*sin_E*sin_E-1)          *in1;
-spl11 =sqrt(135/256)*sin_A*cos_E*(5*sin_E*sin_E-1)          *in1;
-spl12 =sqrt(27/4)*cos(2*A)*sin_E*cos_E*cos_E                 *in1;
-spl13 =sqrt(27/4)*sin(2*A)*sin_E*cos_E*cos_E                 *in1;
-spl14 =cos(3*A)*cos_E*cos_E*cos_E                           *in1;
-spl15 =sin(3*A)*cos_E*cos_E*cos_E                           *in1;
+in1  =spl0+spl1;
+
+
+//1o
+spl0  =W_coeff          *in1;
+spl1  =X_coeff          *in1;
+spl2  =Y_coeff          *in1;
+spl3  =Z_coeff          *in1;
+
+//2o
+spl4  =R_coeff          *in1;
+spl5  =S_coeff          *in1;
+spl6  =T_coeff          *in1;
+spl7  =U_coeff          *in1;
+spl8  =V_coeff          *in1;
+
+//3o
+spl9  =K_coeff          *in1;
+spl10 =L_coeff          *in1;
+spl11 =M_coeff          *in1;
+spl12 =N_coeff          *in1;
+spl13 =O_coeff          *in1;
+spl14 =P_coeff          *in1;
+spl15 =Q_coeff          *in1;
