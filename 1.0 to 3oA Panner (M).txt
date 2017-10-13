@@ -1,0 +1,34 @@
+desc: FuMa
+
+// http://web.archive.org/web/20160313102859/http://www.blueripplesound.com/b-format
+
+slider1:0<-180,180,1>Angle*
+slider2:0<0,90,1>Elevation (height)*
+slider3:60<0,180,1>Width*
+
+// @init
+// C_F=;
+
+@slider
+//dammit radians
+A=slider1*($pi/-180);
+E=slider2*($pi/180);
+
+@sample
+in1=spl0+spl1;
+spl0=sqrt(1/2)                                             *in1;
+spl1 =cos(A)*cos(E)                                        *in1;
+spl2 =sin(A)*cos(E)                                        *in1;
+spl3 =sin(E)                                              *in1;
+spl4 =(1/2)*(3*sin(E)*sin(E)-1)                              *in1;
+spl5 =cos(A)*sin(2*E)                                       *in1;
+spl6 =sin(A)*sin(2*E)                                       *in1;
+spl7 =cos(2*A)*cos(E)*cos(E)                                 *in1;
+spl8 =sin(2*A)*cos(E)*cos(E)                                 *in1;
+spl9 =(1/2)*sin(E)*(5*sin(E)*sin(E)-3)                        *in1;
+spl10 =sqrt(135/256)*cos(A)*cos(E)*(5*sin(E)*sin(E)-1)          *in1;
+spl11 =sqrt(135/256)*sin(A)*cos(E)*(5*sin(E)*sin(E)-1)          *in1;
+spl12 =sqrt(27/4)*cos(2*A)*sin(E)*cos(E)*cos(E)                 *in1;
+spl13 =sqrt(27/4)*sin(2*A)*sin(E)*cos(E)*cos(E)                 *in1;
+spl14 =cos(3*A)*cos(E)*cos(E)*cos(E)                           *in1;
+spl15 =sin(3*A)*cos(E)*cos(E)*cos(E)                           *in1;
