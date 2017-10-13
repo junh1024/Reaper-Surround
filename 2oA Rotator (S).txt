@@ -1,0 +1,35 @@
+desc: FuMa
+
+// http://web.archive.org/web/20160313102859/http://www.blueripplesound.com/b-format
+
+slider1:0<-180,180,1>Angle*
+
+
+
+@slider
+//dammit radians
+A=slider1*($pi/-180);
+E=slider2*($pi/180);
+
+@sample
+
+spl_in0= spl0 ;
+spl_in1= spl1 ;
+spl_in2= spl2 ;
+spl_in3= spl3 ;
+spl_in4= spl4 ;
+spl_in5= spl5 ;
+spl_in6= spl6 ;
+spl_in7= spl7 ;
+spl_in8= spl8 ;
+
+
+spl0=1*spl_in0	+spl_in1*	0	+spl_in2*	0	+spl_in3*	0	+spl_in4*	0	+spl_in5*	0	+spl_in6*	0	+spl_in7*	0	+spl_in8*	0                 ;
+spl1=0*spl_in0	+spl_in1*	cos(A)	+spl_in2*	-sin(A)	+spl_in3*	0	+spl_in4*	0	+spl_in5*	0	+spl_in6*	0	+spl_in7*	0	+spl_in8*	0         ;
+spl2=0*spl_in0	+spl_in1*	sin(A)	+spl_in2*	cos(A)	+spl_in3*	0	+spl_in4*	0	+spl_in5*	0	+spl_in6*	0	+spl_in7*	0	+spl_in8*	0         ;
+spl3=0*spl_in0	+spl_in1*	0	+spl_in2*	0	+spl_in3*	1	+spl_in4*	0	+spl_in5*	0	+spl_in6*	0	+spl_in7*	0	+spl_in8*	0                 ;
+spl4=0*spl_in0	+spl_in1*	0	+spl_in2*	0	+spl_in3*	0	+spl_in4*	1	+spl_in5*	0	+spl_in6*	0	+spl_in7*	0	+spl_in8*	0                 ;
+spl5=0*spl_in0	+spl_in1*	0	+spl_in2*	0	+spl_in3*	0	+spl_in4*	0	+spl_in5*	cos(A)	+spl_in6*	-sin(A)	+spl_in7*	0	+spl_in8*	0         ;
+spl6=0*spl_in0	+spl_in1*	0	+spl_in2*	0	+spl_in3*	0	+spl_in4*	0	+spl_in5*	sin(A)	+spl_in6*	cos(A)	+spl_in7*	0	+spl_in8*	0         ;
+spl7=0*spl_in0	+spl_in1*	0	+spl_in2*	0	+spl_in3*	0	+spl_in4*	0	+spl_in5*	0	+spl_in6*	0	+spl_in7*	cos(2*A)	+spl_in8*	-sin(2*A)      ;
+spl8=0*spl_in0	+spl_in1*	0	+spl_in2*	0	+spl_in3*	0	+spl_in4*	0	+spl_in5*	0	+spl_in6*	0	+spl_in7*	sin(2*A)	+spl_in8*	cos(2*A)       ;
