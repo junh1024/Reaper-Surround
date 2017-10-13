@@ -38,6 +38,27 @@ O_coeff=sqrt(27/4)*sin(2*A)*sin_E*cos_E*cos_E             ;
 P_coeff=cos(3*A)*cos_E*cos_E*cos_E                        ;
 Q_coeff=sin(3*A)*cos_E*cos_E*cos_E                        ;
 
+
+//ambix
+// 1
+// sin(A)*cos(E)
+// sin(E)
+// cos(A)*cos(E)
+// sqrt(3/4)*sin(2*A)*cos(E)*cos(E)
+// sqrt(3/4)*sin(A)*sin(2*E)
+// (1/2)*(3*sin(E)*sin(E)-1)
+// sqrt(3/4)*cos(A)*sin(2*E)
+// sqrt(3/4)*cos(2*A)*cos(E)*cos(E)
+// sqrt(5/8)*sin(3*A)*cos(E)*cos(E)*cos(E)
+// sqrt(15/4)*sin(2*A)*sin(E)*cos(E)*cos(E)
+// sqrt(3/8)*sin(A)*cos(E)*(5*sin(E)*sin(E)-1)
+// (1/2)*sin(E)*(5*sin(E)*sin(E)-3)
+// sqrt(3/8)*cos(A)*cos(E)*(5*sin(E)*sin(E)-1)
+// sqrt(15/4)*cos(2*A)*sin(E)*cos(E)*cos(E)
+// sqrt(5/8)*cos(3*A)*cos(E)*cos(E)*cos(E)
+
+
+
 @sample
 in1  =spl0+spl1;
 
