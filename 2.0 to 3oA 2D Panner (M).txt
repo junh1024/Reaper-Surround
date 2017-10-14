@@ -1,0 +1,124 @@
+desc: FuMa
+
+// http://web.archive.org/web/20160313102859/http://www.blueripplesound.com/b-format
+
+slider1:0<-180,180,1>Angle*
+slider2:0<0,90,1>Unused
+slider3:60<0,180,1>Width*
+
+// @init
+// C_F=;
+
+@slider
+//dammit radians
+A1=(slider1-slider3)*($pi/-180);//left
+A2=(slider1+slider3)*($pi/-180);//right
+E=0;
+// E=slider2*($pi/180);
+
+
+// left
+W_coeff1=sqrt(1/2)                                         ;
+X_coeff1=cos(A1)*cos(E)                                       ;
+Y_coeff1=sin(A1)*cos(E)                                       ;
+// Z_coeff1=sin(E)                                             ;
+R_coeff1=(1/2)*(3*sin(E)*sin(E)-1)                           ;
+// S_coeff1=cos(A1)*sin(2*E)                                    ;
+// T_coeff1=sin(A1)*sin(2*E)                                    ;
+U_coeff1=cos(2*A1)*cos(E)*cos(E)                              ;
+V_coeff1=sin(2*A1)*cos(E)*cos(E)                              ;
+// K_coeff1=(1/2)*sin(E)*(5*sin(E)*sin(E)-3)                     ;
+L_coeff1=sqrt(135/256)*cos(A1)*cos(E)*(5*sin(E)*sin(E)-1)       ;
+M_coeff1=sqrt(135/256)*sin(A1)*cos(E)*(5*sin(E)*sin(E)-1)       ;
+// N_coeff1=sqrt(27/4)*cos(2*A1)*sin(E)*cos(E)*cos(E)             ;
+// O_coeff1=sqrt(27/4)*sin(2*A1)*sin(E)*cos(E)*cos(E)             ;
+P_coeff1=cos(3*A1)*cos(E)*cos(E)*cos(E)                        ;
+Q_coeff1=sin(3*A1)*cos(E)*cos(E)*cos(E)                        ;
+
+// right
+W_coeff2=sqrt(1/2)                                         ;
+X_coeff2=cos(A2)*cos(E)                                       ;
+Y_coeff2=sin(A2)*cos(E)                                       ;
+// Z_coeff2=sin(E)                                             ;
+R_coeff2=(1/2)*(3*sin(E)*sin(E)-1)                           ;
+// S_coeff2=cos(A2)*sin(2*E)                                    ;
+// T_coeff2=sin(A2)*sin(2*E)                                    ;
+U_coeff2=cos(2*A2)*cos(E)*cos(E)                              ;
+V_coeff2=sin(2*A2)*cos(E)*cos(E)                              ;
+// K_coeff2=(1/2)*sin(E)*(5*sin(E)*sin(E)-3)                     ;
+L_coeff2=sqrt(135/256)*cos(A2)*cos(E)*(5*sin(E)*sin(E)-1)       ;
+M_coeff2=sqrt(135/256)*sin(A2)*cos(E)*(5*sin(E)*sin(E)-1)       ;
+// N_coeff2=sqrt(27/4)*cos(2*A2)*sin(E)*cos(E)*cos(E)             ;
+// O_coeff2=sqrt(27/4)*sin(2*A2)*sin(E)*cos(E)*cos(E)             ;
+P_coeff2=cos(3*A2)*cos(E)*cos(E)*cos(E)                        ;
+Q_coeff2=sin(3*A2)*cos(E)*cos(E)*cos(E)                        ;
+
+
+//ambix
+// 1
+// sin(A)*cos(E)
+// sin(E)
+// cos(A)*cos(E)
+// sqrt(3/4)*sin(2*A)*cos(E)*cos(E)
+// sqrt(3/4)*sin(A)*sin(2*E)
+// (1/2)*(3*sin(E)*sin(E)-1)
+// sqrt(3/4)*cos(A)*sin(2*E)
+// sqrt(3/4)*cos(2*A)*cos(E)*cos(E)
+// sqrt(5/8)*sin(3*A)*cos(E)*cos(E)*cos(E)
+// sqrt(15/4)*sin(2*A)*sin(E)*cos(E)*cos(E)
+// sqrt(3/8)*sin(A)*cos(E)*(5*sin(E)*sin(E)-1)
+// (1/2)*sin(E)*(5*sin(E)*sin(E)-3)
+// sqrt(3/8)*cos(A)*cos(E)*(5*sin(E)*sin(E)-1)
+// sqrt(15/4)*cos(2*A)*sin(E)*cos(E)*cos(E)
+// sqrt(5/8)*cos(3*A)*cos(E)*cos(E)*cos(E)
+
+
+
+@sample
+in1  =spl0;
+in2  =spl1;
+
+
+//1o
+spl0  =W_coeff1          *in1;
+spl1  =X_coeff1          *in1;
+spl2  =Y_coeff1          *in1;
+// spl3  =Z_coeff1          *in1;
+
+//2o
+spl4  =R_coeff1          *in1;
+// spl5  =S_coeff1          *in1;
+// spl6  =T_coeff1          *in1;
+spl7  =U_coeff1          *in1;
+spl8  =V_coeff1          *in1;
+
+//3o
+// spl9  =K_coeff1          *in1;
+spl10 =L_coeff1          *in1;
+spl11 =M_coeff1          *in1;
+// spl12 =N_coeff1          *in1;
+// spl13 =O_coeff1          *in1;
+spl14 =P_coeff1          *in1;
+spl15 =Q_coeff1          *in1;
+
+
+spl0  +=W_coeff2          *in2;
+spl1  +=X_coeff2          *in2;
+spl2  +=Y_coeff2          *in2;
+// spl3  +=Z_coeff2          *in2;
+
+//2o
+spl4  +=R_coeff2          *in2;
+// spl5  +=S_coeff2          *in2;
+// spl6  +=T_coeff2          *in2;
+spl7  +=U_coeff2          *in2;
+spl8  +=V_coeff2          *in2;
+
+//3o
+// spl9  +=K_coeff2          *in2;
+spl10 +=L_coeff2          *in2;
+spl11 +=M_coeff2          *in2;
+// spl12 +=N_coeff2          *in2;
+// spl13 +=O_coeff2          *in2;
+spl14 +=P_coeff2          *in2;
+spl15 +=Q_coeff2          *in2;
