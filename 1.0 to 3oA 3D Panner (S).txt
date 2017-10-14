@@ -4,7 +4,7 @@ desc: FuMa
 
 slider1:0<-180,180,1>Angle*
 slider2:0<0,90,1>Elevation (height)*
-slider3:60<0,180,1>Width*//non functional
+// slider3:60<0,180,1>Width*//non functional
 
 // @init
 // C_F=;
