@@ -4,15 +4,15 @@ desc: FuMa
 
 slider1:0<-180,180,1>Angle*
 slider2:0<0,90,1>Unused
-slider3:60<0,180,1>Width*
+slider3:60<0,360,1>Width*
 
 // @init
 // C_F=;
 
 @slider
-//dammit radians
-A1=(slider1-slider3)*($pi/-180);//left
-A2=(slider1+slider3)*($pi/-180);//right
+//dammit radians, 180 is correct-er but it's a optimization hack to divide by 2 inline
+A1=(slider1-slider3)*($pi/-360);//left
+A2=(slider1+slider3)*($pi/-360);//right
 E=0;
 // E=slider2*($pi/180);
 
