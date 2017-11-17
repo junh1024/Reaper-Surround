@@ -1,0 +1,86 @@
+desc: FuMa
+
+//http://web.archive.org/web/20150905170405/www.blueripplesound.com/rotations
+
+slider1:0<-180,180,1>Angle*
+slider2:0<-180,180,1>Offset*
+
+
+
+@slider
+//dammit radians
+A=slider1*($pi/-180);
+A+=slider2*($pi/-180);
+// E=slider2*($pi/180);
+
+cos_A=cos(A);
+sin_A=sin(A);
+cos_2_A=cos(2*A);
+sin_2_A=sin(2*A);
+cos_3_A=cos(3*A);
+sin_3_A=sin(3*A);
+
+
+// W
+// X
+// Y
+// Z
+
+// R
+// S
+// T
+// U
+// V
+
+// K
+// L
+// M
+// N
+// O
+// P
+// Q
+
+@sample
+
+spl_in0= spl0 ;
+spl_in1= spl1 ;
+spl_in2= spl2 ;
+spl_in3= spl3 ;
+spl_in4= spl4 ;
+spl_in5= spl5 ;
+spl_in6= spl6 ;
+spl_in7= spl7 ;
+spl_in8= spl8 ;
+spl_in9	=	spl9	;
+spl_in10	=	spl10	;
+spl_in11	=	spl11	;
+spl_in12	=	spl12	;
+spl_in13	=	spl13	;
+spl_in14	=	spl14	;
+spl_in15	=	spl15	;
+spl_in16	=	spl16	;
+
+// spl0=1*spl_in0+spl_in1*0+spl_in2*0+spl_in3*0+spl_in4*0+spl_in5*0+spl_in6*0+spl_in7*0+spl_in8*0;
+spl1=spl_in1*cos_A+spl_in2*-sin_A;
+spl2=spl_in1*sin_A+spl_in2*cos_A;
+// spl3=+spl_in3*1;
+
+
+// spl4=+spl_in4*1;
+spl5=spl_in5*cos_A+spl_in6*-sin_A;
+spl6=spl_in5*sin_A+spl_in6*cos_A;
+spl7=spl_in7*cos_2_A+spl_in8*-sin_2_A;
+spl8=spl_in7*sin_2_A+spl_in8*cos_2_A;
+
+
+spl5=spl_in5	*	cos_A	+	spl_in6	*	-sin_A	;
+spl6=spl_in5	*	sin_A	+	spl_in6	*	cos_A	;
+spl7=spl_in7	*	cos_2_A	+	spl_in8	*	-sin_2_A	;
+spl8=spl_in7	*	sin_2_A	+	spl_in8	*	cos_2_A	;
+
+spl10	=	spl_in10	*	cos_A	+	spl_in11	*	-sin_A	;
+spl11	=	spl_in10	*	sin_A	+	spl_in11	*	cos_A	;
+spl12	=	spl_in12	*	cos_2_A	+	spl_in13	*	-sin_2_A	;
+spl13	=	spl_in12	*	sin_2_A	+	spl_in13	*	cos_2_A	;
+spl14	=	spl_in14	*	cos_3_A	+	spl_in15	*	-sin_3_A	;
+spl15	=	spl_in14	*	sin_3_A	+	spl_in15	*	cos_3_A	;
