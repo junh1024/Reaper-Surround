@@ -20,7 +20,7 @@ sqrt(27/4)*sin(2*A)*sin(E)*cos(E)*cos(E)
 cos(3*A)*cos(E)*cos(E)*cos(E)
 sin(3*A)*cos(E)*cos(E)*cos(E)"""
 
-fuma_order=['W','X','Y','Z','R','S','T','U','V','K','L','M','N','O','P','Q']
+fuma_order=['(W','X','Y','Z','R','S','T','U','V','K','L','M','N','O','P','Q']
 
 r=2 #radius meters?,ignore
 z=0
@@ -40,25 +40,25 @@ f = open("jsfx_shell.txt", "w")
 # slider3:45<0,90,5>Height Elevation
 
 speaker_array = [
-'L',	['-slider2'	,	r	,z]	,
-'R',	['slider2'	,	r	,z]	,
-'C',	['0	',	r	,z]	,
-'LFE',	['0	',	r	,z]	,
-'BL',	['-180+slider2',r	,z]	,				
-'BR',	['180-slider2' ,r	,z]	,
-'SL',	['-90',	r	,z]	,
-'SR',	['90'	,	r	,z]	,
+'L',['(-A_rad)',r,z],
+'R',['(A_rad)',r,z],
+'C',['(0)',r,z],
+'LFE',['(0)',r,z],
+'BL',['(-180+A_rad)',r,z],
+'BR',['(180-A_rad' ,r,z],
+'SL',['(-90)',r,z],
+'SR',['(90)',r,z],
 
-'HL',	['-slider2'	,	r	,'slider3']	,
-'HR',	['slider2'	,	r	,'slider3']	,
+'HL',['(-A_rad)',r,'E_rad'],
+'HR',['(A_rad)',r,'E_rad'],
 
-'BTL',	['-slider2'	,	r	,'-slider3']	,
-'BTR',	['slider2'	,	r	,'-slider3'],
+'BTL',['(-A_rad)',r,'-E_rad'],
+'BTR',['(A_rad)',r,'-E_rad'],
 
-'HBL',	['-180+slider2',r	,'slider3']	,				
-'HBR',	['180-slider2' ,r	,'slider3']	,
-'HSL',	['-90',	r	,'slider3']	,
-'HSR',	['90'	,	r	,'slider3']	
+'HBL',['(-180+A_rad)',r,'E_rad'],
+'HBR',['(180-A_rad' ,r,'E_rad'],
+'HSL',['(-90)',r,'E_rad'],
+'HSR',['(90)',r,'E_rad']
 ]
 f.write('@init\n')
 
@@ -69,6 +69,11 @@ for speaker in range (0, int(len(speaker_array)/2 )):
 	print(speaker_array[speaker*2]+'_E='+str(speaker_array[speaker*2+1][2])+';\n')
 	
 f.write('@slider') 
+f.write("""
+A_rad=slider2*($pi/-180);
+E_rad=slider3*($pi/180);
+"""
+) 
 
 
 count=0                                                 
@@ -77,7 +82,7 @@ for line in fuma_pan_equations.splitlines():
 		variablename=fuma_order[count]+"_coeff_"+speaker_array[speaker*2]
 		coefficientnames.append(variablename)
 		editedline=line.replace('A',str(speaker_array[speaker*2+1][0]))
-		editedline=line.replace('E',str(speaker_array[speaker*2+1][2]))
+		editedline=editedline.replace('E',str(speaker_array[speaker*2+1][2]))
 		print(variablename+'='+editedline+';\n')
 		# write=line
 	count+=1
