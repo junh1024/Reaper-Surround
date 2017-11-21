@@ -1,4 +1,7 @@
 from math import sin	,cos	,sqrt, radians
+import os
+
+#TODO: remove if coeff <.1, account for varying w
 
 fuma_pan_equations="""sqrt(1/2)                                         
 cos(A)*cos(E)                                       
@@ -26,7 +29,7 @@ A=0
 E=0
 
 w=30 #hex
-w=45 #cine
+# w=45 #cine
 
 speaker_array = [
 'L',	[-w	,	r	,z]	,
@@ -50,28 +53,33 @@ speaker_array = [
 'HSR',	[90	,	r	,hz]	
 ]
 
-print (speaker_array)
+# print (speaker_array)
 # restrictions=[A,E,sin,cos,sqrt,radians]
-
+F = open("jsfx_shell.txt", "w") 
 #create temp variables
 in_chans=16
 for in_chan in range (0,in_chans):
-	print('spl'+str(in_chan)+'_in=spl'+str(in_chan)+'*gain_comp*gain_slider;')
+	F.write(str('spl'+str(in_chan)+'_in=spl'+str(in_chan)+'*gain_comp*gain_slider;\n'))
 
 count=0
 for line in fuma_pan_equations.splitlines():
 	
-	print('spl'+str(count)+'=',end='')
+	F.write(str('spl'+str(count)+'='))
 	for speaker in range (0, int(len(speaker_array)/2 )):
-		print ('spl'+str(speaker)+'_in*', end='')
+		F.write(str ('spl'+str(speaker)+'_in*'))
 		# print (speaker)
-		A=radians(speaker_array[speaker*2+1][0])
+		A=radians(-speaker_array[speaker*2+1][0])
 		E=radians(speaker_array[speaker*2+1][2])
 		coeff=eval(line,globals() )
-		print(round(coeff,5),'+', end='')
-	print('\b;')
+		F.write(str(round(coeff,5)))
+		if(speaker < int(len(speaker_array)/2 )-1):
+			F.write('+')
+	# F.seek(-1,os.SEEK_CUR)
+	F.write(str(';\n'))
 	count+=1
-input("Press Enter to continue")
+	
+F.close
+# input("Press Enter to continue")
 
 
 
