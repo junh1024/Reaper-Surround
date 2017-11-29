@@ -91,9 +91,13 @@ for line in fuma_pan_equations.splitlines():
 f.write('\n@sample\n')
 
 #create temp variables for speakers
-in_chans=16
+in_chans=int(len(speaker_array)/2 )
 for in_chan in range (0,in_chans):
+	if(in_chan%2 ==0): #need this hack because splN is active even though Nchans is below that
+		f.write("num_ch>"+str(in_chan)+"?\n(")
 	f.write(str('spl'+str(in_chan)+'_in=spl'+str(in_chan)+';\n'))
+	if(in_chan%2 !=0):
+		f.write(");\n")
 f.write('\n')
 
 count=0
