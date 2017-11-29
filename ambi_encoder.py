@@ -1,4 +1,4 @@
-from math import sin	,cos	,sqrt, radians
+from math import sin ,cos ,sqrt, radians
 
 fuma_pan_equations="""sqrt(1/2)*slider4
 cos(A)*cos(E)
@@ -48,7 +48,7 @@ speaker_array = [
 'HSR',['((-$pi/2))',r,'E_rad']
 ]
 f.write("""desc: 15.1 to 3oA Fuma downmixer. LFE is moved to C, so gain -10dB or silence it.
-//Generated from ambi_encoder.py
+//Generated from ambi_encoder.py , comments there.
 
 slider1:30<0,90,2.5>Angle of R (influences speaker width)
 slider2:45<0,90,5>Elevation of height speakers
@@ -90,13 +90,13 @@ for line in fuma_pan_equations.splitlines():
 # restrictions=[A,E,sin,cos,sqrt,radians]
 f.write('\n@sample\n')
 
-#create temp variables for speakers
+#create temp variables for speaker inputs
 in_chans=int(len(speaker_array)/2 )
-for in_chan in range (0,in_chans):
-	if(in_chan%2 ==0): #need this hack because splN is active even though Nchans is below that
-		f.write("num_ch>"+str(in_chan)+"?\n(")
-	f.write(str('spl'+str(in_chan)+'_in=spl'+str(in_chan)+';\n'))
-	if(in_chan%2 !=0):
+for count in range (0,in_chans):
+	if(count%2 ==0): #need this hack because splN is active even though Nchans is below that
+		f.write("num_ch>"+str(count)+"?\n(")
+	f.write(str('spl'+str(count)+'_in=spl'+str(count)+';\n'))
+	if(count%2 !=0):
 		f.write(");\n")
 f.write('\n')
 
@@ -104,7 +104,8 @@ count=0
 coefficientnamescounter=0
 #write coefficients, multiply each speaker in with fuma coefficient for each fuma chan
 for line in fuma_pan_equations.splitlines():
-	
+	if(count%2 ==0): #need this hack because splN is active even though Nchans is below that
+		f.write("num_ch>"+str(count)+"?\n(")
 	f.write(str('spl'+str(count)+'='))
 	for speaker in range (0, int(len(speaker_array)/2 )):
 		f.write(str ('spl'+str(speaker)+'_in*') + coefficientnames[coefficientnamescounter] )
@@ -116,6 +117,8 @@ for line in fuma_pan_equations.splitlines():
 		if(speaker < int(len(speaker_array)/2 )-1):#dont add + for last element of line
 			f.write('+')
 	f.write(str(';\n'))
+	if(count%2 !=0):
+		f.write(");\n")
 	count+=1
 	
 f.close
