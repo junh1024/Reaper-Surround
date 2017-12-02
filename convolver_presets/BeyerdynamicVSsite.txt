@@ -1,0 +1,52 @@
+Rather than packing up your mix and taking it to all of these places – which would take a long time and would be pretty expensive – rely on the ultimate solution from beyerdynamic:
+
+ 
+
+A VST and AU-based plug-in that can be used with standard music programs such as Magix Samplitude, Steinberg Cubase, Apple Logic etc.
+
+ 
+
+The plug-in virtually simulates real speaker systems (such as stereo or 5.1) in various environments (recording studio, concert halls, etc.) on your headphones.
+
+ 
+
+This lets you listen to audio tracks or signals on your headphones as if they were playing over the correspondent speaker system in whichever space you choose.
+
+No more long waiting periods and stress with appointments just to use a studio space which is only available for a limited time anyway – with beyerdynamic Virtual Studio you can mix and master your tracks whenever you want and wherever you are. Whether riding on the train, sitting at home on the sofa or hanging out at a friend’s place – you can take the studio wherever you go.
+
+===
+
+How does beyerdynamic Virtual Studio work?
+
+Beyerdynamic Virtual Studio was developed by beyerdynamic in cooperation with the ITA Aachen (Institute of Technical Acoustics), Bauer Studios Ludwigsburg and the HOFA studios especially for reference monitor applications. beyerdynamic’s sound engineers have made what could be called “acoustic photos?? of various speaker systems in different environments, which can be simulated realistically on a pair of headphones using bVS. A sinus signal is sent out using every individual speaker and recorded by the dummy head, which is placed in the ideal acoustic position. This method not only takes into account the speaker system and the space, but also how the acoustic waves coming from different angles break at the head of the person listening (Head Related Transfer Function). This creates an acoustic map of the speaker system in its actual environment. Impulse responses calculated from this process form the basis of the software.
+
+ 
+
+The bVS plug-in can be used as the final effect in the mastering process of music software and uses impulse responses based on the principle of convolution to calculate how an audio track or signal would sound on a given speaker, in an ideal position in a certain environment.
+
+ 
+
+ 
+
+Technical Specs:
+
+Basis:
+VST-Version:
+Operating System:
+
+Free space on hard drive:
+Music software:
+
+
+Terms of use:
+
+
+
+Virtual Studio Technology, Audio Unit
+2.4
+Microsoft Windows 32/64 bit (XP/Vista/7), Mac OS X 10.5 and up
+5 MB
+Magix Samplitude, Steinberg Cubase, Ableton Live, Apple Logic, Apple Garage Band, Final Cut
+bVS software is the sole property of beyerdynamic GmbH & Co. KG. Any unauthorized duplication is punishable by law.
+
+ 
