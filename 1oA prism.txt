@@ -1,0 +1,33 @@
+desc: based on http://www.blueripplesound.com/decoding
+@sample
+globl_gain=2;
+height_gain=1.5;
+W=spl0 *0.75 			*globl_gain;
+X=spl1  				*globl_gain;
+Y=spl2  				*globl_gain;
+Z=spl3  				*globl_gain;
+
+Z_bottom=(-0.0722)*0.5;
+
+  // W In  X In  Y In  Z In
+  
+// Front Lower Left   0.1768  0.0722  0.0722  -0.0722
+// Front Lower Right   0.1768  0.0722  -0.0722  -0.0722
+// Back Lower Left   0.1768  -0.0722  0.0722  -0.0722
+// Back Lower Right   0.1768  -0.0722  -0.0722  -0.0722
+
+// Front Upper Left   0.1768  0.0722  0.0722  0.0722
+// Front Upper Right   0.1768  0.0722  -0.0722  0.0722
+// Back Upper Left   0.1768  -0.0722  0.0722  0.0722
+// Back Upper Right   0.1768  -0.0722  -0.0722  0.0722
+
+
+spl0=0.1768*W+ 0.0722*X+   0.0722*Y+  Z_bottom *Z ;
+spl1=0.1768*W+ 0.0722*X+  -0.0722*Y+  Z_bottom *Z ;
+
+spl4=0.1768*W+-0.0722*X+   0.0722*Y+  Z_bottom *Z ;
+spl5=0.1768*W+-0.0722*X+  -0.0722*Y+  Z_bottom *Z ;
+
+spl6=0.1768*W+0.0722*X+    0.0722    *Z * height_gain;
+spl7=0.1768*W+-0.0722*X+     0.0722  *Z * height_gain;
+
