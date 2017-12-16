@@ -30,12 +30,12 @@ pan=slider1;//pan, from clockwise, degrees
 (  pan -30 >=spk6pos-W && pan -30<=spk6pos+W )? spl6_coeff_L = abs(cos( ( (1.5* (pan - spk6pos -30)) )*($pi/180)  )) : spl6_coeff_L=0;
 (  pan -30 >=spk7pos-W && pan -30<=spk7pos+W )? spl7_coeff_L = abs(cos( ( (1.5* (pan - spk7pos -30)) )*($pi/180)  )) : spl7_coeff_L=0;
 
-(  pan +30 >=spk1pos-W && pan +30<=spk1pos+W )? 			spl1_coeff_R = abs(cos(((1.5*(pan - spk1pos+30)))*($pi/180))):spl0_coeff_R=0;
-(  pan +30 >=spk7pos-W && pan +30<=spk7pos+W )? 			spl7_coeff_R = abs(cos(((1.5*(pan - spk7pos+30)))*($pi/180))):spl1_coeff_R=0;
-(  pan +30 >=spk6pos-W && pan +30<=spk6pos+W )? 			spl6_coeff_R = abs(cos(((1.5*(pan - spk6pos+30)))*($pi/180))):spl4_coeff_R=0;
-(( pan +30 >=spk4pos-W &&pan+30<=spk4pos+W)||(pan+30>150))?	spl4_coeff_R = abs(cos(((1.5*(pan - spk4pos+30)))*($pi/180))):spl5_coeff_R=0;
-(  pan +30 >=spk0pos-W && pan +30<=spk0pos+W )? 			spl0_coeff_R = abs(cos(((1.5*(pan - spk0pos+30)))*($pi/180))):spl6_coeff_R=0;
-(( pan +30 >=spk5pos-W&&pan+30<=spk5pos+W)||(pan+30<-180))? spl5_coeff_R = abs(cos(((1.5*(pan - spk5pos+30)))*($pi/180))):spl7_coeff_R=0;
+(  pan +30 >=spk1pos-W && pan +30<=spk1pos+W )? 			spl1_coeff_R = abs(cos(((1.5*(pan - spk1pos+30)))*($pi/180))):spl1_coeff_R=0;
+(  pan +30 >=spk0pos-W && pan +30<=spk0pos+W )? 			spl0_coeff_R = abs(cos(((1.5*(pan - spk0pos+30)))*($pi/180))):spl0_coeff_R=0;
+(  pan +30 >=spk6pos-W && pan +30<=spk6pos+W )? 			spl6_coeff_R = abs(cos(((1.5*(pan - spk6pos+30)))*($pi/180))):spl6_coeff_R=0;
+(( pan +30 >=spk4pos-W &&pan+30<=spk4pos+W)||(pan+30>150))?	spl4_coeff_R = abs(cos(((1.5*(pan - spk4pos+30)))*($pi/180))):spl4_coeff_R=0;
+(  pan +30 >=spk5pos-W && pan +30<=spk5pos+W )? 			spl5_coeff_R = abs(cos(((1.5*(pan - spk5pos+30)))*($pi/180))):spl5_coeff_R=0;
+(( pan +30 >=spk7pos-W && pan+30 <=spk7pos+W)||(pan+30<-180))? spl7_coeff_R = abs(cos(((1.5*(pan - spk7pos+30)))*($pi/180))):spl7_coeff_R=0;
 
 ///height
 
