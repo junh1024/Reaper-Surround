@@ -1,0 +1,23 @@
+desc:
+
+@init
+delayposA = 0;
+delayposB = 0;
+delaylenA=480;
+delaylenB=delaylenA;
+
+@sample
+dpintA = delayposA*2;
+dpintB = delayposB*2;
+
+os1 = dpintA[0];
+os2 = dpintB[1];
+
+dpintA[0] = spl0;
+dpintB[1] = spl1;
+
+(delayposA+=1) >= delaylenA ? delayposA=0;
+(delayposB+=1) >= delaylenB ? delayposB=0;
+
+spl0 = os1;
+spl1 = os2;
