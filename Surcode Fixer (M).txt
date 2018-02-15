@@ -1,20 +1,45 @@
-desc:
+desc: Fixes PDC, rear delay, and width flaws of Surcode DPL2 by Minnetoka.
+
+slider1:100<0,100,10>Rear Width
 
 @init
 delayposA = 0;
-delaylenA=4800;
+delaylenA=480; //rear is delay'd 10ms*48k=480sa relative to front
+
+@slider
+R_width_coeff=slider1/100;
+
+pdc_delay=720; //total sa to PDC (240 PDC for front, 120 band FFT, plus 480sa for rear)
+pdc_top_ch=5;
+pdc_bot_ch=0;
 
 @sample
-dpintA = delayposA*2;
-dpintB = delayposA*2;
+// fix rear delay of 480sa by applying same delay to front
+dpintA = delayposA*3;
+dpintB = delayposA*3;
+dpintC = delayposA*3;
 
 os1 = dpintA[0];
 os2 = dpintB[1];
+os3 = dpintC[2];
 
 dpintA[0] = spl0;
 dpintB[1] = spl1;
+dpintB[2] = spl2;
 
 (delayposA+=1) >= delaylenA ? delayposA=0;
 
 spl0 = os1;
 spl1 = os2;
+spl2 = os3;
+
+// width reduction
+spl5*=-1; //flip SR
+
+R_S=(spl4-spl5)*0.5;
+
+spl4-=R_S*(1-R_width_coeff);
+spl5+=R_S*(1-R_width_coeff);
+
+spl0+=R_S*(1-R_width_coeff);
+spl1-=R_S*(1-R_width_coeff);

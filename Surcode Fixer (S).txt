@@ -1,0 +1,32 @@
+desc: Fixes ONLY rear delay flaw of Surcode DPL2 by Minnetoka.
+
+@init
+delayposA = 0;
+delayposB = 0;
+delaylenA=480;
+delaylenB=delaylenA;
+
+@slider
+R_width_coeff=slider1/100;
+
+pdc_delay=480; 
+pdc_top_ch=5;
+pdc_bot_ch=0;
+
+
+@sample
+// fix rear delay of 480sa by applying same delay to front
+dpintA = delayposA*2;
+dpintB = delayposB*2;
+
+os1 = dpintA[0];
+os2 = dpintB[1];
+
+dpintA[0] = spl0;
+dpintB[1] = spl1;
+
+(delayposA+=1) >= delaylenA ? delayposA=0;
+(delayposB+=1) >= delaylenB ? delayposB=0;
+
+spl0 = os1;
+spl1 = os2;
