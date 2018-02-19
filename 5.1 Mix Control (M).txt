@@ -11,11 +11,31 @@ slider4:100<0,100,10>Rear Width
 @slider
 // gain = 2^(slider1/6); // convert from dB to a multiplier
 width_coeff=slider1/100; 
-depth_temp=(slider2*$pi)/200; //depth scaled from 0-100 to 0>half pi
+
 pan_temp=(slider3*$pi)/200; //depth scaled from 0-100 to 0>half pi
 R_width_coeff=slider4/100;
-// @block
-// this happens per-block, not really that important for this app
+
+
+depth_temp=(slider2*$pi)/200; //depth scaled from 0-100 to 0>half pi
+
+
+(  slider2 >= 0 )?  (
+  coeff_A = cos( depth_temp - ($pi/2)  );
+ ):
+(
+  coeff_A = cos( depth_temp + ($pi/2) ); 
+);
+ coeff_B = cos( depth_temp );
+
+//Pan ref
+(  slider3 >= 0 )?  (
+	coeff_C =cos( pan_temp - ($pi/2)  ) ;
+):
+(
+	coeff_C = cos( pan_temp + ($pi/2) ) ; 
+);
+	coeff_D = cos( pan_temp );
+
 
 @sample
 //Width
@@ -25,33 +45,38 @@ spl2 = spl2*(1-width_coeff);
 
 //Depth
 (  slider2 >= 0 )?  (
-	spl0 += cos( depth_temp - ($pi/2)  )*spl4;
-	spl4 = cos( depth_temp )*spl4;
+  spl0 += coeff_A*spl4;
+  spl4 = coeff_B*spl4;
 
-	spl1 += cos( depth_temp - ($pi/2)  )*spl5;
-	spl5 = cos( depth_temp )*spl5;
+  spl1 += coeff_A*spl5;
+  spl5 = coeff_B*spl5;
 ):
 (
-	spl4 += cos( depth_temp + ($pi/2) )*spl0; //reversed order is important
-	spl0 = cos( depth_temp   )*spl0;
-	spl5 += cos( depth_temp + ($pi/2) )*spl1; //reversed order is important
-	spl1 = cos( depth_temp   )*spl1;
+  spl4 += coeff_A*spl0; //reversed order is important
+  spl0 = coeff_B*spl0;
+  spl5 += coeff_A*spl1; //reversed order is important
+  spl1 = coeff_B*spl1;
 );
+
+
 
 //Pan
 (  slider3 >= 0 )?  (
-	spl1 += cos( pan_temp - ($pi/2)  )*spl0;
-	spl0 = cos( pan_temp )*spl0;
+	spl1 += coeff_C  *spl0;
+	spl0 =  coeff_D *spl0;
 
-	spl5 += cos( pan_temp - ($pi/2)  )*spl5;
-	spl4 = cos( pan_temp )*spl4;
+	spl5 += coeff_C  *spl5;
+	spl4 =  coeff_D *spl4;
 ):
 (
-	spl0 += cos( pan_temp + ($pi/2) )*spl1; //reversed order is important
-	spl1 = cos( pan_temp   )*spl1;
-	spl4 += cos( pan_temp + ($pi/2) )*spl5; //reversed order is important
-	spl5 = cos( pan_temp   )*spl5;
+	spl0 += coeff_C*spl1; //reversed order is important
+	spl1 =  coeff_D*spl1;
+	spl4 += coeff_C*spl5; //reversed order is important
+	spl5 =  coeff_D*spl5;
 );
+
+
+
 
 //Rear width
 R_M=(spl4+spl5)*0.5;
