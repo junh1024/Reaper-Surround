@@ -1,0 +1,37 @@
+desc:
+
+slider1:0.1<-1,1,0.1>Threshold
+slider2:0<0,48000,100>Blocksize
+slider3:0<0,1,0.1>Responsiveness
+slider4:0<-1,1,0.1>Surr
+slider5:0<-1,1,0.1>Dematrix
+slider6:0<-1,1,0.1>Pan
+@init
+
+count=0;
+sumL=0;
+sumR=0;
+
+
+@sample
+
+// (slider1)?
+// (
+sumL+=spl0;
+sumR+=spl1;
+count+=1;
+(count>slider2)?
+(
+slider5=(((sumR-sumL)/(sumR+sumL))*slider3)+(slider5*(1-slider3));
+sumL=0;
+sumR=0;
+count=0;
+);
+
+// );
+
+
+
+@slider
+
+
