@@ -1,0 +1,73 @@
+desc:
+
+slider1:0.1<-1,1,0.1>Threshold
+slider2:1024<128,8192,128>Blocksize
+slider3:0.5<0.1,1,0.1>Responsiveness
+
+slider4:0<0,2,0.01>Pan
+slider5:0<0,2,0.01>Rear
+slider7:0.9<0,2,0.01>Thresh Start Rear
+slider8:9.0<0,2,0.01>Thresh End Rear
+// multiplier
+@init
+
+delta=0.01;
+
+count=0;
+sumMid=0+delta;
+sumSide=0;
+
+pan_temp=0;
+front_coeff=0;
+back_coeff =0;
+@sample
+
+
+Mid=(spl0+spl1)*0.5;//compute Mid/Side
+Side=(spl0-spl1)*0.5;
+
+Mid*=sign(Mid) ; //get magnitude
+Side*=sign(Side) ;
+
+sumMid+=Mid;
+sumSide+=Side;
+
+count+=1;//keep count of blocksize
+
+(count>slider2)?//if blocksize full,
+(
+slider4=(((sumSide)/(sumMid))*slider3)+(slider4*(1-slider3));//do avg of all samples, with time weighting
+ 
+ 
+ (slider4 <= slider7)?
+(slider5=0;);
+
+(slider4 > slider7 && slider4<= slider8 ) ?
+(
+pan_temp= ( ((slider4)*$pi)/((slider8-slider7)*2) );
+
+front_coeff=cos(pan_temp);
+back_coeff=sin(pan_temp);
+slider5=back_coeff;
+);
+
+ (slider4 > slider8)?
+ (slider5=1;);
+
+ 
+
+sumMid=0+delta;
+sumSide=0;
+count=0;
+);
+
+
+
+
+
+ 
+
+// );
+
+
+// if pan<.2, centerize it, if pan >1 , put to back.
