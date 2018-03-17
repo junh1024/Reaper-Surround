@@ -40,13 +40,11 @@ Side_abs=Side*sign(Side) ;
 // L_temp = (Side)*.5;
 
 //make it as wide as appropriate, based on analysis temp width_coeff, comparing the size of side vs mid.
-width_coeff=1-((Side_abs/(Mid_abs+delta)));
 
 spl2=Mid*1.4*(width_coeff);
 
 spl0=  Mid*(1-(width_coeff)) + Side  ;
 spl1=  Mid*(1-(width_coeff)) - Side ;
-
 
 
 
@@ -65,14 +63,16 @@ slider4=(((sumSide)/(sumMid))*slider3)+(slider4*(1-slider3));//do avg of all sam
  (slider4 <= slider7)? //front, no rear, compute front pans
 (slider5=0;
 
+width_coeff=1-( min(slider4,1));
+
 
 
 );
 
 (slider4 > slider7 && slider4<= slider8 ) ? //within rear pan transition threshold, push to back as appropriate
 (
-pan_temp= ( ((slider4)*$pi)/((slider8-slider7)*2) );
-
+pan_temp= ( ((slider4)*$pi)/((slider8-slider7)*2) );//normalize pan, scaling 
+//calculate pan to rear
 front_coeff=cos(pan_temp);
 back_coeff=sin(pan_temp);
 slider5=back_coeff;
