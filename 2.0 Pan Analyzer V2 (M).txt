@@ -17,6 +17,8 @@ count=0;
 sumMid=0+delta;
 sumSide=0;
 
+Mid_abs=0;
+Side_abs =0;
 pan_temp=0;
 front_coeff=0;
 back_coeff =0;
@@ -26,23 +28,48 @@ back_coeff =0;
 Mid=(spl0+spl1)*0.5;//compute Mid/Side
 Side=(spl0-spl1)*0.5;
 
-Mid*=sign(Mid) ; //get magnitude
-Side*=sign(Side) ;
+Mid_abs =Mid*sign(Mid) ; //get magnitude
+Side_abs=Side*sign(Side) ;
 
-sumMid+=Mid;
-sumSide+=Side;
+// ===
+
+// Mid=spl0+spl1;
+// Side=spl0-spl1;
+
+// C_temp = (Mid)*.707;
+// L_temp = (Side)*.5;
+
+//make it as wide as appropriate, based on analysis temp width_coeff, comparing the size of side vs mid.
+width_coeff=1-((Side_abs/(Mid_abs+delta)));
+
+spl2=Mid*1.4*(width_coeff);
+
+spl0=  Mid*(1-(width_coeff)) + Side  ;
+spl1=  Mid*(1-(width_coeff)) - Side ;
+
+
+
+
+// ====
+
+sumMid+=Mid_abs;
+sumSide+=Side_abs;
 
 count+=1;//keep count of blocksize
 
 (count>slider2)?//if blocksize full,
 (
-slider4=(((sumSide)/(sumMid))*slider3)+(slider4*(1-slider3));//do avg of all samples, with time weighting
+slider4=(((sumSide)/(sumMid))*slider3)+(slider4*(1-slider3));//do avg of all samples, with time weighting, calculate pan
  
  
- (slider4 <= slider7)?
-(slider5=0;);
+ (slider4 <= slider7)? //front, no rear, compute front pans
+(slider5=0;
 
-(slider4 > slider7 && slider4<= slider8 ) ?
+
+
+);
+
+(slider4 > slider7 && slider4<= slider8 ) ? //within rear pan transition threshold, push to back as appropriate
 (
 pan_temp= ( ((slider4)*$pi)/((slider8-slider7)*2) );
 
@@ -51,7 +78,7 @@ back_coeff=sin(pan_temp);
 slider5=back_coeff;
 );
 
- (slider4 > slider8)?
+ (slider4 > slider8)? //exceeded all thesholds, push fully back
  (slider5=1;);
 
  
