@@ -1,4 +1,4 @@
-slider1:0<0,100,5>Center Physical Level
+slider1:100<0,100,5>Center Physical Level
 slider2:1<0,2 ,0.1>Bass management for height
 slider3:1<0,2 ,0.1>Reserved
 slider4:0<0,100,5>Side Physical Level
@@ -10,10 +10,10 @@ slider9:1<0,2 ,0.1>Out12
 slider10:1<0,2,0.1>Out34
 slider11:1<0,2,0.1>Out56
 slider12:1<0,2,0.1>Out78
-slider13:1<0,2,0.1>1-2 Width
-slider14:1<0,2,0.1>3-4 Width
-slider15:1<0,2,0.1>5-6 Width
-slider16:1<0,2,0.1>7-8 Width
+slider13:100<0,200,1>1-2 Width %
+slider14:100<0,200,1>3-4 Width %
+slider15:100<0,200,1>5-6 Width %
+slider16:100<0,200,1>7-8 Width %
 
 @slider
 // gain = 2^(slider1/6); // convert from dB to a multiplier
@@ -25,9 +25,14 @@ side_physical_level=slider4/100;
 b1LP = -exp(-2.0*$pi*slider2/srate);
 a0LP = 1.0+b1LP;
 
+slider13_coeff=(slider13-100)/100;
+slider14_coeff=(slider14-100)/100;
+slider15_coeff=(slider15-100)/100;
+slider16_coeff=(slider16-100)/100;
 
 
 @sample
+
 
 //need top first otherwise bottom gets silenced
 // spl0 = spl0 + spl8 + spl10; //top C & LFE are a L & R of a new bottom layer
@@ -77,20 +82,20 @@ heightR_treble = heightR_org - heightR_bass;
 
 
 // sliders13-16 width
-out_12_M  =(spl0+spl1)*0.5;
+// out_12_M  =(spl0+spl1)*0.5;
 out_12_S  =(spl0-spl1)*0.5; 
-out_34_M  =(spl2+spl3)*0.5;
+// out_34_M  =(spl2+spl3)*0.5;
 out_34_S  =(spl2-spl3)*0.5; 
-out_56_M  =(spl4+spl5)*0.5;
+// out_56_M  =(spl4+spl5)*0.5;
 out_56_S  =(spl4-spl5)*0.5; 
-out_78_M  =(spl6+spl7)*0.5;
+// out_78_M  =(spl6+spl7)*0.5;
 out_78_S  =(spl6-spl7)*0.5; 
 
-spl0 = out_12_M + (out_12_S*slider13);
-spl1 = out_12_M - (out_12_S*slider13);
-spl2 = out_34_M + (out_34_S*slider14);
-spl3 = out_34_M - (out_34_S*slider14);
-spl4 = out_56_M + (out_56_S*slider15);
-spl5 = out_56_M - (out_56_S*slider15);
-spl6 = out_78_M + (out_78_S*slider13);
-spl7 = out_78_M - (out_78_S*slider13);
+spl0 += + (out_12_S*slider13_coeff);
+spl1 += - (out_12_S*slider13_coeff);
+spl2 += + (out_34_S*slider14_coeff);
+spl3 += - (out_34_S*slider14_coeff);
+spl4 += + (out_56_S*slider15_coeff);
+spl5 += - (out_56_S*slider15_coeff);
+spl6 += + (out_78_S*slider16_coeff);
+spl7 += - (out_78_S*slider16_coeff);
