@@ -1,0 +1,96 @@
+slider1:0<0,100,5>Center Physical Level
+slider2:1<0,2 ,0.1>Bass management for height
+slider3:1<0,2 ,0.1>Reserved
+slider4:0<0,100,5>Side Physical Level
+slider5:1<0,2 ,0.1>Front height compression V
+slider6:1<0,2 ,0.1>Reserved
+slider7:1<0,2 ,0.1>Height depth position
+slider8:1<0,2 ,0.1>Height height
+slider9:1<0,2 ,0.1>Out12
+slider10:1<0,2,0.1>Out34
+slider11:1<0,2,0.1>Out56
+slider12:1<0,2,0.1>Out78
+slider13:1<0,2,0.1>1-2 Width
+slider14:1<0,2,0.1>3-4 Width
+slider15:1<0,2,0.1>5-6 Width
+slider16:1<0,2,0.1>7-8 Width
+
+@slider
+// gain = 2^(slider1/6); // convert from dB to a multiplier
+
+
+center_physical_level=slider1/100; 
+side_physical_level=slider4/100;
+
+b1LP = -exp(-2.0*$pi*slider2/srate);
+a0LP = 1.0+b1LP;
+
+
+
+@sample
+
+//need top first otherwise bottom gets silenced
+// spl0 = spl0 + spl8 + spl10; //top C & LFE are a L & R of a new bottom layer
+// spl1 = spl1 + spl9 + spl11;
+
+// spl4 = spl4 + spl12;
+// spl5 = spl5 + spl13;
+// spl6 = spl6 + spl14;
+// spl7 = spl7 + spl15;
+
+// spl8 = 0;
+// spl9 = 0;
+// spl10= 0;
+// spl11= 0;
+// spl12= 0;
+// spl13= 0;
+// spl14= 0;
+// spl15= 0;
+
+
+
+//slider1 Width
+spl0 = spl0+0.707*(spl2*(1-center_physical_level));
+spl1 = spl1+0.707*(spl2*(1-center_physical_level));
+spl2 = spl2*(center_physical_level);
+
+// slider4 side_physical_level
+spl0+=(spl6)*0.5*(1-side_physical_level);
+spl1+=(spl7)*0.5*(1-side_physical_level);
+spl4+=(spl6)*0.5*(1-side_physical_level);
+spl5+=(spl7)*0.5*(1-side_physical_level);
+spl6*=side_physical_level;
+spl7*=side_physical_level;
+
+// slider2 BMS H
+heightL=spl8 ;
+heightR=spl9 ;
+
+// heightL_org = heightL;
+// heightR_org = heightR;
+
+heightL_bass = (tmplLP = a0LP*heightL_org - b1LP*tmplLP);
+heightR_bass = (tmprLP = a0LP*heightR_org - b1LP*tmprLP);
+
+heightL_treble = heightL_org - heightL_bass;
+heightR_treble = heightR_org - heightR_bass;
+
+
+// sliders13-16 width
+out_12_M  =(spl0+spl1)*0.5;
+out_12_S  =(spl0-spl1)*0.5; 
+out_34_M  =(spl2+spl3)*0.5;
+out_34_S  =(spl2-spl3)*0.5; 
+out_56_M  =(spl4+spl5)*0.5;
+out_56_S  =(spl4-spl5)*0.5; 
+out_78_M  =(spl6+spl7)*0.5;
+out_78_S  =(spl6-spl7)*0.5; 
+
+spl0 = out_12_M + (out_12_S*slider13);
+spl1 = out_12_M - (out_12_S*slider13);
+spl2 = out_34_M + (out_34_S*slider14);
+spl3 = out_34_M - (out_34_S*slider14);
+spl4 = out_56_M + (out_56_S*slider15);
+spl5 = out_56_M - (out_56_S*slider15);
+spl6 = out_78_M + (out_78_S*slider13);
+spl7 = out_78_M - (out_78_S*slider13);
