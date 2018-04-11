@@ -1,8 +1,8 @@
-slider1:100<0,100,5>Center Physical Level
+slider1:100<0,100,5>Center Physical Level V
 slider2:1<0,2 ,0.1>Bass management for height
 slider3:1<0,2 ,0.1>Reserved
-slider4:0<0,100,5>Side Physical Level
-slider5:1<0,2 ,0.1>Front height compression V
+slider4:0<0,100,5>Side Physical Level V 
+slider5:1<0,200,1>Front height compression V
 slider6:1<0,2 ,0.1>Reserved
 slider7:1<0,2 ,0.1>Height depth position
 slider8:1<0,2 ,0.1>Height height
@@ -10,10 +10,10 @@ slider9:1<0,2 ,0.1>Out12
 slider10:1<0,2,0.1>Out34
 slider11:1<0,2,0.1>Out56
 slider12:1<0,2,0.1>Out78
-slider13:100<0,200,1>1-2 Width %
-slider14:100<0,200,1>3-4 Width %
-slider15:100<0,200,1>5-6 Width %
-slider16:100<0,200,1>7-8 Width %
+slider13:100<0,200,1>1-2 Width %  V
+slider14:100<0,200,1>3-4 Width %  V
+slider15:100<0,200,1>5-6 Width %  V
+slider16:100<0,200,1>7-8 Width %  V
 
 @slider
 // gain = 2^(slider1/6); // convert from dB to a multiplier
@@ -29,6 +29,8 @@ slider13_coeff=(slider13-100)/100;
 slider14_coeff=(slider14-100)/100;
 slider15_coeff=(slider15-100)/100;
 slider16_coeff=(slider16-100)/100;
+
+slider5_coeff=(slider5-100)/100;
 
 
 @sample
@@ -68,34 +70,46 @@ spl6*=side_physical_level;
 spl7*=side_physical_level;
 
 // slider2 BMS H
-heightL=spl8 ;
-heightR=spl9 ;
+bottomL=spl8 ;
+bottomR=spl9 ;
 
-// heightL_org = heightL;
-// heightR_org = heightR;
+// bottomL_org = bottomL;
+// bottomR_org = bottomR;
 
-heightL_bass = (tmplLP = a0LP*heightL_org - b1LP*tmplLP);
-heightR_bass = (tmprLP = a0LP*heightR_org - b1LP*tmprLP);
+bottomL_bass = (tmplLP = a0LP*bottomL_org - b1LP*tmplLP);
+bottomR_bass = (tmprLP = a0LP*bottomR_org - b1LP*tmprLP);
 
-heightL_treble = heightL_org - heightL_bass;
-heightR_treble = heightR_org - heightR_bass;
+bottomL_treble = bottomL_org - bottomL_bass;
+bottomR_treble = bottomR_org - bottomR_bass;
+
+
+front_quad_S1=(spl0-spl8)*0.5; 
+front_quad_S2=(spl1-spl9)*0.5; 
+
+spl0 += (front_quad_S1*slider5_coeff);
+spl1 += (front_quad_S2*slider5_coeff);
+spl8 -= (front_quad_S1*slider5_coeff);
+spl9 -= (front_quad_S2*slider5_coeff);
+
 
 
 // sliders13-16 width
+
 // out_12_M  =(spl0+spl1)*0.5;
-out_12_S  =(spl0-spl1)*0.5; 
 // out_34_M  =(spl2+spl3)*0.5;
-out_34_S  =(spl2-spl3)*0.5; 
 // out_56_M  =(spl4+spl5)*0.5;
-out_56_S  =(spl4-spl5)*0.5; 
 // out_78_M  =(spl6+spl7)*0.5;
+
+out_12_S  =(spl0-spl1)*0.5; 
+out_34_S  =(spl2-spl3)*0.5; 
+out_56_S  =(spl4-spl5)*0.5; 
 out_78_S  =(spl6-spl7)*0.5; 
 
-spl0 += + (out_12_S*slider13_coeff);
-spl1 += - (out_12_S*slider13_coeff);
-spl2 += + (out_34_S*slider14_coeff);
-spl3 += - (out_34_S*slider14_coeff);
-spl4 += + (out_56_S*slider15_coeff);
-spl5 += - (out_56_S*slider15_coeff);
-spl6 += + (out_78_S*slider16_coeff);
-spl7 += - (out_78_S*slider16_coeff);
+spl0 += (out_12_S*slider13_coeff);
+spl1 -= (out_12_S*slider13_coeff);
+spl2 += (out_34_S*slider14_coeff);
+spl3 -= (out_34_S*slider14_coeff);
+spl4 += (out_56_S*slider15_coeff);
+spl5 -= (out_56_S*slider15_coeff);
+spl6 += (out_78_S*slider16_coeff);
+spl7 -= (out_78_S*slider16_coeff);
