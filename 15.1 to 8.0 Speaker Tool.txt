@@ -22,7 +22,8 @@ slider16:100<0,200,1>7-8 Width %  V
 center_physical_level=slider1/100; 
 side_physical_level=slider4/100;
 
-b1LP = -exp(-2.0*$pi*slider2/srate);
+LP_freq=500;
+b1LP = -exp(-2.0*$pi*LP_freq/srate);
 a0LP = 1.0+b1LP;
 
 slider13_coeff=(slider13-100)/100;
@@ -70,24 +71,22 @@ spl6*=side_physical_level;
 spl7*=side_physical_level;
 
 // slider2 BMS H
-bottomL=spl8 ;
-bottomR=spl9 ;
+bottomL_org=spl0 ;
+bottomR_org=spl1 ;
 
-// bottomL_org = bottomL;
-// bottomR_org = bottomR;
 
 bottomL_bass = (tmplLP = a0LP*bottomL_org - b1LP*tmplLP);
 bottomR_bass = (tmprLP = a0LP*bottomR_org - b1LP*tmprLP);
 
-bottomL_treble = bottomL_org - bottomL_bass;
-bottomR_treble = bottomR_org - bottomR_bass;
+spl0 = bottomL_org - bottomL_bass; //bottomL_treble
+spl1 = bottomR_org - bottomR_bass; //bottomR_treble
 
-
+//slider5 FH compression
 front_quad_S1=(spl0-spl8)*0.5; 
 front_quad_S2=(spl1-spl9)*0.5; 
 
-spl0 += (front_quad_S1*slider5_coeff);
-spl1 += (front_quad_S2*slider5_coeff);
+spl0 += (front_quad_S1*slider5_coeff)+bottomL_bass;
+spl1 += (front_quad_S2*slider5_coeff)+bottomR_bass;
 spl8 -= (front_quad_S1*slider5_coeff);
 spl9 -= (front_quad_S2*slider5_coeff);
 
