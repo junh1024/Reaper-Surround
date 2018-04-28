@@ -1,7 +1,7 @@
-desc: stereo to 7.1 panner
+desc: stereo to 15.1 panner
 
 slider1:0<-180,180>the pan (deg)
-slider2:60<0,360>width (deg)
+slider2:60<60,60,1>width (deg)
 
 
 slider3:0<-100,100,5>Height (+ve up, -ve down)
