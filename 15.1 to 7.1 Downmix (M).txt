@@ -2,7 +2,7 @@ desc:15.1 to 7.1 Downmix (DONT USE DEPRECATED & WRONG)
 
 slider1:100<0,100,1>ELL Width
 slider2:100<0,100,1>Height Width//need a ELL width
-slider3:1<0,1,1{On,Off}>(Matrix Height)
+slider3:0<0,1,1{Off,On}>(Matrix Height)
 @init
 polarity=-1;
 pan_law=3.00  ;//wrong
