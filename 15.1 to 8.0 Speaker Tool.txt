@@ -4,8 +4,8 @@ slider3:1<0,2 ,0.1>Reserved
 slider4:0<0,100,5>Side Physical Level V 
 slider5:0<0,100,1>Front height V
 slider6:1<0,2 ,0.1>Reserved
-slider7:1<0,2 ,0.1>Height depth position
-slider8:1<0,2 ,0.1>Height height
+slider7:0<-100,100,1>Height depth position
+slider8:100<0,100 ,1>Height height
 slider9:1<0,2 ,0.1>Out12
 slider10:1<0,2,0.1>Out34
 slider11:1<0,2,0.1>Out56
@@ -34,9 +34,14 @@ slider16_coeff=(slider16-100)/100;
 slider5_coeff=(slider5-100)/100;
 
 
+Top_Side_Depth=(abs(slider7 ))/ 100;
+
+Height_height=slider8/100;
+FrontHeight=slider5/100;
+
 @sample
-
-
+heightsL=0;
+heightsR=0;
 //need top first otherwise bottom gets silenced
 // spl0 = spl0 + spl8 + spl10; //top C & LFE are a L & R of a new bottom layer
 // spl1 = spl1 + spl9 + spl11;
@@ -57,6 +62,9 @@ slider5_coeff=(slider5-100)/100;
 
 
 
+// spl6 +=  spl14 *(1-Height_height);
+// spl7 +=  spl15 *(1-Height_height);
+
 //slider1 Width
 spl0 = spl0+0.707*(spl2*(1-center_physical_level));
 spl1 = spl1+0.707*(spl2*(1-center_physical_level));
@@ -70,6 +78,7 @@ spl5+=(spl7)*0.5*(1-side_physical_level);
 spl6*=side_physical_level;
 spl7*=side_physical_level;
 
+
 // slider2 BMS H
 L_org=spl0 ;
 R_org=spl1 ;
@@ -80,15 +89,89 @@ R_bass = (tmprLP = a0LP*R_org - b1LP*tmprLP);
 spl0 = L_org - L_bass; //L_treble
 spl1 = R_org - R_bass; //R_treble
 
+
 //slider5 FH compression
 
-FrontHeight=slider5/100;
 
-spl8+=(spl0*FrontHeight);
-spl9+=(spl1*FrontHeight);
+heightsL=(spl0*FrontHeight);
+heightsR=(spl1*FrontHeight);
 
 spl0=(spl0*(1-FrontHeight))+ L_bass;
 spl1=(spl1*(1-FrontHeight))+ R_bass;
+
+
+
+//slider7
+slider7>0?( //Push TS to TF
+spl8 +=(spl14)*   Top_Side_Depth;
+spl9 +=(spl15)*   Top_Side_Depth;
+
+//but also push TB to TS
+spl14=( ( spl14)*(1-Top_Side_Depth) )+((spl12)*   Top_Side_Depth);
+spl15=( ( spl15)*(1-Top_Side_Depth) )+((spl13)*   Top_Side_Depth);
+
+spl12*=(1-Top_Side_Depth) ;
+spl13*=(1-Top_Side_Depth) ;
+)
+:
+(//push TS to TB
+spl12 +=(spl14)*   Top_Side_Depth;
+spl13 +=(spl15)*   Top_Side_Depth;
+
+//but also push TF to TS
+spl14=( ( spl14)*(1-Top_Side_Depth) )+((spl8)*   Top_Side_Depth);
+spl15=( ( spl15)*(1-Top_Side_Depth) )+((spl9)*   Top_Side_Depth);
+
+spl8*=(1-Top_Side_Depth) ;
+spl9*=(1-Top_Side_Depth) ;
+);
+
+
+
+
+
+
+
+
+
+
+//downmix
+// spl0 += spl8 ; //top C & LFE are a L & R of a new bottom layer
+// spl1 += spl9 ;
+// spl4 += spl12;
+// spl5 += spl13;
+
+//slider 8 heightheight
+//move TF & TB into ELL F&B
+spl0 +=  ( spl8  *(1-Height_height));
+spl1 +=  ( spl9  *(1-Height_height));
+spl4 +=  (spl12 *(1-Height_height) );
+spl5 +=  (spl13 *(1-Height_height) );
+
+//decrease TF & TB 
+ spl8  *=Height_height;
+ spl9  *=Height_height;
+spl12  *=Height_height;
+spl13  *=Height_height;
+
+
+
+
+//mapping
+heightsL += spl8 + spl12 + spl14;
+heightsR += spl9 + spl13 + spl15;
+spl2=heightsL ;
+spl3=heightsR ;
+
+spl8 = 0;
+spl9 = 0;
+// spl10= 0;
+// spl11= 0;
+spl12= 0;
+spl13= 0;
+spl14= 0;
+spl15= 0;
+
 
 // sliders13-16 width
 
