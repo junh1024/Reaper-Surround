@@ -37,6 +37,9 @@ slider5_coeff=(slider5-100)/100;
 Top_Side_Depth=(abs(slider7 ))/ 100;
 
 Height_height=slider8/100;
+Height_height_TS=(100-((100-slider8)*0.75))/100;
+
+
 FrontHeight=slider5/100;
 
 @sample
@@ -70,13 +73,7 @@ spl0 = spl0+0.707*(spl2*(1-center_physical_level));
 spl1 = spl1+0.707*(spl2*(1-center_physical_level));
 spl2 = spl2*(center_physical_level);
 
-// slider4 side_physical_level
-spl0+=(spl6)*0.5*(1-side_physical_level);
-spl1+=(spl7)*0.5*(1-side_physical_level);
-spl4+=(spl6)*0.5*(1-side_physical_level);
-spl5+=(spl7)*0.5*(1-side_physical_level);
-spl6*=side_physical_level;
-spl7*=side_physical_level;
+
 
 
 // slider2 BMS H
@@ -148,14 +145,26 @@ spl1 +=  ( spl9  *(1-Height_height));
 spl4 +=  (spl12 *(1-Height_height) );
 spl5 +=  (spl13 *(1-Height_height) );
 
+spl6 +=( spl14*(1-Height_height_TS) );
+spl7 +=( spl15*(1-Height_height_TS) );
+
 //decrease TF & TB 
  spl8  *=Height_height;
  spl9  *=Height_height;
 spl12  *=Height_height;
 spl13  *=Height_height;
 
+spl14*=Height_height_TS;
+spl15*=Height_height_TS;
 
 
+// slider4 side_physical_level
+spl0+=(spl6)*0.5*(1-side_physical_level);
+spl1+=(spl7)*0.5*(1-side_physical_level);
+spl4+=(spl6)*0.5*(1-side_physical_level);
+spl5+=(spl7)*0.5*(1-side_physical_level);
+spl6*=side_physical_level;
+spl7*=side_physical_level;
 
 //mapping
 heightsL += spl8 + spl12 + spl14;
