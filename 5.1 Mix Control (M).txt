@@ -5,83 +5,30 @@ slider2:0<-100,100,1>Depth
 slider3:0<-100,100,1>Pan
 slider4:100<0,100,10>Rear Width
 
+import surroundlib2.txt
+import surroundlib3.txt
+
 @init
 // this is stuff that happens once (or if the samplerate changes, etc)
 
 @slider
 // gain = 2^(slider1/6); // convert from dB to a multiplier
 width_coeff=slider1/100; 
-
-pan_temp=(slider3*$pi)/200; //depth scaled from 0-100 to 0>half pi
+depth_coeff=(slider2*$pi)/200; //depth scaled from 0-100 to 0>half pi
+pan_coeff=(slider3*$pi)/200; //pan scaled from 0-100 to 0>half pi
 R_width_coeff=slider4/100;
 
-
-depth_temp=(slider2*$pi)/200; //depth scaled from 0-100 to 0>half pi
-
-
-(  slider2 >= 0 )?  (
-  coeff_A = cos( depth_temp - ($pi/2)  );
- ):
-(
-  coeff_A = cos( depth_temp + ($pi/2) ); 
-);
- coeff_B = cos( depth_temp );
-
-//Pan ref
-(  slider3 >= 0 )?  (
-	coeff_C =cos( pan_temp - ($pi/2)  ) ;
-):
-(
-	coeff_C = cos( pan_temp + ($pi/2) ) ; 
-);
-	coeff_D = cos( pan_temp );
-
+calculate_depth_coeffs(depth_coeff);
+calculate_pan_coeffs(pan_coeff);
 
 @sample
+
 //Width
-spl0 = spl0+0.707*(spl2*width_coeff);
-spl1 = spl1+0.707*(spl2*width_coeff);
-spl2 = spl2*(1-width_coeff);
+do_width(width_coeff);
 
-//Depth
-(  slider2 >= 0 )?  (
-  spl0 += coeff_A*spl4;
-  spl4 = coeff_B*spl4;
+do_pan(pan_coeff);
 
-  spl1 += coeff_A*spl5;
-  spl5 = coeff_B*spl5;
-):
-(
-  spl4 += coeff_A*spl0; //reversed order is important
-  spl0 = coeff_B*spl0;
-  spl5 += coeff_A*spl1; //reversed order is important
-  spl1 = coeff_B*spl1;
-);
-
-
-
-//Pan
-(  slider3 >= 0 )?  (
-	spl1 += coeff_C  *spl0;
-	spl0 =  coeff_D *spl0;
-
-	spl5 += coeff_C  *spl5;
-	spl4 =  coeff_D *spl4;
-):
-(
-	spl0 += coeff_C*spl1; //reversed order is important
-	spl1 =  coeff_D*spl1;
-	spl4 += coeff_C*spl5; //reversed order is important
-	spl5 =  coeff_D*spl5;
-);
-
-
-
+do_depth(depth_coeff);
 
 //Rear width
-R_M=(spl4+spl5)*0.5;
-R_S=(spl4-spl5)*0.5*R_width_coeff;
-
-spl4=R_M+R_S;
-spl5=R_M-R_S;
-
+rear_width(R_width_coeff);

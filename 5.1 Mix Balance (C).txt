@@ -3,21 +3,17 @@ desc:Balances via volume the relative F/B loudness, no cross-leaking
 slider1:0<-100,100,1>Balance F/B
 slider2:100<0,100,10>Rear Width
 
-@init
-// this is stuff that happens once (or if the samplerate changes, etc)
+import surroundlib3.txt
 
 @slider
 // gain = 2^(slider1/6); // convert from dB to a multiplier
 // depth_temp=(slider1*$pi)/200; //depth scaled from 0-100 to 0>half pi
 bal_temp=abs(slider1/100);
 R_width_coeff=slider2/100;
-// @block
-// this happens per-block, not really that important for this app
 
 @sample
 
-
-//Depth
+//Modified Depth
 (  slider1 >= 0 )?  (
   spl0 *= (1+bal_temp);
   spl1 *= (1+bal_temp);
@@ -31,12 +27,5 @@ R_width_coeff=slider2/100;
   spl5 *= 1+bal_temp;
 );
 
-
-
 //Rear width
-R_M=(spl4+spl5)*0.5;
-R_S=(spl4-spl5)*0.5*R_width_coeff;
-
-spl4=R_M+R_S;
-spl5=R_M-R_S;
-
+rear_width(R_width_coeff);

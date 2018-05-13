@@ -1,56 +1,25 @@
-desc: (Common-sized). Useful after upscalers that don't have controls of DTS Neural Upmix .
+desc: (Common-sized). Useful after upscalers that don't have controls of DTS Neural Upmix.
 
 slider1:0<-100,100,1>Depth
 slider2:100<0,100,10>Rear Width
+
+import surroundlib2.txt
+import surroundlib3.txt
 
 @init
 // this is stuff that happens once (or if the samplerate changes, etc)
 
 @slider
 // gain = 2^(slider1/6); // convert from dB to a multiplier
-depth_temp=(slider1*$pi)/200; //depth scaled from 0-100 to 0>half pi
+depth_coeff=(slider1*$pi)/200; //depth scaled from 0-100 to 0>half pi
 R_width_coeff=slider2/100;
 
-
-(  slider1 >= 0 )?  (
-  coeff_A = cos( depth_temp - ($pi/2)  );
-  coeff_B = cos( depth_temp );
-
-):
-(
-  coeff_A = cos( depth_temp + ($pi/2) ); 
-  coeff_B = cos( depth_temp   );
-
-);
-
-
-// @block
-// this happens per-block, not really that important for this app
+calculate_depth_coeffs(depth_coeff);
 
 @sample
 
-
 //Depth
-(  slider1 >= 0 )?  (
-  spl0 += coeff_A*spl4;
-  spl4 = coeff_B*spl4;
-
-  spl1 += coeff_A*spl5;
-  spl5 = coeff_B*spl5;
-):
-(
-  spl4 += coeff_A*spl0; //reversed order is important
-  spl0 = coeff_B*spl0;
-  spl5 += coeff_A*spl1; //reversed order is important
-  spl1 = coeff_B*spl1;
-);
-
-
+do_depth(depth_coeff);
 
 //Rear width
-R_M=(spl4+spl5)*0.5;
-R_S=(spl4-spl5)*0.5*R_width_coeff;
-
-spl4=R_M+R_S;
-spl5=R_M-R_S;
-
+rear_width(R_width_coeff);
