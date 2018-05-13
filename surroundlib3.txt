@@ -1,0 +1,13 @@
+desc: small functions
+
+@init
+
+function rear_width(R_width_coeff)
+(
+R_M=(spl4+spl5)*0.5;
+R_S=(spl4-spl5)*0.5*R_width_coeff;
+
+spl4=R_M+R_S;
+spl5=R_M-R_S;
+);
+

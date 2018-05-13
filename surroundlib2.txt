@@ -1,0 +1,77 @@
+desc: medium functions
+
+
+@init
+
+coeff_A=0;
+coeff_B=0;
+coeff_C=0;
+coeff_D=0;
+
+function calculate_depth_coeffs(depth_coeff)
+(
+	(  depth_coeff >= 0 )? 
+	(
+	  coeff_A = cos( depth_coeff - ($pi/2)  );
+	 ):
+	(
+	  coeff_A = cos( depth_coeff + ($pi/2) ); 
+	);
+	 coeff_B = cos( depth_coeff );
+ );
+ 
+function calculate_pan_coeffs(pan_coeff)
+(
+	//Pan ref
+	(  pan_coeff >= 0 )?  (
+		coeff_C =cos( pan_coeff - ($pi/2)  ) ;
+	):
+	(
+		coeff_C = cos( pan_coeff + ($pi/2) ) ; 
+	);
+		coeff_D = cos( pan_coeff );
+);
+
+
+function do_width(width_coeff)
+(
+spl0 = spl0+0.707*(spl2*width_coeff);
+spl1 = spl1+0.707*(spl2*width_coeff);
+spl2 = spl2*(1-width_coeff);
+);
+
+
+function do_depth(depth_coeff)
+(
+	(  depth_coeff >= 0 )?  (
+	  spl0 += coeff_A*spl4;
+	  spl4 = coeff_B*spl4;
+
+	  spl1 += coeff_A*spl5;
+	  spl5 = coeff_B*spl5;
+	):
+	(
+	  spl4 += coeff_A*spl0; //reversed order is important
+	  spl0 = coeff_B*spl0;
+	  spl5 += coeff_A*spl1; //reversed order is important
+	  spl1 = coeff_B*spl1;
+	);
+);
+
+function do_pan(pan_coeff)
+(
+	(  pan_coeff >= 0 )?  (
+		spl1 += coeff_C  *spl0;
+		spl0 =  coeff_D *spl0;
+
+		spl5 += coeff_C  *spl5;
+		spl4 =  coeff_D *spl4;
+	):
+	(
+		spl0 += coeff_C*spl1; //reversed order is important
+		spl1 =  coeff_D*spl1;
+		spl4 += coeff_C*spl5; //reversed order is important
+		spl5 =  coeff_D*spl5;
+	);
+);
+
