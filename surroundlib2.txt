@@ -75,3 +75,12 @@ function do_pan(pan_coeff)
 	);
 );
 
+function do_side_physical_level(side_physical_level)
+(
+	spl0+=(spl6)*0.5*(1-side_physical_level);
+	spl1+=(spl7)*0.5*(1-side_physical_level);
+	spl4+=(spl6)*0.5*(1-side_physical_level);
+	spl5+=(spl7)*0.5*(1-side_physical_level);
+	spl6*=side_physical_level;
+	spl7*=side_physical_level;
+);

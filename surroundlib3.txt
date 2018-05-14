@@ -21,3 +21,10 @@ function rear_width(R_width_coeff)
 	spl5=R_M-R_S;
 );
 
+function ELL_Side_Depth_71_to_51(ELL_Side_Depth)
+(
+	spl0 +=(spl6)*  ELL_Side_Depth;
+	spl1 +=(spl7)*  ELL_Side_Depth;
+	spl4+=(spl6)*(1-ELL_Side_Depth);
+	spl5+=(spl7)*(1-ELL_Side_Depth);
+);

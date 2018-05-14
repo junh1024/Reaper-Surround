@@ -20,10 +20,7 @@ ELL_Side_Depth=(slider1+100 )/ 200;
 rear_width(R_width_coeff);
 
 //ELL side depth
-spl0 +=(spl6)*  ELL_Side_Depth;
-spl1 +=(spl7)*  ELL_Side_Depth;
-spl4+=(spl6)*(1-ELL_Side_Depth);
-spl5+=(spl7)*(1-ELL_Side_Depth);
+ELL_Side_Depth_71_to_51(ELL_Side_Depth);
 
 spl6=0;
 spl7=0;

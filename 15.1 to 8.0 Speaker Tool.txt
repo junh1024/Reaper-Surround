@@ -1,19 +1,25 @@
+desc: only things marked V may work
+
 slider1:100<0,100,5>Center Physical Level V
 slider2:1<0,2 ,0.1>Bass management for height
 slider3:1<0,2 ,0.1>Reserved
 slider4:0<0,100,5>Side Physical Level V 
 slider5:0<0,100,1>Front height V
 slider6:1<0,2 ,0.1>Reserved
-slider7:0<-100,100,1>Height depth position
-slider8:100<0,100 ,1>Height height
-slider9:1<0,2 ,0.1>Out12
-slider10:1<0,2,0.1>Out34
-slider11:1<0,2,0.1>Out56
-slider12:1<0,2,0.1>Out78
+slider7:0<-100,100,1>Height depth position V
+slider8:100<0,100 ,1>Height height V
+slider9: 1<0,1,1,{L R,BtL BtR}>Out12
+slider10:1<0,1,1,{C LFE,HL HR}>Out34
+slider11:1<0,1,1,{BL, BR}>		Out56
+slider12:1<0,1,1,{SL SR,HBL HBR}>Out78
 slider13:100<0,200,1>1-2 Width %  V
 slider14:100<0,200,1>3-4 Width %  V
 slider15:100<0,200,1>5-6 Width %  V
 slider16:100<0,200,1>7-8 Width %  V
+
+import surroundlib1.txt
+import surroundlib2.txt
+
 
 @slider
 // gain = 2^(slider1/6); // convert from dB to a multiplier
@@ -34,7 +40,7 @@ slider16_coeff=(slider16-100)/100;
 slider5_coeff=(slider5-100)/100;
 
 
-Top_Side_Depth=(abs(slider7 ))/ 100;
+Top_Side_Depth=((slider7 ))/ 100;
 
 Height_height=slider8/100;
 Height_height_TS=(100-((100-slider8)*0.75))/100;
@@ -64,7 +70,6 @@ heightsR=0;
 // spl15= 0;
 
 
-
 // spl6 +=  spl14 *(1-Height_height);
 // spl7 +=  spl15 *(1-Height_height);
 
@@ -74,11 +79,9 @@ spl1 = spl1+0.707*(spl2*(1-center_physical_level));
 spl2 = spl2*(center_physical_level);
 
 
-
-
 // slider2 BMS H
-L_org=spl0 ;
-R_org=spl1 ;
+L_org=spl0 + spl10;
+R_org=spl1 + spl11;
 
 L_bass = (tmplLP = a0LP*L_org - b1LP*tmplLP);
 R_bass = (tmprLP = a0LP*R_org - b1LP*tmprLP);
@@ -97,39 +100,8 @@ spl0=(spl0*(1-FrontHeight))+ L_bass;
 spl1=(spl1*(1-FrontHeight))+ R_bass;
 
 
-
 //slider7
-slider7>0?( //Push TS to TF
-spl8 +=(spl14)*   Top_Side_Depth;
-spl9 +=(spl15)*   Top_Side_Depth;
-
-//but also push TB to TS
-spl14=( ( spl14)*(1-Top_Side_Depth) )+((spl12)*   Top_Side_Depth);
-spl15=( ( spl15)*(1-Top_Side_Depth) )+((spl13)*   Top_Side_Depth);
-
-spl12*=(1-Top_Side_Depth) ;
-spl13*=(1-Top_Side_Depth) ;
-)
-:
-(//push TS to TB
-spl12 +=(spl14)*   Top_Side_Depth;
-spl13 +=(spl15)*   Top_Side_Depth;
-
-//but also push TF to TS
-spl14=( ( spl14)*(1-Top_Side_Depth) )+((spl8)*   Top_Side_Depth);
-spl15=( ( spl15)*(1-Top_Side_Depth) )+((spl9)*   Top_Side_Depth);
-
-spl8*=(1-Top_Side_Depth) ;
-spl9*=(1-Top_Side_Depth) ;
-);
-
-
-
-
-
-
-
-
+ Top_Side_Depth_adj_v2 ( Top_Side_Depth );
 
 
 //downmix
@@ -159,12 +131,7 @@ spl15*=Height_height_TS;
 
 
 // slider4 side_physical_level
-spl0+=(spl6)*0.5*(1-side_physical_level);
-spl1+=(spl7)*0.5*(1-side_physical_level);
-spl4+=(spl6)*0.5*(1-side_physical_level);
-spl5+=(spl7)*0.5*(1-side_physical_level);
-spl6*=side_physical_level;
-spl7*=side_physical_level;
+do_side_physical_level(side_physical_level);
 
 //mapping
 heightsL += spl8 + spl12 + spl14;

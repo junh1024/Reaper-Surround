@@ -10,6 +10,8 @@ slider5:0<0,100,2>Bottom into C
 slider6:0<-100,100,2>ELL Side Depth
 slider7:0<-100,100,2>Top Side Depth
 
+import surroundlib1.txt
+
 //Height/ELL into front (copy from 51d)
 
 @init
@@ -25,7 +27,7 @@ width_coeff=slider4/100;
 center_coeff =slider5/100; //convert from slider to coefficient
 slider_coeff = 1-center_coeff;
 
-Top_Side_Depth=(abs(slider7 ))/ 100;
+Top_Side_Depth=((slider7 ))/ 100;
 ELL_Side_Depth=(abs(slider6 ))/ 100;
 
 
@@ -74,30 +76,7 @@ spl10 = spl10 *slider_coeff ;
 spl11 = spl11 *slider_coeff ;
 
 //Top side depth
-slider7>0?( //Push TS to TF
-spl8 +=(spl14)*   Top_Side_Depth;
-spl9 +=(spl15)*   Top_Side_Depth;
-
-//but also push TB to TS
-spl14=( ( spl14)*(1-Top_Side_Depth) )+((spl12)*   Top_Side_Depth);
-spl15=( ( spl15)*(1-Top_Side_Depth) )+((spl13)*   Top_Side_Depth);
-
-spl12*=(1-Top_Side_Depth) ;
-spl13*=(1-Top_Side_Depth) ;
-)
-:
-(//push TS to TB
-spl12 +=(spl14)*   Top_Side_Depth;
-spl13 +=(spl15)*   Top_Side_Depth;
-
-//but also push TF to TS
-spl14=( ( spl14)*(1-Top_Side_Depth) )+((spl8)*   Top_Side_Depth);
-spl15=( ( spl15)*(1-Top_Side_Depth) )+((spl9)*   Top_Side_Depth);
-
-spl8*=(1-Top_Side_Depth) ;
-spl9*=(1-Top_Side_Depth) ;
-);
-
+ Top_Side_Depth_adj_v2 ( Top_Side_Depth );
 
 slider6>0?(
 //ELL side depth
