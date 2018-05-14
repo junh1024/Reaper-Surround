@@ -5,6 +5,8 @@ slider2:0<-100,100,1>Top Side Depth (+ve is front)
 slider3:0<-100,100,1>Side Depth (+ve is front)
 slider4:100<0,100,10>Rear Width
 
+import surroundlib3.txt
+
 @init
 top_P=1.11  ;
 top_W=0.9   ;
@@ -24,11 +26,7 @@ spl15 = spl15*-1;
 );
 
 //Rear width
-R_M=(spl4+spl5)*0.5;
-R_S=(spl4-spl5)*0.5*R_width_coeff;
-
-spl4=R_M+R_S;
-spl5=R_M-R_S;
+rear_width(R_width_coeff);
 
 //height side depth
 spl8 +=(spl14)*   Top_Side_Depth;

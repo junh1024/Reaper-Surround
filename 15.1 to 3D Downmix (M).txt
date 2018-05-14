@@ -6,6 +6,8 @@ slider3:0<-100,100,1>Side Depth (+ve is front)
 slider4:100<0,100,10>Rear Width
 slider5:0<0,1,1{9.1h (Auro3D & AMBEO), 11.1bf (bottom front)}>Output layout
 
+import surroundlib3.txt
+
 @init
 
 @slider
@@ -23,11 +25,7 @@ ELL_Side_Depth=(slider3+100 )/ 200;
 // );
 
 //Rear width
-R_M=(spl4+spl5)*0.5;
-R_S=(spl4-spl5)*0.5*R_width_coeff;
-
-spl4=R_M+R_S;
-spl5=R_M-R_S;
+rear_width(R_width_coeff);
 
 //height side depth
 spl8 +=(spl14)*   Top_Side_Depth;
