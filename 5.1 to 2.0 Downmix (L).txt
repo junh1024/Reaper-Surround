@@ -7,6 +7,8 @@ slider4:100<0,200,1>L/R Gain (dB)
 slider5:100<0,200,1>C Gain (dB)
 slider6:100<0,200,1>Rear Gain (dB)
 
+import surroundlib3.txt
+
 @init
 // this is stuff that happens once (or if the samplerate changes, etc)
 
@@ -17,18 +19,10 @@ R_width_coeff=slider2/100;
 
 @sample
 //Front width
-F_M=(spl0+spl1)*0.5;
-F_S=(spl0-spl1)*0.5*F_width_coeff;
-
-spl0=F_M+F_S;
-spl1=F_M-F_S;
+front_width(F_width_coeff);
 
 //Rear width
-R_M=(spl4+spl5)*0.5;
-R_S=(spl4-spl5)*0.5*R_width_coeff;
-
-spl4=R_M+R_S;
-spl5=R_M-R_S;
+rear_width(R_width_coeff);
 
 //DPL
 slider3 == 0 ? spl5 = spl5*-1;

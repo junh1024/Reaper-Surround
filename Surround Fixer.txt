@@ -1,4 +1,4 @@
-desc:iudfgyodirufy
+desc: Fixes surround by adjusting the cross width of 5.1
 
 slider1:0<-12,12,1>Pre Gain (dB)
 slider2:3<-12,12,1>Width (dB)
@@ -30,21 +30,21 @@ widthgain= 2^(slider2/6);
 
 // pregain,encode,widthgain,decode
 
-tmp4=spl4*gain;
-tmp5=spl5*gain;
+Right_Mid=spl4*gain;
+Right_Side=spl5*gain;
 
-tmp0 = ( spl0 + tmp4 ) * 0.5    ;
-tmp1 = ( spl0 - tmp4 ) * 0.5    ;
-tmp4 = ( spl1 + tmp5 ) * 0.5    ;
-tmp5 = ( spl1 - tmp5 ) * 0.5    ;
-
-
-tmp1=tmp1*widthgain;
-tmp5=tmp5*widthgain;
+Left_Mid = ( spl0 + Right_Mid ) * 0.5    ;
+Left_Side = ( spl0 - Right_Mid ) * 0.5    ;
+Right_Mid = ( spl1 + Right_Side ) * 0.5    ;
+Right_Side = ( spl1 - Right_Side ) * 0.5    ;
 
 
+Left_Side=Left_Side*widthgain;
+Right_Side=Right_Side*widthgain;
 
-spl0 = tmp0 + tmp1;
-spl4 = tmp0 - tmp1;
-spl1 = tmp4 + tmp5;
-spl5 = tmp4 - tmp5;
+
+
+spl0 = Left_Mid + Left_Side;
+spl4 = Left_Mid - Left_Side;
+spl1 = Right_Mid + Right_Side;
+spl5 = Right_Mid - Right_Side;
