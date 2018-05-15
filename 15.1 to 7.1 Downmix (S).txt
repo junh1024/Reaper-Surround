@@ -1,23 +1,16 @@
 desc:Simple 15.1 to 7.1 Downmix
 
+import surroundlib2.txt
+
+
 @init
 
 @sample 
 
 //need top first otherwise bottom gets silenced
-spl0 = spl0 + spl8 + spl10; //top C & LFE are a L & R of a new bottom layer
-spl1 = spl1 + spl9 + spl11;
 
-spl4 = spl4 + spl12;
-spl5 = spl5 + spl13;
-spl6 = spl6 + spl14;
-spl7 = spl7 + spl15;
+//downmix
+downmix_151_71_v1();
 
-spl8 = 0;
-spl9 = 0;
-spl10= 0;
-spl11= 0;
-spl12= 0;
-spl13= 0;
-spl14= 0;
-spl15= 0;
+//silence
+silence_top_layer_151();
