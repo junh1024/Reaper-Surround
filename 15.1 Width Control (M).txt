@@ -6,6 +6,8 @@ slider3:100<0,100,1>Top Width
 slider4:0<-3,3,0.1>Pan law (dB)
 slider5:1<0,1,1{Off,On}>Matrix (reverse polarity of top)
 
+import surroundlib2.txt
+
 @init
 
 @slider
@@ -30,12 +32,7 @@ top_coeff = slider3/100;
 // spl14= spl6 * top_coeff;
 // spl15= spl7 * top_coeff;
 
-front_M =(spl0+spl1)*0.5;
-front_S =(spl0-spl1)*0.5; 
-back_M  =(spl4+spl5)*0.5;
-back_S  =(spl4-spl5)*0.5; 
-side_M  =(spl6+spl7)*0.5;
-side_S  =(spl6-spl7)*0.5; 
+ MS_encode_ELL();
 
 //quite complicated, as we only want the pan law to apply only when the width is reduced.
 spl0 = front_M + (front_M * (1-ell_W)*(ell_P-1))+ (front_S * ell_W);
@@ -46,12 +43,7 @@ spl6 = side_M  + (side_M  * (1-ell_W)*(ell_P-1))+ (side_S  * ell_W);
 spl7 = side_M  + (side_M  * (1-ell_W)*(ell_P-1))- (side_S  * ell_W);
 
 //M/S encode
-top_front_M =(spl8+spl9)*0.5;
-top_front_S =(spl8-spl9)*0.5; 
-top_back_M  =(spl12+spl13)*0.5;
-top_back_S  =(spl12-spl13)*0.5; 
-top_side_M  =(spl14+spl15)*0.5;
-top_side_S  =(spl14-spl15)*0.5; 
+ MS_encode_Top();
 
 //M/S decode
 spl8 = top_front_M + (top_front_M * (1-top_W)*(top_P-1))+ (top_front_S * top_W);

@@ -35,13 +35,9 @@ ELL_Side_Depth=(abs(slider6 ))/ 100;
 
 @sample 
 
-front_M =(spl0 +spl1)*0.5;
-front_S =(spl0 -spl1)*0.5; 
-back_M  =(spl4+spl5)*0.5;
-back_S  =(spl4-spl5)*0.5; 
-side_M  =(spl6+spl7)*0.5;
-side_S  =(spl6-spl7)*0.5; 
+ MS_encode_ELL();
 
+//MS decode ELL
 spl0=(front_M)+ (front_S * ELL_W) ;
 spl1=(front_M)- (front_S * ELL_W) ;
 spl4=(back_M )+ (back_S  * ELL_W) ;
@@ -50,12 +46,7 @@ spl6=(side_M )+ (side_S  * ELL_W) ;
 spl7=(side_M )- (side_S  * ELL_W) ;
 
 //need top first otherwise bottom gets silenced, convert top to M/S
-top_front_M =(spl8 +spl9 )*0.5;
-top_front_S =(spl8 -spl9 )*0.5; 
-top_back_M  =(spl12+spl13)*0.5;
-top_back_S  =(spl12-spl13)*0.5; 
-top_side_M  =(spl14+spl15)*0.5;
-top_side_S  =(spl14-spl15)*0.5; 
+ MS_encode_Top();
 
 //decode M/S with polarity
 spl8 = ( (top_front_M)+ (top_front_S * top_W) ) ;

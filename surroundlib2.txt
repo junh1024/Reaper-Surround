@@ -107,3 +107,22 @@ function silence_top_layer_151()
 	spl15= 0;
 );
 
+function MS_encode_ELL()
+(
+	front_M =(spl0+spl1)*0.5;
+	front_S =(spl0-spl1)*0.5; 
+	back_M  =(spl4+spl5)*0.5;
+	back_S  =(spl4-spl5)*0.5; 
+	side_M  =(spl6+spl7)*0.5;
+	side_S  =(spl6-spl7)*0.5; 
+);
+
+function MS_encode_Top()
+(
+	top_front_M =(spl8+spl9)*0.5;
+	top_front_S =(spl8-spl9)*0.5; 
+	top_back_M  =(spl12+spl13)*0.5;
+	top_back_S  =(spl12-spl13)*0.5; 
+	top_side_M  =(spl14+spl15)*0.5;
+	top_side_S  =(spl14-spl15)*0.5; 
+);
