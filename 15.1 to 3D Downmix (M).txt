@@ -28,16 +28,10 @@ ELL_Side_Depth=(slider3+100 )/ 200;
 rear_width(R_width_coeff);
 
 //height side depth
-spl8 +=(spl14)*   Top_Side_Depth;
-spl9 +=(spl15)*   Top_Side_Depth;
-spl12+=(spl14)*(1-Top_Side_Depth);
-spl13+=(spl15)*(1-Top_Side_Depth);
+Top_Side_Depth_71_to_51(Top_Side_Depth);
 
 //ELL side depth
-spl0 +=(spl6)*  ELL_Side_Depth;
-spl1 +=(spl7)*  ELL_Side_Depth;
-spl4+=(spl6)*(1-ELL_Side_Depth);
-spl5+=(spl7)*(1-ELL_Side_Depth);
+ELL_Side_Depth_71_to_51(ELL_Side_Depth);
 
 ///downmixxx
 
@@ -70,7 +64,6 @@ spl11= spl13;
 // spl7=0;
 // spl8 =0;
 // spl9 =0;
-
 
 
 //silence ch13-16
