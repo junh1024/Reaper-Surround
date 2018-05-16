@@ -1,6 +1,4 @@
-desc:Based on DTS Neural Upmix (Common). Useful after upscalers that don't have these controls.
-
-
+desc:
 
 @sample
 mid= 0.7*(spl0+spl1);

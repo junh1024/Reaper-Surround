@@ -1,4 +1,4 @@
-desc:Based on DTS Neural Upmix (Common). Useful after upscalers that don't have these controls.
+desc: 
 
 slider1:100<0,100,2>Reserved
 slider2:100<0,100,2>Reserved

@@ -1,4 +1,4 @@
-desc: dfghdfgh
+desc: 
 
 slider1:0<-180,180,1>the pan (deg)
 

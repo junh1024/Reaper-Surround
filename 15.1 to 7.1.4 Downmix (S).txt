@@ -1,5 +1,6 @@
-desc:Simple 15.1 to 7.1 Downmix
+desc:Simple 15.1 to 7.1.4 Downmix
 slider1:0<0,1,1{On,Off}>Top downmix
+
 @init
 top_P=1.11  ;
 top_W=0.9   ;

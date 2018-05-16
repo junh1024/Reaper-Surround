@@ -9,8 +9,6 @@ import surroundlib2.txt
 import surroundlib3.txt
 
 @init
-top_P=1.11  ;
-top_W=0.9   ;
 
 @slider
 R_width_coeff=slider4/100;

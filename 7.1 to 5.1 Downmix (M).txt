@@ -6,8 +6,6 @@ slider2:100<0,100,10>Rear Width
 import surroundlib3.txt
 
 @init
-top_P=1.11  ;
-top_W=0.9   ;
 
 @slider
 R_width_coeff=slider2/100;
