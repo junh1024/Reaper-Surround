@@ -2,6 +2,15 @@ desc: small functions
 
 @init
 
+
+function do_width(width_coeff)
+(
+spl0 = spl0+0.707*(spl2*width_coeff);
+spl1 = spl1+0.707*(spl2*width_coeff);
+spl2 = spl2*(1-width_coeff);
+);
+
+
 function front_width(F_width_coeff)
 (
 	F_M=(spl0+spl1)*0.5;

@@ -12,6 +12,7 @@ slider7:0<-100,100,2>Top Side Depth
 
 import surroundlib1.txt
 import surroundlib2.txt
+import surroundlib3.txt
 
 
 //Height/ELL into front (copy from 51d)
@@ -30,7 +31,7 @@ center_coeff =slider5/100; //convert from slider to coefficient
 slider_coeff = 1-center_coeff;
 
 Top_Side_Depth=((slider7 ))/ 100;
-ELL_Side_Depth=(abs(slider6 ))/ 100;
+ELL_Side_Depth=((slider6 ))/ 100;
 
 
 @sample 
@@ -58,9 +59,7 @@ spl15= ( (top_side_M )- (top_side_S  * top_W) ) *polarity;
 
 
 //Width, C into LR
-spl0 = spl0+0.707*(spl2*width_coeff);
-spl1 = spl1+0.707*(spl2*width_coeff);
-spl2 = spl2*(1-width_coeff);
+do_width(width_coeff);
 
 //Btm into C
 spl2 += (spl10+spl11) * center_coeff ; 
@@ -71,21 +70,7 @@ spl11 = spl11 *slider_coeff ;
 //Top side depth
  Top_Side_Depth_adj_v2 ( Top_Side_Depth );
 
-slider6>0?(
-//ELL side depth
-spl0 +=(spl6)*   ELL_Side_Depth;
-spl1 +=(spl7)*   ELL_Side_Depth;
-spl6=  (spl6)*(1-ELL_Side_Depth);
-spl7=  (spl7)*(1-ELL_Side_Depth);
-)
-:
-(
-spl4 +=(spl6)*  ELL_Side_Depth;
-spl5 +=(spl7)*  ELL_Side_Depth;
-spl6= (spl6)*(1-ELL_Side_Depth);
-spl7= (spl7)*(1-ELL_Side_Depth);
-);
-
+ELL_Side_Depth_71_to_71(ELL_Side_Depth);
 
 //downmix
 downmix_151_71_v1();

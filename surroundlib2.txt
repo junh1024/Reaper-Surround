@@ -33,13 +33,6 @@ function calculate_pan_coeffs(pan_coeff)
 );
 
 
-function do_width(width_coeff)
-(
-spl0 = spl0+0.707*(spl2*width_coeff);
-spl1 = spl1+0.707*(spl2*width_coeff);
-spl2 = spl2*(1-width_coeff);
-);
-
 
 function do_depth(depth_coeff)
 (
@@ -53,7 +46,7 @@ function do_depth(depth_coeff)
 	(
 	  spl4 += coeff_A*spl0; //reversed order is important
 	  spl0 = coeff_B*spl0;
-	  spl5 += coeff_A*spl1; //reversed order is important
+	  spl5 += coeff_A*spl1; 
 	  spl1 = coeff_B*spl1;
 	);
 );
@@ -70,7 +63,7 @@ function do_pan(pan_coeff)
 	(
 		spl0 += coeff_C*spl1; //reversed order is important
 		spl1 =  coeff_D*spl1;
-		spl4 += coeff_C*spl5; //reversed order is important
+		spl4 += coeff_C*spl5; 
 		spl5 =  coeff_D*spl5;
 	);
 );
@@ -125,4 +118,24 @@ function MS_encode_Top()
 	top_back_S  =(spl12-spl13)*0.5; 
 	top_side_M  =(spl14+spl15)*0.5;
 	top_side_S  =(spl14-spl15)*0.5; 
+);
+
+
+function ELL_Side_Depth_71_to_71(ELL_Side_Depth)
+(
+	ELL_Side_Depth>0?(
+	//ELL side depth
+	spl0 +=(spl6)*   ELL_Side_Depth;
+	spl1 +=(spl7)*   ELL_Side_Depth;
+	spl6=  (spl6)*(1-ELL_Side_Depth);
+	spl7=  (spl7)*(1-ELL_Side_Depth);
+	)
+	:
+	(
+	ELL_Side_Depth*=-1;
+	spl4 +=(spl6)*  ELL_Side_Depth;
+	spl5 +=(spl7)*  ELL_Side_Depth;
+	spl6= (spl6)*(1-ELL_Side_Depth);
+	spl7= (spl7)*(1-ELL_Side_Depth);
+	);
 );
