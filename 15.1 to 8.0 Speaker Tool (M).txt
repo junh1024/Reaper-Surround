@@ -1,0 +1,78 @@
+desc: This EXPERIMENTAL tool is for height playback through ch3-4 aka C/LFE. For height playback through 7/8 SL/SR, use the 15.1 7.1 (X) Downmixer
+
+slider1:0<0,2 ,0.1>Bass boost (unimplemented)
+slider2:0<0,6,2>channel_offset
+slider3:100<0,200,5>Width
+slider4:0<0,1,1,{Yes,No}>SL SR on ch7-8 exists
+slider5:0<-100,100,1>ELL depth position 
+slider6:0<-100,100,1>Height depth position 
+slider7:0<0,50 ,1>ELL height 
+slider8:100<0,100 ,1>Height height 
+
+import surroundlib1.txt
+import surroundlib2.txt
+import surroundlib3.txt
+
+@slider
+
+channel_offset=slider2;
+pair_width=slider3/100;
+
+slider4==0? //SL SR exists
+(  side_physical_level =1 ):(  side_physical_level =0 );
+ 
+ELL_Side_Depth=((slider5 ))/ 100;
+Top_Side_Depth=((slider6 ))/ 100;
+
+vert_coeff =  slider7/100 ;  //vert coefficient
+ell_coeff = 1-vert_coeff;//ell coefficient
+
+Height_height=slider8/100;
+Height_height_TS=(100-((100-slider8)*0.75))/100;
+
+
+// FrontHeight=slider5/100;
+
+@sample
+
+do_width(1); //set no physical center
+
+ELL_Side_Depth_71_to_71(ELL_Side_Depth);
+Top_Side_Depth_adj_v2 ( Top_Side_Depth );
+
+
+//Parametric choose which speaker pair to width
+Mid= (spl(channel_offset)+spl(channel_offset+1))*0.5;
+Side=(spl(channel_offset)-spl(channel_offset+1))*0.5*pair_width;
+spl(channel_offset)=Mid+Side;
+spl(channel_offset+1)=Mid-Side;
+
+ELL_L= spl0 * vert_coeff;
+ELL_R= spl1 * vert_coeff;
+ELL_L+= (spl4 * vert_coeff);
+ELL_R+= (spl5 * vert_coeff);
+ELL_L+= (spl6 * vert_coeff);
+ELL_R+= (spl7 * vert_coeff);
+
+spl0 *= ell_coeff;
+spl1 *= ell_coeff;
+spl4 *= ell_coeff;
+spl5 *= ell_coeff;
+spl6 *= ell_coeff;
+spl7 *= ell_coeff;
+
+Height_height_adj_v1(Height_height);
+spl2=heightsL +ELL_L;
+spl3=heightsR +ELL_R;
+ 
+// spl6 +=  spl14 *(1-Height_height);
+// spl7 +=  spl15 *(1-Height_height);
+	spl0+=spl10; //top C & LFE are a L & R of a new bottom layer
+	spl1+=spl11;
+// downmix_151_71_v1()      ;
+silence_top_layer_151()  ;
+
+do_side_physical_level(side_physical_level);
+
+ 
+ 
