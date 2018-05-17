@@ -29,3 +29,28 @@ function Top_Side_Depth_adj_v2 ( Top_Side_Depth )
 	spl9*=(1-Top_Side_Depth) ;
 	);
 );
+
+function Height_height_adj_v1(Height_height)
+(
+	//move TF & TB into ELL F&B
+	spl0 +=  ( spl8  *(1-Height_height));
+	spl1 +=  ( spl9  *(1-Height_height));
+	spl4 +=  (spl12 *(1-Height_height) );
+	spl5 +=  (spl13 *(1-Height_height) );
+
+	spl6 +=( spl14*(1-Height_height_TS) );
+	spl7 +=( spl15*(1-Height_height_TS) );
+
+	//decrease TF & TB 
+	 spl8  *=Height_height;
+	 spl9  *=Height_height;
+	spl12  *=Height_height;
+	spl13  *=Height_height;
+
+	spl14*=Height_height_TS;
+	spl15*=Height_height_TS;
+
+	//mapping
+	heightsL = spl8 + spl12 + spl14;
+	heightsR = spl9 + spl13 + spl15;
+)
