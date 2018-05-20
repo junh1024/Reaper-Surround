@@ -10,6 +10,10 @@ slider5:0<0,100,2>Bottom into C
 slider6:0<-100,100,2>ELL Side Depth
 slider7:0<-100,100,2>Top Side Depth
 
+slider8:0<0,100,5>Side Physical Level
+slider9:100<0,100 ,1>Height height 
+
+
 import surroundlib1.txt
 import surroundlib2.txt
 import surroundlib3.txt
@@ -19,7 +23,8 @@ import surroundlib3.txt
 
 @init
 polarity=1;
-
+heightsL=0;
+heightsR=0;
 
 @slider
 ELL_W=slider1/100   ;
@@ -32,6 +37,10 @@ slider_coeff = 1-center_coeff;
 
 Top_Side_Depth=((slider7 ))/ 100;
 ELL_Side_Depth=((slider6 ))/ 100;
+
+side_physical_level=slider8/100;
+Height_height=slider9/100;
+Height_height_TS=(100-((100-slider9)*0.75))/100;
 
 
 @sample 
@@ -67,13 +76,22 @@ spl2 += (spl10+spl11) * center_coeff ;
 spl10 = spl10 *slider_coeff ;
 spl11 = spl11 *slider_coeff ;
 
+ELL_Side_Depth_71_to_71(ELL_Side_Depth);
+
 //Top side depth
  Top_Side_Depth_adj_v2 ( Top_Side_Depth );
 
-ELL_Side_Depth_71_to_71(ELL_Side_Depth);
+ do_side_physical_level(side_physical_level);
 
+Height_height_adj_v1(Height_height);
+
+spl6+=heightsL;
+spl7+=heightsR;
+
+	spl0+=spl10;
+	spl1+=spl11;
 //downmix
-downmix_151_71_v1();
+// downmix_151_71_v1();
 
 //silence
 silence_top_layer_151();
