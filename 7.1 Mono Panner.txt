@@ -11,17 +11,23 @@ spk6pos=-90;
 spk7pos=90;
 W=60;
 
-@sample
-in0=spl0;
-in1=spl1;
+@slider
 
 pan=slider1;//pan, from clockwise, degrees
 
-(  pan >=spk0pos-W && pan <=spk0pos+W )? spl0 = cos( ( (1.5* (pan - spk0pos )) )*($pi/180)  )*in0 : spl0=0;
-(  pan >=spk1pos-W && pan <=spk1pos+W )? spl1 = cos( ( (1.5* (pan - spk1pos )) )*($pi/180)  )*in0 : spl1=0;
-( ( pan >=spk4pos-W && pan <=spk4pos+W ) || ( pan>150)    )? spl4 = cos( ( (1.5* (pan - spk4pos )) )*($pi/180)  )*in0 : spl4=0;//special handling
-( ( pan >=spk5pos-W && pan <=spk5pos+W ) || ( pan <-150 )  )? spl5 = cos( ( (1.5* (pan - spk5pos )) )*($pi/180)  )*in0 : spl5=0;//for rear wraparound
-( pan >=spk6pos-W && pan <=spk6pos+W )? spl6 = cos( ( (1.5* (pan - spk6pos )) )*($pi/180)  )*in0 : spl6=0;
-( pan >=spk7pos-W && pan <=spk7pos+W )? spl7 = cos( ( (1.5* (pan - spk7pos )) )*($pi/180)  )*in0 : spl7=0;
+(  pan  >=spk0pos-W && pan <=spk0pos+W )? spl0_coeff = abs(cos( ( (1.5* (pan - spk0pos )) )*($pi/180)  )) : spl0_coeff=0;
+(  pan  >=spk1pos-W && pan <=spk1pos+W )? spl1_coeff = abs(cos( ( (1.5* (pan - spk1pos )) )*($pi/180)  )) : spl1_coeff=0;
+(( pan  >=spk4pos-W && pan <=spk4pos+W )||(pan>150))?spl4_coeff = abs(cos( ( (1.5* (pan - spk4pos )) )*($pi/180)  )) : spl4_coeff=0;//special handling
+(( pan  >=spk5pos-W  ||  pan< -spk5pos ))?spl5_coeff = abs(cos( ( (1.5* (pan - spk5pos )) )*($pi/180)  )) : spl5_coeff=0;//for rear wraparound
+(  pan  >=spk6pos-W && pan <=spk6pos+W )? spl6_coeff = abs(cos( ( (1.5* (pan - spk6pos )) )*($pi/180)  )) : spl6_coeff=0;
+(  pan  >=spk7pos-W && pan <=spk7pos+W )? spl7_coeff = abs(cos( ( (1.5* (pan - spk7pos )) )*($pi/180)  )) : spl7_coeff=0;
 
-// ( pan +60>=spk1pos-W && pan +60<=spk1pos+W )? spl1 += cos( ( (1.5* (pan - spk1pos +60)) )*($pi/180)  )*in1 ;
+@sample
+in0=(spl0+spl1)*0.7071; //loudness compensation
+
+spl0 = spl0_coeff * in0;
+spl1 = spl1_coeff * in0;
+spl4 = spl4_coeff * in0;
+spl5 = spl5_coeff * in0;// ( pan +60>=spk1pos-W && pan +60<=spk1pos+W )? spl1 += cos( ( (1.5* (pan - spk1pos +60)) )*($pi/180)  )*in1 ;
+spl6 = spl6_coeff * in0;
+spl7 = spl7_coeff * in0;
