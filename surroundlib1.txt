@@ -84,3 +84,52 @@ function do_10_to_71_pan(in0)
 	spl6 = spl6_coeff * in0;
 	spl7 = spl7_coeff * in0;
 );
+
+function calculate_71_to_151_coeffs_pc(theslider1)
+(	//pan compensated
+	temp1 = theslider1*0.9 ; //map 0-100 to 0-90deg
+	temp2 = temp1*$pi /180 ; //convert from degrees to rads
+	top_coeff_pan = sin(temp2)  ; //top coefficient
+
+	temp4 = 90 - temp1; //
+	temp5 = temp4*$pi /180; //to rads
+	ell_coeff_pan = sin(temp5);//bottom coefficient
+);
+
+
+function calculate_71_to_151_coeffs_npc(theslider1)
+(	//non pan compensated
+	top_coeff_pan = ( theslider1/100);  //vert coefficient
+	ell_coeff_pan = 1-( abs(theslider1/100));
+);
+	
+function do_71_to_151_pan(theslider1)
+(
+	(  theslider1 >= 0 )?  (
+	//need top first otherwise it gets silenced
+	spl8 = spl0 * top_coeff_pan;
+	spl9 = spl1 * top_coeff_pan;
+
+	spl12= spl4 * top_coeff_pan;
+	spl13= spl5 * top_coeff_pan;
+	spl14= spl6 * top_coeff_pan;
+	spl15= spl7 * top_coeff_pan;
+
+	spl0 = spl0 * ell_coeff_pan;
+	spl1 = spl1 * ell_coeff_pan;
+
+	spl4 = spl4 * ell_coeff_pan;
+	spl5 = spl5 * ell_coeff_pan;
+	spl6 = spl6 * ell_coeff_pan;
+	spl7 = spl7 * ell_coeff_pan;
+	)
+	:
+	(	//top coeff is actually for bottom. need -ve to counteract the -ve sin as calc'd above
+	spl10= spl0 *- top_coeff_pan;
+	spl11= spl1 *- top_coeff_pan;
+	spl0 = spl0 * ell_coeff_pan;
+	spl1 = spl1 * ell_coeff_pan; 
+	);
+);
+// function calculate_71_to_151_coeffs_npc(theslider1)
+// ();

@@ -1,39 +1,32 @@
-desc:Width decreaser by mixing LR into C
+desc:
 
-slider1:0<0,100,1>Height
+slider1:0<-100,100,1>Height
+
+import surroundlib1.txt
 
 @init
 
 @slider
-// gain = 2^(slider1/6); // convert from dB to a multiplier
-// depth_temp=(slider1*$pi)/200; //depth scaled from 0-100 to 0>half pi
-// R_width_coeff=slider2/100;
+calculate_71_to_151_coeffs_pc(slider1);
 
-temp1 = slider1*0.9 ; //map 0-100 to 0-90deg
-temp2 = temp1*$pi /180 ; //convert from degrees to rads
-top_coeff = sin(temp2)  ; //top coefficint
-
-temp4 = 90 - temp1; //
-temp5 = temp4*$pi /180; //to rads
-ell_coeff = sin(temp5);//bottom coefficient
 @sample 
-
+do_71_to_151_pan(slider1);
 //need top first otherwise it gets silenced
-spl8 = spl0 * top_coeff;
-spl9 = spl1 * top_coeff;
-spl10= 0;
-spl11= 0;
-spl12= spl4 * top_coeff;
-spl13= spl5 * top_coeff;
-spl14= spl6 * top_coeff;
-spl15= spl7 * top_coeff;
+// spl8 = spl0 * top_coeff;
+// spl9 = spl1 * top_coeff;
+// spl10= 0;
+// spl11= 0;
+// spl12= spl4 * top_coeff;
+// spl13= spl5 * top_coeff;
+// spl14= spl6 * top_coeff;
+// spl15= spl7 * top_coeff;
 
-spl0 = spl0 * ell_coeff;
-spl1 = spl1 * ell_coeff;
-spl2 = 0;
-spl3 = 0;
-spl4 = spl4 * ell_coeff;
-spl5 = spl5 * ell_coeff;
-spl6 = spl6 * ell_coeff;
-spl7 = spl7 * ell_coeff;
+// spl0 = spl0 * ell_coeff;
+// spl1 = spl1 * ell_coeff;
+// spl2 = 0;
+// spl3 = 0;
+// spl4 = spl4 * ell_coeff;
+// spl5 = spl5 * ell_coeff;
+// spl6 = spl6 * ell_coeff;
+// spl7 = spl7 * ell_coeff;
 
