@@ -1,0 +1,20 @@
+desc: mono to 15.1 panner. Pan-compensated.
+
+slider1:0<-180,180>the pan (deg)
+slider2:0<-100,100,5>Height (+ve up, -ve down)
+
+import surroundlib1.txt
+
+@init
+
+@slider
+
+pan=slider1;//pan, from clockwise, degrees
+calculate_10_to_71_coeffs (pan);
+calculate_71_to_151_coeffs_pc(slider2);
+
+@sample 
+in0=(spl0+spl1)*0.7071; //loudness compensation
+
+do_10_to_71_pan(in0);
+do_71_to_151_pan(slider2);

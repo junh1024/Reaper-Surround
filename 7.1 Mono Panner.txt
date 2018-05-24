@@ -7,7 +7,6 @@ import surroundlib1.txt
 @init
 
 
-
 @slider
 
 pan=slider1;//pan, from clockwise, degrees
