@@ -4,22 +4,29 @@ A collection of my mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). Bu
 
 Instructions
 ===
-These are JSFX so DOWNLOAD ZIP & Put them in your Reaper EFFECTS folder. Note if you're cherry picking FX to DL (or updating), that you'll need surroundlib1-3 so get those too[1].
+These are JSFX so DOWNLOAD ZIP & Put them in your Reaper EFFECTS folder. Note if you're cherry picking FX to DL (or updating), that you'll need surroundlib1-3 so get those too [1].
 
 Disclaimer
 ===
 
 NO warranty is provided, and these are provided as-is. Although I have been using these since 2015, I reserve the right to make changes, including backwards-incompatible changes. Although it is not in my intrest to do so, as I, too, have projects to keep working. Tools may be added, changed, or deleted at ANY time. Although old versions of this repo are available in the worst case. Experimental tools should be especially prone to change (pending my time & effort), and tools in **/Old** are prone to deletion/already deprecated/may be wrong.
 
+Introduction to 15.1
+===
+* 15.1 is HQ channel-based INTERMEDIATARY format for 3D surround.
+* Order as follows for 15.1: L R C LFE BL BR SL SR, HL HR, BtL BtR, HBL HBR HSL HSR
+* Use  Reaper's channel parenting to place  stereo tracks statically.
+* Use mono panners for dynamic panning of sounds (Mono panners are preferred as there is improved directivity with speaker playback)
+* 15.1 Conversion to 3oA is supported for flexible & powerful workflows. However, ambisonics decoders for 3D speaker playback are not well implemented here. Try blue ripple's O3A suite or the http://www.matthiaskronlachner.com/?p=2015 ambix suite + https://www.york.ac.uk/sadie-project/ambidec.html 
+
 Quick start/Example workflows
 ===
 * 3D: 1.0 to 15.1 Panner (S).txt >>> 15.1 to * downmix | 15.1 to 3oA Downmix (M).txt
-* 3D Delivery: 15.1 to 7.1 Downmix v2 (L).txt | Playback: 15.1 to 8.0 Speaker Tool (M).txt
+* 3D Delivery: 15.1 to 7.x Downmix (M).txt for 11.1h (DTS-X) | 15.1 to 3D Downmix (M).txt for 9.1h (Auro3D, AMBEO speaker),  15.1 to 7.1 Downmix v2 (L).txt for 7.1 PL2z/DSU
+* 3D Playback: 15.1 to 8.0 Speaker Tool (M).txt
 * 2D: 7.1 Mono panner.txt >>> 7.1 to 5.1 Downmix (M).txt >>> 5.1 * >>> 5.1 to 2.0 Downmix (L).txt
 * Mono track to center: 2.0 to 3.0 Upmix (C).txt
-* Direct assignment for static stereo tracks (bypass panner): use Reaper's channel parenting. Order as follows for 15.1: L R C LFE BL BR SL SR, HL HR, BtL BtR, HBL HBR HSL HSR
 * 3oA FUMA: * to 3oA * Panner >>> 3oA Rotator (M).txt >>> * oA decoder
-* Mono is preferred as there is improved directivity with speaker playback
 
 Note on sizes & CPU use
 ===
@@ -33,7 +40,7 @@ Ambisonics Panners
 - 1.0 to 3oA 3D Panner (S).txt
 - 2.0 to 3oA 2D Panner (M).txt
 - 2.0 to 3oA 3D Panner (M).txt
-- 15.1 to 1oA Downmix (L).txt
+- 15.1 to 1oA Downmix (L).txt (These 2 can convert 2.0 to 15.1 to ambisonics, as long as the channel order is correct, see above)
 - 15.1 to 3oA Downmix (M).txt
 
 Ambisonics Manipulators
@@ -109,6 +116,13 @@ Fixers
 - Surround Fixer.txt
 
 FX not listed might be old/WIP/specialist/for my own use.
+
+FAQ
+===
+
+*How do I pan a sound flying directly overhead if your tools only seem to pan to the sides*?
+
+You can (ab)use 5.1 Mix Control (M).txt as a X-Y panner, pan around in 7.1 then push it up & reduce width with 15.1 Width Control (M).txt, or play around with 1.0 to 3oA 3D Panner (S).txt. Elevation for 3oA 3D panners go from 0-180* for exactly this reason.
 
 Future Directions
 ===
