@@ -17,7 +17,7 @@ Introduction to 15.1
 * Order as follows for 15.1: L R C LFE BL BR SL SR, HL HR, BtL BtR, HBL HBR HSL HSR
 * Use  Reaper's channel parenting to place  stereo tracks statically.
 * Use mono panners for dynamic panning of sounds (Mono panners are preferred as there is improved directivity with speaker playback)
-* 15.1 Conversion to 3oA is supported for flexible & powerful workflows. However, ambisonics decoders for 3D speaker playback are not well implemented here. Try blue ripple's O3A suite or the http://www.matthiaskronlachner.com/?p=2015 ambix suite + https://www.york.ac.uk/sadie-project/ambidec.html 
+* 15.1 Conversion to 3oA is supported for flexible & powerful workflows. However, ambisonics decoders for 3D speaker playback here are phantom, not full (i.e, don't include C). Try blue ripple's O3A suite or the http://www.matthiaskronlachner.com/?p=2015 ambix suite + https://www.york.ac.uk/sadie-project/ambidec.html if you need full or more decoders.
 
 Quick start/Example workflows
 ===
@@ -47,16 +47,15 @@ Ambisonics Manipulators
 ===
 - 3oA Rotator (M).txt: 2 rotators are provided for your convenience. To do a 360* spin starting from 0*, set offset to -180*, then adjust angle from -180* - +180*. You can use parameter modulation to automate Angle. Since Parameter modulation LFO may start at a undesired phase, offset is provided for manual adjustment (this was exactly the use-case for including 2 rotators). Or you can use a LFO on angle and a HFO on the offset for a wiggle.
 
-Ambisonics Decoders (experimental, list may change)
+Ambisonics Decoders (phantom)
 ===
-- 14.2 Ambisonics decoder.txt
-- 4 to 3 codec.txt
-- 4.0 Ambisonics codec.txt
+- 15.1 Ambisonics decoder.txt (hand-tuned)
+- 4 to 3 codec.txt (not really Ambisonics)
+- 4.0 Ambisonics codec.txt (padded to 5.1)
 - 7.1 Ambisonics decoder.txt
-- 1oA 11.1bf decoder.txt
+- 1oA 11.1bf decoder.txt (wrong)
 - 1oA 3D cube decoder v3.txt
 - 1oA prism.txt
-- 1oA quad decoder.txt
 
 Decoders are provided for your convenience but they're not that great.
 
