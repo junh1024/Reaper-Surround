@@ -1,4 +1,11 @@
-# Clips	Buses	Tracks	FX	RAM	CPU	BPM
+"""Reascript for showing stats in this order:
+Tracks	Buses	Envs	Clips	MIDIClips	FX	BPM
+I wanted to collect various stats from projects for a retrospective spreadsheet. There was a bit of feature creep as I browsed through the API to see what stats I could collect, leaving out ones which are incompatible with 4.52 (sends, TakeFX). Stats are displayed using raw numbers, separated by tab, for easy copying into a spreadsheet.
+
+On top of the RAW stats, I wanted to have a derived stat which showed how much effort each project was. I was struggling to find a formula for combining stats until I realized it's prolly better to have 2 stats. One reflecting size, and another reflecting complexity. The formulae I have in my spreadsheet is approximately (Tracks + Envelopes) and the average of (Clips per non-bus track, Effects per track).
+"""
+
+
 
 from reaper_python import *
 from contextlib import contextmanager
@@ -6,9 +13,9 @@ from sws_python import *
 
 # import os
 Buses=0
-Envelopes=0
+Envelopes=-1#fix
 TrackFXs=0
-Sends=0
+# Sends=0
 MIDIitems=0
 
 fastStr = SNM_CreateFastString("")
@@ -50,22 +57,14 @@ for i in range (RPR_CountMediaItems( 0)):
 	SNM_GetSourceType( take, fastStr)
 	
 	# TrackFXs+=RPR_TakeFX_GetCount( take )
-	msg(SNM_GetFastString(fastStr))
+	# msg(SNM_GetFastString(fastStr))
 	if (SNM_GetFastString(fastStr))=="MIDI":
 		MIDIitems+=1
-		msg(MIDIitems)
+		# msg(MIDIitems)
 
 
-# msg("""
-# Clips: %s
-# Buses: %s
-# Tracks: %s
-# Envelopes: %s
-# BPM: %s
-# TrFX: %s
-# Sends: %s
-
-# """   % (  RPR_CountMediaItems( 0) ,Buses,  RPR_CountTracks( 0 ) ,Envelopes, RPR_TimeMap_GetDividedBpmAtTime( 2 ), TrackFXs,Sends) )
+msg(			"""%s	%s	%s	%s	%s	%s	%s\n"""
+%(RPR_CountTracks(0),Buses,Envelopes,RPR_CountMediaItems(0),MIDIitems,TrackFXs,RPR_TimeMap_GetDividedBpmAtTime(2)))
 	
 	 # RPR_GetTrackNumSends( tr, 0 )
 SNM_DeleteFastString(fastStr)
