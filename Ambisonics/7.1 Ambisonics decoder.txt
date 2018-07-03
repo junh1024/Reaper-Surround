@@ -5,8 +5,8 @@ desc: decodes 2nd order 2D WXYUV (think Wigtools mono>5ch(2o2d),wxyuv panner) to
 W=spl0;
 X=spl1;
 Y=spl2;
-U=spl3;
-V=spl4;
+U=spl7;
+V=spl8;
 
 
 spl0=0.2357*W+0.1987*X+0.1147*Y+0.0321*U+0.0556*V;//Front Left
@@ -17,3 +17,5 @@ spl4=0.2357*W+-0.1987*X+0.1147*Y+0.0321*U+-0.0556*V;//Back Left
 spl5=0.2357*W+-0.1987*X+-0.1147*Y+0.0321*U+0.0556*V;//Back Right
 spl6=0.2357*W+0*X+0.2294*Y+-0.0643*U+0*V;//Left
 spl7=0.2357*W+0*X+-0.2294*Y+-0.0643*U+0*V;//Right
+spl8=0;
+spl9=0;
