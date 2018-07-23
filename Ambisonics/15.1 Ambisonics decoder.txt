@@ -8,38 +8,42 @@ X=spl1;
 Y=spl2;
 Z=spl3;
 
-// R=spl4;
 U=spl7;
 V=spl8;
 
-// P=spl15;
+R= spl4*0.5;//0.5 scaling factor in case I get 2/3o coefficients wrong
+Q=spl15*0.5;
+
+// L=spl10;// disabled for now since enabling them seems to do strange things unless I probably implement other coefficients
+// M=spl11;
+
 
 Z_ELL=-0.1  ;
 Z_top=0.2   ;
 
-// W_ELL=1.2  ;
-// W_top=0.6   ;
+L_gain=0.1;
+M_gain=0.05;
 
-
-// R_ELL=-0.1;
-// R_top=0.2;
+R_ELL=-0.1;
+R_top=0.2;
 
 ELL_gain=1;
 top_gain=0.5;
+Q_gain=0.1;
 
 //   
-spl0= 0.24*0.8*W	+0.1987*X	+0.1147*Y	+Z_ELL*Z	+0.0321*U	+0.0556*V;
-spl1= 0.24*0.8*W	+0.1987*X	-0.1147*Y	+Z_ELL*Z	+0.0321*U	-0.0556*V;
-spl4= 0.24*0.8*W	-0.1987*X	+0.1147*Y	+Z_ELL*Z	+0.0321*U	-0.0556*V;
-spl5= 0.24*0.8*W	-0.1987*X	-0.1147*Y	+Z_ELL*Z	+0.0321*U	+0.0556*V;
-spl6= 0.24*0.8*W	+0.0000*X	+0.2294*Y	+Z_ELL*Z	-0.0643*U	+0.0000*V;
-spl7= 0.24*0.8*W	+0.0000*X	-0.2294*Y	+Z_ELL*Z	-0.0643*U	+0.0000*V;
-spl8= 0.24*0.8*W	+0.1987*X	+0.1147*Y	+Z_top*Z	+0.0321*U	+0.0556*V;
-spl9= 0.24*0.8*W	+0.1987*X	-0.1147*Y	+Z_top*Z	+0.0321*U	-0.0556*V;
-spl12=0.24*0.8*W	-0.1987*X	+0.1147*Y	+Z_top*Z	+0.0321*U	-0.0556*V;
-spl13=0.24*0.8*W	-0.1987*X	-0.1147*Y	+Z_top*Z	+0.0321*U	+0.0556*V;
-spl14=0.24*0.8*W	+0.0000*X	+0.2294*Y	+Z_top*Z	-0.0643*U	+0.0000*V;
-spl15=0.24*0.8*W	+0.0000*X	-0.2294*Y	+Z_top*Z	-0.0643*U	+0.0000*V;
+spl0= 0.24*0.8*W	+0.1987*X	+0.1147*Y	+Z_ELL*Z	+R_ELL*R	+0.0321*U	+0.0556*V+Q_gain*Q-L_gain*L-M_gain*M;
+spl1= 0.24*0.8*W	+0.1987*X	-0.1147*Y	+Z_ELL*Z	+R_ELL*R	+0.0321*U	-0.0556*V-Q_gain*Q-L_gain*L+M_gain*M;
+spl4= 0.24*0.8*W	-0.1987*X	+0.1147*Y	+Z_ELL*Z	+R_ELL*R	+0.0321*U	-0.0556*V+Q_gain*Q+L_gain*L-M_gain*M;
+spl5= 0.24*0.8*W	-0.1987*X	-0.1147*Y	+Z_ELL*Z	+R_ELL*R	+0.0321*U	+0.0556*V-Q_gain*Q+L_gain*L+M_gain*M;
+spl6= 0.24*0.8*W	+0.0000*X	+0.2294*Y	+Z_ELL*Z	+R_ELL*R	-0.0643*U	+0.0000*V-Q_gain*Q+0.0000*L-M_gain*M*2;
+spl7= 0.24*0.8*W	+0.0000*X	-0.2294*Y	+Z_ELL*Z	+R_ELL*R	-0.0643*U	+0.0000*V+Q_gain*Q+0.0000*L+M_gain*M*2;
+spl8= 0.24*0.8*W	+0.1987*X	+0.1147*Y	+Z_top*Z	+R_top*R	+0.0321*U	+0.0556*V+Q_gain*Q-L_gain*L-M_gain*M;
+spl9= 0.24*0.8*W	+0.1987*X	-0.1147*Y	+Z_top*Z	+R_top*R	+0.0321*U	-0.0556*V-Q_gain*Q-L_gain*L+M_gain*M;
+spl12=0.24*0.8*W	-0.1987*X	+0.1147*Y	+Z_top*Z	+R_top*R	+0.0321*U	-0.0556*V+Q_gain*Q+L_gain*L-M_gain*M;
+spl13=0.24*0.8*W	-0.1987*X	-0.1147*Y	+Z_top*Z	+R_top*R	+0.0321*U	+0.0556*V-Q_gain*Q+L_gain*L+M_gain*M;
+spl14=0.24*0.8*W	+0.0000*X	+0.2294*Y	+Z_top*Z	+R_top*R	-0.0643*U	+0.0000*V-Q_gain*Q+0.0000*L-M_gain*M*2;
+spl15=0.24*0.8*W	+0.0000*X	-0.2294*Y	+Z_top*Z	+R_top*R	-0.0643*U	+0.0000*V+Q_gain*Q+0.0000*L+M_gain*M*2;
 
 spl2=0;
 spl3=0;
