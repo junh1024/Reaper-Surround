@@ -1,25 +1,31 @@
-desc:
+desc: 5.1 Level Control, 7.1 sides = rears, but control is half strength.
 
-slider1:100<0,200,1>L/R Gain (dB)
-slider2:100<0,200,1>C Gain (dB)
-slider3:100<0,200,1>LFE Gain (dB)
-slider4:100<0,200,1>Rear Gain (dB)
-
+slider1:100<0,200,1>L/R	Gain	(%)
+slider2:100<0,200,1>C	Gain	(%)
+slider3:100<0,200,1>LFE	Gain	(%)
+slider4:100<0,200,1>Sur	Gain	(%)
 
 @init
-// this is stuff that happens once (or if the samplerate changes, etc)
 
 @slider
 
-@sample
-// this happens per-sample. spl0 is the left channel, spl1 is the right,
-// and if your track has more than 2 channels, spl2, spl3, etc..
+side_coeff=(100-(100-slider4)/2)/100
 
+@sample
+
+//LR
 spl0 *=(slider1/100); 
-spl1 *=(slider1/100); 
-spl2 *=(slider2/100); 
-spl3 *=(slider3/100); 
+spl1 *=(slider1/100);
+ 
+// C LFE
+spl2 *=(slider2/100);
+ 
+spl3 *=(slider3/100);
+
+// BL BR
 spl4 *=(slider4/100); 
 spl5 *=(slider4/100);
-spl6 *=(slider4/100); 
-spl7 *=(slider4/100); 
+
+// SL SR 1/2 strength
+spl6 *=(side_coeff); 
+spl7 *=(side_coeff); 
