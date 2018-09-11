@@ -1,0 +1,35 @@
+desc:  A-A format converter
+
+// this tool is intended to process "ambisonic" microphone signals, if the capsules are omni directional , and make them (super) cardiod by subtracting the whole from the individual. This method is used because A format quality exceeds B format quality, and I want to use them for 3D surround applications. I'm not sure if this FX actually works as intended.
+
+slider1:19<1,32,1>Chans
+slider2:100<0,200,1>Subtract Amount (%)
+
+@init
+
+@slider
+chans=slider1;
+W_coeff=slider2/100;
+
+@sample
+W=0;
+i=0;
+
+
+  // For all chans, add it to W
+loop(chans,
+  W+=spl(i);
+  i+=1;
+);
+
+
+i=0;
+W/=chans; // average/ normalize
+
+loop(chans,
+
+  spl(i) -= (W_coeff*W);
+  
+  i+=1;
+);
+
