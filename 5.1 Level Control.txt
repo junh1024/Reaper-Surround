@@ -1,9 +1,9 @@
 desc: 5.1 Level Control, 7.1 sides = rears, but control is half strength.
 
-slider1:100<0,200,1>L/R	Gain	(%)
-slider2:100<0,200,1>C	Gain	(%)
-slider3:100<0,200,1>LFE	Gain	(%)
-slider4:100<0,200,1>Sur	Gain	(%)
+slider1:100<0,200,4>L/R  Gain  (%)
+slider2:100<0,200,4>C  Gain  (%)
+slider3:100<0,200,4>LFE  Gain  (%)
+slider4:100<0,200,4>Sur  Gain  (%)
 
 @init
 

@@ -1,6 +1,6 @@
 desc: What width is reduced from the rear gets added to the front.
 
-slider1:100<0,100,10>Rear Width
+slider1:100<0,100,5>Rear Width
 
 @init
 // this is stuff that happens once (or if the samplerate changes, etc)

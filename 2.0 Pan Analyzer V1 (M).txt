@@ -1,5 +1,7 @@
 desc:
 
+// Other ideas: throw away min/max of 10 miniblox, moving avg, RMS or squared
+
 slider1:0.1<-1,1,0.1>Threshold
 slider2:4096<128,8192,128>Blocksize
 slider3:0.7<0.1,1,0.1>Responsiveness
@@ -12,6 +14,10 @@ count=0;
 sumL=0;
 sumR=0;
 
+@slider
+blocksize=slider2;
+response=slider3;
+
 
 @sample
 
@@ -22,9 +28,9 @@ sumR+=(spl1)*sign(spl1); //add 2 buffer for averaging.
 
 count+=1;//keep count of blocksize
 
-(count>slider2)?//if blocksize full,
+(count>blocksize)?//if blocksize full,
 (
-slider4=(((sumR-sumL)/(sumR+sumL))*slider3)+(slider4*(1-slider3));//do avg of all samples, with time weighting
+slider4=(((sumR-sumL)/(sumR+sumL))*response)+(slider4*(1-response));//do avg of all samples, with time weighting
 sumL=0;
 sumR=0;
 count=0;
