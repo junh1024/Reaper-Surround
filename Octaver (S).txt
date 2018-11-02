@@ -1,12 +1,11 @@
-desc: MIDI Keytrack generator 2
-//tags: Key track follow generator link
-//author: Robert Randolph
+desc: Copies a MIDI note & offsets it. Works for semitones & octaves.
+//author: junh1024
+//with portions from: Robert Randolph's keytracker
 //www.admiralbumblebee.com/music/2017/08/06/Keytrack-any-parameter-in-Reaper-with-this-script.html
-//modified by me, junh1024
+//with portions from IXix's MIDI_tool (GPLv3)
+//License: 
 
-slider1:0<0,127,1>Midi Note Value
-slider2:0<-31,31,1>offset
-slider3:1<0,4,0.1>scaling
+slider1:0<-31,31,1>offset (semitones)
 
 in_pin:none
 out_pin:none
@@ -36,14 +35,22 @@ while
 
     // channel == inChannel ? (
         onOffStatus == 144 ? (
-            slider1 =  msg23&127;
-        // )
+
+		// Extract note number
+		note = msg23 & $x7F;
+		note+=slider1;
+		// Extract velocity
+		velocity = msg23 >> 8;
+
+
     );
     
     midisend(ts,msg1,msg23) ; // pass through
+	msg23 = note | (velocity << 8); //make new note
+	midisend(ts,msg1,msg23); //send new note
+				
 
- slider1+=slider2;
-slider1=((slider1-63)*slider3)+63;
+ 
 	);
 );
 
