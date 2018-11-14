@@ -3,7 +3,7 @@ desc: Copies a MIDI note & offsets it. Works for semitones & octaves.
 //with portions from: Robert Randolph's keytracker
 //www.admiralbumblebee.com/music/2017/08/06/Keytrack-any-parameter-in-Reaper-with-this-script.html
 //with portions from IXix's MIDI_tool (GPLv3)
-//License: 
+//Changes: I used only the note extraction & reassembly codes
 
 slider1:0<-31,31,1>offset (semitones)
 
@@ -17,17 +17,12 @@ out_pin:none
 
 @slider
 
-
-
 @block
-
-
 
 while 
 (
 	midirecv(ts,msg1,msg23) ? 
 	(
-
     // channel = msg1 & $x0F;
     onOffStatus = msg1 & $xF0; // 144 == Note On, 128 == Note Off
 
@@ -41,19 +36,12 @@ while
 		note+=slider1;
 		// Extract velocity
 		velocity = msg23 >> 8;
-
-
     );
     
     midisend(ts,msg1,msg23) ; // pass through
 	msg23 = note | (velocity << 8); //make new note
 	midisend(ts,msg1,msg23); //send new note
-				
-
  
 	);
 );
 
-
-
-  

@@ -13,7 +13,7 @@ temp1 = 1-temp0; //for C
 
 @sample
 
-spl2 = (spl0+spl1) * temp1  * gain; //*0.7071 for constant theoretical gain
+spl2+= (spl0+spl1) * temp1  * gain; //*0.7071 for constant theoretical gain
      
 spl0 = spl0 *temp0 ;
 spl1 = spl1 *temp0 ;
