@@ -1,7 +1,7 @@
 desc: 6ch symmetrical compressor
 //gfx section modified from Liteon's deesser (GPL)
 
-slider1:0.1<-60,0,1>Threshold
+slider1:-1<-60,0,1>Threshold
 slider2:4096<128,8192,128>Blocksize
 slider3:0.5<0.1,1,0.1>Responsiveness
 
@@ -13,21 +13,18 @@ count=0;
 sumALL=0;
 gain_excess=0;
 gain_old=0;
-
+threshold_exceeded_number=0;
+abs_spl=0;
 
 blocksize=slider2;
 gain_reduction=0;
 // gain_reduction_old=0;
 
 //GFX variables
-n = 0;
 sqrt2 = sqrt(2);
 s2 = sqrt2/2;
-cgain = 1;
-cdenorm = 10^-30;
-e10 = 10^-10;
-g_meter = gr_meter = g_reset = 1;
-gr_meter_decay = exp(1/(1*srate));
+// g_meter = gr_meter = g_reset = 1;
+// gr_meter_decay = exp(1/(1*srate));
 
 
 @slider
@@ -44,30 +41,51 @@ count+=samplesblock;
 
 (count>blocksize)?
 (
-	average_spls=((sumALL/count)/divisor);
+	average_spls=(sumALL/threshold_exceeded_number);
 	average_spls>threshold?
-	(gain_reduction=average_spls-threshold;)
+	(gain=threshold/average_spls;)
 	:
-	(gain_reduction=0;);
+	(gain=1;);
 	
 	sumALL=0;
 	count=0;
+	threshold_exceeded_number=0;
 );
 
 
 
 
-gain=((1-gain_reduction)*response )+ gain_old*(1-response);
+gain=(gain*response )+ gain_old*(1-response);
+// gain=((threshold)*response )+ gain_old*(1-response);
 gr_meter=gain;
 
 
 gain_old=gain;
 
+
 @sample
+n = 0;
 
 // (slider1)?
 // (
-sumALL+=((spl0)*sign(spl0))  +((spl1)*sign(spl1))  +((spl2)*sign(spl2))  +((spl3)*sign(spl3))  +((spl4)*sign(spl4))  +((spl5)*sign(spl5) ) ;// need to have sign since abs makes 0, and raw adding magnifies small differences since it sums to ~0
+abs_spl=spl(n)*sign(spl(n));
+
+// sumALL+=abs_spl ;
+
+
+// loop(
+
+
+abs_spl>threshold?
+(
+sumALL+=abs_spl;
+threshold_exceeded_number+=1;
+);
+// )
+
+
+// +((spl1)*sign(spl1))  +((spl2)*sign(spl2))  +((spl3)*sign(spl3))  +((spl4)*sign(spl4))  +((spl5)*sign(spl5) ) ;// need to have sign since abs makes 0, and raw adding magnifies small differences since it sums to ~0
+
 
 
 spl0*=gain;
