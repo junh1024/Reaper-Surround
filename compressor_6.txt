@@ -11,9 +11,10 @@ slider4:6<1,6,1>Channels
 count=0;
 sumALL=0;
 gain_excess=0;
-gain_old=0;
+gain_old=1;
 threshold_exceeded_number=0;
 abs_spl=0;
+gain=1;
 
 blocksize=slider2;
 gain_reduction=0;
@@ -26,12 +27,9 @@ s2 = sqrt2/2;
 
 @slider
 threshold=2 ^ (slider1/6); //in dB
-
-
-
 blocksize=slider2;
 response=slider3;
-divisor=slider4;
+chans=slider4;
 
 @block
 count+=samplesblock;
@@ -62,15 +60,16 @@ gain_old=gain;
 n = 0;
 
 
-// loop(
-
-abs_spl=spl(n)*sign(spl(n));
-abs_spl>threshold?
-(
-sumALL+=abs_spl;
-threshold_exceeded_number+=1;
+loop(chans,
+	abs_spl=spl(n)*sign(spl(n));
+	abs_spl>threshold?
+	(
+		sumALL+=abs_spl;
+		threshold_exceeded_number+=1;
+	);
+	// spl(n)*=gain;
+	n+=1;
 );
-// )
 
 
 spl0*=gain;
