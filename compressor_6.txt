@@ -37,8 +37,8 @@ count+=samplesblock;
 (count>blocksize)?
 (
 	average_spls=(sumALL/threshold_exceeded_number);
-	average_spls>threshold?
-	(gain=threshold/average_spls;)
+	average_spls>threshold? //if the average is over the threshold
+	(gain=threshold/average_spls;) //set the gain so that the audio would not be >threshold
 	:
 	(gain=1;);
 	
@@ -58,17 +58,27 @@ gain_old=gain;
 
 @sample
 n = 0;
+m = 0;
 
+analyze=1;
 
-loop(chans,
+while(
+	//if any channel exceeds threshold, make a snapshot of all channels.
 	abs_spl=spl(n)*sign(spl(n));
 	abs_spl>threshold?
 	(
-		sumALL+=abs_spl;
-		threshold_exceeded_number+=1;
+		loop(chans,
+		// abs_spl2=
+		sumALL+=spl(m)*sign(spl(m));
+		m+=1;
+		);
+		
+		threshold_exceeded_number+=chans;
+		n=chans;//break out of loop
 	);
 	// spl(n)*=gain;
 	n+=1;
+	n<chans;
 );
 
 
@@ -78,6 +88,9 @@ spl2*=gain;
 spl3*=gain;
 spl4*=gain;
 spl5*=gain;
+
+analyze=1;
+
 
 // );
 
