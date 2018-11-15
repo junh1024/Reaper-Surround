@@ -57,39 +57,26 @@ gain_old=gain;
 
 
 @sample
+
+sumALL_current=0;
 n = 0;
-m = 0;
 
-analyze=1;
+//add all chans to a temp
+loop(chans,
+	abs_spl=spl(n)*sign(spl(n)); //get a positive value every time
+	sumALL_current+=abs_spl;
+	
+	spl(n)*=gain; //apply current gain
 
-while(
-	//if any channel exceeds threshold, make a snapshot of all channels.
-	abs_spl=spl(n)*sign(spl(n));
-	abs_spl>threshold?
-	(
-		loop(chans,
-		// abs_spl2=
-		sumALL+=spl(m)*sign(spl(m));
-		m+=1;
-		);
-		
-		threshold_exceeded_number+=chans;
-		n=chans;//break out of loop
-	);
-	// spl(n)*=gain;
 	n+=1;
-	n<chans;
 );
 
-
-spl0*=gain;
-spl1*=gain;
-spl2*=gain;
-spl3*=gain;
-spl4*=gain;
-spl5*=gain;
-
-analyze=1;
+//add only to sumALL if threshold exceeded
+sumALL_current>(threshold*chans)?
+(
+sumALL+=sumALL_current;
+threshold_exceeded_number+=chans;
+);
 
 
 // );
