@@ -1,7 +1,7 @@
 desc: (Medium)
 
 slider1:100<0,100,2>Center Level Control
-slider2:4000<1000,10000,1000>rear LP freq  (Hz)
+slider2:10000<5000,15000,1000>rear LP freq  (Hz)
 
 @init
 shape = 0.2 //filter shape (0=sharp, 1=dull)
