@@ -16,22 +16,18 @@ shape = 0.2 ;  //filter shape (0=sharp, 1=dull)
 delayposA = 0;
 
 
-
-
 @slider
-  damp=0.01+shape*20;
-  c = 1/tan($pi*slider4/srate);
-  fk = 1 / (1 + c*(c+damp));
-  fa1 = 2 * (1 - c*c) * fk;
-  fa0 = (1 + c*(c-damp)) * fk;
-  //damp!=oldamp ? fd1l=fd2l=fd1r=fd2r=0;
-  oldamp=damp;
+damp=0.01+shape*20;
+c = 1/tan($pi*slider4/srate);
+fk = 1 / (1 + c*(c+damp));
+fa1 = 2 * (1 - c*c) * fk;
+fa0 = (1 + c*(c-damp)) * fk;
+//damp!=oldamp ? fd1l=fd2l=fd1r=fd2r=0;
+oldamp=damp;
 
-  
-  
-  delaylenA=slider5*srate/1000;
-  
-  polarity=(slider3-0.5)*-2; 
+delaylenA=slider5*srate/1000;
+
+polarity=(slider3-0.5)*-2; 
   
 @sample
 mid = 0.7*(spl0+spl1);
@@ -55,16 +51,11 @@ fd1l = fd0l;
 
 //delays
 dpintA = delayposA*2;
-
 os1 = dpintA[0];
-
 dpintA[0] = spl4;
-
 (delayposA+=1) >= delaylenA ? delayposA=0;
 
 spl4 = os1;
-
-
 spl5 = spl4*polarity; //polarity
 
 

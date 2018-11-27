@@ -1,10 +1,13 @@
-desc: (Medium)
+desc: (Medium), now includes a hardcoded 10ms delay for rear
 
 slider1:100<0,100,2>Center Level Control
 slider2:10000<5000,15000,1000>rear LP freq  (Hz)
 
 @init
-shape = 0.2 //filter shape (0=sharp, 1=dull)
+shape = 0.2; //filter shape (0=sharp, 1=dull)
+delayposA = 0;
+delaylenA=10*srate/1000; //10ms delay
+
 // @slider
 // gain = 2^(slider1/6); // convert from dB to a multiplier
 // depth_temp=(slider1*$pi)/200; //depth scaled from 0-100 to 0>half pi
@@ -38,4 +41,12 @@ spl4 = fd0l + fd1l + fd1l + fd2l;
 fd2l = fd1l;//previous buffers etc
 fd1l = fd0l;
 
+//delays
+dpintA = delayposA*2;
+os1 = dpintA[0];
+dpintA[0] = spl4;
+(delayposA+=1) >= delaylenA ? delayposA=0;
+
+spl4 = os1;
 spl5 = spl4;
+
