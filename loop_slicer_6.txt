@@ -1,0 +1,67 @@
+desc: loop_slicer_8
+
+slider1:1<0.01,4,0.01>split length (beats)
+slider2:2<0.01,4,0.01>split length (beats)
+slider3:3<0.01,4,0.01>split length (beats)
+slider4:4<0.01,4,0.01>split length (beats)
+slider5:4<1,32,1> loop length (beats)
+slider6:0<0,1,0.01> position (beats)
+
+@slider
+loop_length=slider5;
+
+slider4<slider3?(slider4=slider3);
+slider3<slider2?(slider3=slider2);
+slider2<slider1?(slider2=slider1);
+
+split1_norm=slider1/loop_length;
+split2_norm=slider2/loop_length;
+split3_norm=slider3/loop_length;
+
+
+
+
+@block
+slider6=loop_pos_norm;
+
+@sample
+
+// _norm means normalized to 0-1
+
+// loop_pos_beats=beat_position%loop_length ;
+// loop_pos_norm=loop_pos_beats/loop_length;
+
+A=beat_position/loop_length;
+B=floor(A);
+
+loop_pos_norm=A-B;
+
+(loop_pos_norm>split3_norm)?
+
+(spl6=spl0;
+spl7=spl1;
+
+spl0=0;
+spl1=0;
+
+);
+
+(loop_pos_norm>split2_norm)?
+(spl4=spl0;
+spl5=spl1;
+
+spl0=0;
+spl1=0;
+)
+;
+
+(loop_pos_norm>split1_norm)?
+(
+	spl2=spl0;
+	spl3=spl1;
+	spl0=0;
+	spl1=0;
+)
+;
+
+
