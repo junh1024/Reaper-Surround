@@ -1,11 +1,21 @@
-desc: loop_slicer_8
+desc: beat-synced realtime loopslicer multi-out
 
-slider1:1<0.01,4,0.01>split length (beats)
-slider2:2<0.01,4,0.01>split length (beats)
-slider3:3<0.01,4,0.01>split length (beats)
-slider4:4<0.01,4,0.01>split length (beats)
+slider1:1<0.125,4,0.125>split length (beats)
+slider2:2<0.125,4,0.125>split length (beats)
+slider3:3<0.125,4,0.125>split length (beats)
+slider4:4<0.125,4,0.125>unused
 slider5:4<1,32,1> loop length (beats)
 slider6:0<0,1,0.01> position (beats)
+
+
+// out_pin:out_1
+// out_pin:out_1
+// out_pin:out_2
+// out_pin:out_2
+// out_pin:out_3
+// out_pin:out_3
+// out_pin:out_4
+// out_pin:out_4
 
 @slider
 loop_length=slider5;
