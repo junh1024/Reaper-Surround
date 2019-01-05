@@ -1,10 +1,8 @@
 # Reaper-Surround
 
-A collection of my mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). Bugs/suggestions? File an issue or contact me on twitter/cockos forums/etc. Hopefully all of it should be made/modified by me. If it isn't, leave a comment & I'll remove.
-
-Instructions
+Introduction
 ===
-These are JSFX so DOWNLOAD ZIP & Put them in your Reaper EFFECTS folder. Note if you're cherry picking FX to DL (or updating), that you'll need surroundlib1-3 so get those too [1].
+A collection of my mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). These are JSFX so DOWNLOAD ZIP & Put them in your Reaper EFFECTS folder. Note if you're cherry picking FX to DL (or updating), that you'll need surroundlib1-3 so get those too [1]. Bugs/suggestions? File an issue or contact me on twitter.
 
 Disclaimer
 ===
@@ -14,8 +12,8 @@ NO warranty is provided, and these are provided as-is. Although I have been usin
 Introduction to 15.1
 ===
 * 15.1 is HQ channel-based INTERMEDIATARY format for 3D surround.
-* Order as follows for 15.1: L R C LFE BL BR SL SR, HL HR, BtL BtR, HBL HBR HSL HSR
-* Use  Reaper's channel parenting to place  stereo tracks statically.
+* Order as follows for 15.1: L R C LFE BL BR SL SR, HL HR, BtL BtR, HBL HBR HSL HSR (applies to 5.1/7.1 too)
+* Use Reaper's channel parenting to place  stereo tracks statically.
 * Use mono panners for dynamic panning of sounds (Mono panners are preferred as there is improved directivity with speaker playback)
 * 15.1 Conversion to 3oA is supported for flexible & powerful workflows. However, ambisonics decoders for 3D speaker playback here are phantom, not full (i.e, don't include C). Try blue ripple's O3A suite or the http://www.matthiaskronlachner.com/?p=2015 ambix suite + https://www.york.ac.uk/sadie-project/ambidec.html if you need full or more decoders.
 
@@ -90,11 +88,22 @@ Manipulators
 - 5.1 Mix Control (M).txt
 - 7.1 Depth Mixer (M).txt
 
-Effects & Utility
+Effects (Audio)
+===
+- dc_remove_6
+- 
+- limiter_6
+
+Effects (MIDI)
+===
+
+Specialist
 ===
 - DifferenceMaker.txt
-- dc_remove_6 & limiter_6: 6ch versions of existing JSFX.
+- Peak_Extender_SC.txt: Extends the peaks of Main (1+2) with the sidechain (3+4). Use case: combining a lossless low-DR song with a lossy high-DR song
 
+Effects (Third-Party)
+===
 For >6ch EQ & DC removal, I can recommend the excellent mcfx suite http://www.matthiaskronlachner.com/?p=1910 which can support 16ch.
 
 Downmixers

@@ -1,0 +1,75 @@
+desc: Extends the peaks of Main (1+2) with the sidechain (3+4). Bar flashing = working.
+//gfx section modified from Liteon's deesser (GPL)
+
+slider1:-1<-8,0,0.1>Threshold (dB)
+slider2:1<0,128,1>Attack (samples, disabled)
+slider3:1<0,128,1>Holddd (samples, disabled)
+slider4:1<0,128,1>Releas (samples, disabled)
+
+
+@init
+
+//GFX variables
+sqrt2 = sqrt(2);
+s2 = sqrt2/2;
+// gr_meter_decay = exp(1/(1*srate));
+
+
+@slider
+thresh= 2^(slider1/6); // convert from dB to a multiplier;
+
+@block
+
+@sample
+
+gr_meter=0;
+
+spl0*sign(spl0)>thresh?(spl0=spl2;gr_meter=1;);
+spl1*sign(spl1)>thresh?(spl1=spl3;gr_meter=1;);
+
+// );
+
+@gfx 425 16
+//---------------------------------
+// set gr meter
+//---------------------------------
+// gr_meter *= exp(1/30);
+gr_meter > 1 ? gr_meter=1;
+gfx_r=0.6;
+gfx_g=0.4;
+gfx_b=0.5;
+gfx_a=0.8;
+meter_bot=20;
+meter_h=min(gfx_h,21);
+xscale=gfx_w*20/meter_bot;
+gfx_y=0;
+gfx_x=gfx_w + log10(gr_meter)*xscale;
+gfx_rectto(gfx_w,meter_h);
+//---------------------------------
+// draw scale
+//---------------------------------
+gfx_r=1;
+gfx_b=1;
+gfx_g=1;
+gfx_a=0.6;
+g = s2;
+// while(
+// gfx_x=gfx_w + log10(g)*xscale;
+// gfx_x >= 0 ? (
+// gfx_y=0;
+// gfx_lineto(gfx_x,meter_h-1,0);
+// gfx_y=meter_h-gfx_texth-5;
+// gfx_x+=4;
+// gfx_drawnumber(log10(g)*20,0);
+// gfx_drawchar($'d');
+// gfx_drawchar($'B');
+// );
+// g*=s2;
+// gfx_x >=0;
+// );
+gfx_x=0;
+gfx_y=meter_h;
+gfx_lineto(gfx_w,meter_h,0);
+gfx_a=0.9;
+gfx_x=gfx_w - 61;
+gfx_y=meter_h + gfx_texth - 1;
