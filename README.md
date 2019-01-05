@@ -6,7 +6,7 @@ A collection of my mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). Th
 
 Disclaimer
 ---
-NO warranty is provided, and these are provided as-is. Although I have been using these since 2015, I reserve the right to make changes, including backwards-incompatible changes. Although it is not in my intrest to do so, as I, too, have projects to keep working. Tools may be added, changed, or deleted at ANY time. Although old versions of this repo are available in the worst case. Experimental tools should be especially prone to change (pending my time & effort), and tools in **/Old** are prone to deletion/already deprecated/may be wrong.
+NO warranty is provided, and these are provided as-is. Although I have been using these since 2015, I reserve the right to make changes, including backwards-incompatible changes. Although it is not in my intrest to do so, as I, too, have projects to keep working. Tools may be added, changed, or deleted at ANY time. Although old versions of this repo are available in the worst case. Experimental tools should be especially prone to change (pending my time & effort), and tools in **/Old** are prone to deletion/already deprecated/may be wrong. Some FX may have unused controls, which are TBD.
 
 Introduction to 15.1
 ---
@@ -88,8 +88,9 @@ Manipulators
 Effects (Audio)
 ---
 - dc_remove_6
-- 
 - limiter_6
+- compressor_6.txt: multichannel compressor, intended as a long-term compressor (ie, leveler). Works for 16ch, but you can type in more. As the key & affector are all selected channels, it's suitable for holistic compression of ambisonics.
+- loop_slicer_6.txt: beat-synced realtime loop slicer, which sequentially splits slices to multiple outs, according to split length
 
 Effects (MIDI)
 ---

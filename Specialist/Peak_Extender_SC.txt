@@ -2,9 +2,9 @@ desc: Extends the peaks of Main (1+2) with the sidechain (3+4). Bar flashing = w
 //gfx section modified from Liteon's deesser (GPL)
 
 slider1:-1<-8,0,0.1>Threshold (dB)
-slider2:1<0,128,1>Attack (samples, disabled)
-slider3:1<0,128,1>Holddd (samples, disabled)
-slider4:1<0,128,1>Releas (samples, disabled)
+slider2:1<0,128,1>Attack (samples, unused)
+slider3:1<0,128,1>Holddd (samples, unused)
+slider4:1<0,128,1>Releas (samples, unused)
 
 
 @init
