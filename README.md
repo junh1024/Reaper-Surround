@@ -32,7 +32,7 @@ There may be different sizes of the same FX, eg, M(U)cro, (C)ommon, (S)mall, (M)
 # Effects listing
  (for more info, refer to JSFX. It is advised to disable JSFX descriptions)
 
-Ambisonics Panners
+Ambisonics Panners (FuMa)
 ---
 - 1.0 to 3oA 3D Panner (S).txt
 - 2.0 to 3oA 2D Panner (M).txt
@@ -62,7 +62,6 @@ Panners
 - 7.1 Mono Panner.txt
 - 7.1 to 15.1 Height Panner v2 (M).txt
 
-
 Upmixers (Experimental, except for "2.0 to 3.0 Upmix (C)")
 ---
 Upmixers are considered experimental & are based on matrixes. It's advisable to use DTS Neural upmix (DTS edition like http://i54.tinypic.com/xq9xt5.png , NOT waves edition - waves has a bug with LFE). I've also tried about 10 other upmixers and they're all deficient in some way.
@@ -85,28 +84,6 @@ Manipulators
 - 5.1 Mix Control (M).txt
 - 7.1 Depth Mixer (M).txt
 
-Effects (Audio)
----
-- dc_remove_6
-- limiter_6
-- compressor_6.txt: multichannel compressor, intended as a long-term compressor (ie, leveler). Works for 16ch, but you can type in more. As the key & affector are all selected channels, it's suitable for holistic compression of ambisonics.
-- loop_slicer_6.txt: beat-synced realtime loop slicer, which sequentially splits slices to multiple outs, according to split length
-
-Effects (MIDI)
----
-
-Specialist
----
-- DifferenceMaker.txt
-- Peak_Extender_SC.txt: Extends the peaks of Main (1+2) with the sidechain (3+4). Use case: combining a lossless low-DR song with a lossy high-DR song
-- Surcode Fixer (M).txt
-- Surcode Fixer (S).txt
-- Surround Fixer.txt
-
-Effects (Third-Party)
----
-For >6ch EQ & DC removal, I can recommend the excellent mcfx suite http://www.matthiaskronlachner.com/?p=1910 which can support 16ch.
-
 Downmixers
 ---
 - 15.1 to 3D Downmix (M).txt
@@ -118,6 +95,40 @@ Downmixers
 - 7.1 to 5.1 Downmix (M).txt
 - 7.1 to 6.0 Downmix (M).txt
 
+Effects (Audio)
+---
+- dc_remove_6: DC remover for 6ch
+- limiter_6: limiter (or clipper) for 6ch
+- compressor_6.txt: multichannel compressor, intended as a long-term compressor (ie, leveler). Works for 16ch, but you can type in more. As the key & affector are all selected channels, it's suitable for holistic compression of ambisonics.
+- loop_slicer_6.txt: beat-synced realtime loop slicer, which sequentially splits slices to multiple outs, according to split length
+
+Effects (MIDI)
+---
+- KeyTracker 2 (M).txt: shows current MIDI note via slider. Use with PMOD for adding movement/width to a song.
+- Octaver (S).txt
+
+Effects (Third-Party)
+---
+- EQ 16ch: please use the mcfx suite from http://www.matthiaskronlachner.com/?p=1910
+- Reverb 64ch:  please use fdnReverb from https://plugins.iem.at/
+- A GUI 5.1 panner & several 5.1 DRCs are available here http://sonic.supermaailma.net/plugins
+
+Specialist & Utility
+---
+- DifferenceMaker.txt: subtracts Sidechain (3+4) from  Main (1+2). Useful for getting the difference after an effect.
+- Peak_Extender_SC.txt: Extends the peaks of Main (1+2) with the Sidechain (3+4). Use case: combining a lossless low-DR song with a lossy high-DR song. Clipping artefacts? Verify both songs are aligned & levels set correctly.
+- MSEDDouble.txt: Double Mid/Side Codec (1+2) & (5+6)
+- Simple Crossfade.txt: Fade between 2 sets of inputs, like a DJ mixer.
+- Surcode Fixer: Fixes delay &/ PDC, width adjustments of Surcode DPL.
+- Surround Fixer.txt
+
+Scripts
+---
+- Delete item fades under threshold.py: By default, RPR makes small (10ms) fades on item boundaries to  prevent artefacts, which is usually a good thing. But when you're making a continuous edit from pieces, these automatic fades can actually introduce artefacts. This script is useful in this case, as it deletes fades under 20ms, for selected items.
+- ProjectSanitizer.py
+- Reaper Stats.py: collects various project statistics and outputs them via a dialog. See script for more details.
+- Set item start to position.py
+- SetPanAccordingToName.py: Useful for implementing directional dialogue for films.
 
 FAQ
 ---
