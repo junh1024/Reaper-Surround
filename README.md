@@ -10,9 +10,10 @@ NO warranty is provided, and these are provided as-is. Although I have been usin
 
 Introduction to 15.1
 ---
-* 15.1 is HQ channel-based INTERMEDIATARY format for 3D surround.
+* 15.1 is HQ channel-based system for 3D surround, based on combining the best of NHK's 22.2, and 7.1 surround.
+* Best used as an intermediary, since delivery of 15.1 is tricky.
 * Order as follows for 15.1: L R C LFE BL BR SL SR, HL HR, BtL BtR, HBL HBR HSL HSR (applies to 5.1/7.1 too)
-* Use Reaper's channel parenting to place  stereo tracks statically.
+* Use Reaper's channel parenting to place stereo tracks statically.
 * Use mono panners for dynamic panning of sounds (Mono panners are preferred as there is improved directivity with speaker playback)
 * 15.1 Conversion to 3oA is supported for flexible & powerful workflows. However, ambisonics decoders for 3D speaker playback here are phantom, not full (i.e, don't include C). Try blue ripple's O3A suite or the http://www.matthiaskronlachner.com/?p=2015 ambix suite + https://www.york.ac.uk/sadie-project/ambidec.html if you need full or more decoders.
 

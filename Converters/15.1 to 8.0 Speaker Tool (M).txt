@@ -7,7 +7,7 @@ slider4:0<0,1,1,{Yes,No}>SL SR on ch7-8 exists
 slider5:0<-100,100,1>ELL depth position 
 slider6:0<-100,100,1>Height depth position 
 slider7:0<0,50 ,1>ELL height 
-slider8:100<0,100 ,1>Height height 
+slider8:80<0,100 ,1>Height height 
 
 import surroundlib1.txt
 import surroundlib2.txt
@@ -71,6 +71,8 @@ spl3=heightsR +ELL_R;
 	spl1+=spl11;
 // downmix_151_71_v1()      ;
 silence_top_layer_151()  ;
+
+//TODO: make >100 to upmix 51>71
 
 do_side_physical_level(side_physical_level);
 
