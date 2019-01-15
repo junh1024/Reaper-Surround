@@ -1,0 +1,32 @@
+desc: mono to 3.0 panner.
+
+slider1:0<-30,30,1>the pan (deg)
+slider2:0<0,100,1>Width (%)
+// slider3:0<0,100,1>Width (%)
+// slider4:0<0,100,1>Width (%)
+
+import surroundlib1.txt
+import surroundlib3.txt
+
+@init
+
+@slider
+
+//map from -30-+30 to -30-+90, so I can reuse my 7.1 pan function
+pan=((slider1+30)*2)-30;
+calculate_10_to_71_coeffs (pan);
+width_coeff=slider2/100; 
+
+
+@sample 
+in0=(spl0+spl1)*0.7071; //loudness compensation
+
+do_10_to_71_pan(in0);
+
+//remap from 7.1 to 3.0
+spl2=spl1;
+spl1=spl7;
+spl7=0;
+
+do_width(width_coeff);
+

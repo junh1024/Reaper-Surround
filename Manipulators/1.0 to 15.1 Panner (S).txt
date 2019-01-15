@@ -1,4 +1,4 @@
-desc: mono to 15.1 panner. Pan-compensated.
+desc: mono to 15.1 panner. (phantom center)
 
 slider1:0<-180,180>the pan (deg)
 slider2:0<-100,100,5>Height (+ve up, -ve down)
