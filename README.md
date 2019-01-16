@@ -25,6 +25,7 @@ Quick start/Example workflow tools
 * 7.1 to 5.1 Downmix (M).txt
 * < 5.1 Effects & manipulators >
 * 5.1 to 2.0 Downmix (L).txt
+
 For a full GUI panner, see "Effects (Third-Party, external)"
 
 ### 3D workflow:
@@ -106,6 +107,7 @@ Downmixers
 - 15.1 to 7.1 Downmix v2 (L).txt
 - 15.1 to 7.x Downmix (M).txt
 - 15.1 to 3D Downmix (M).txt
+- 15.1 to 8.0 Speaker Tool (M).txt (8.0h Order: L R, HL HR, BL BR, SL SR, which is similar & backwards compatible with SMPTE-MS 7.1, for 3D surround playback using commonly available 7.1 sound cards)
 
 Effects (Audio)
 ---
