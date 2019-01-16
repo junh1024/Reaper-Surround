@@ -15,31 +15,46 @@ Introduction to 15.1
 * Order as follows for 15.1: L R C LFE BL BR SL SR, HL HR, BtL BtR, HBL HBR HSL HSR (applies to 5.1/7.1 too)
 * Use Reaper's channel parenting to place stereo tracks statically.
 * Use mono panners for dynamic panning of sounds (Mono panners are preferred as there is improved directivity with speaker playback)
-* 15.1 Conversion to 3oA is supported for flexible & powerful workflows. However, ambisonics decoders for 3D speaker playback here are phantom, not full (i.e, don't include C). Try blue ripple's O3A suite or the http://www.matthiaskronlachner.com/?p=2015 ambix suite + https://www.york.ac.uk/sadie-project/ambidec.html if you need full or more decoders.
+* 15.1 Conversion to 3oA is supported for flexible & powerful workflows. However, ambisonics decoders for 3D speaker playback here are phantom, not full (i.e, don't include C). You will need to convert Fuma to Ambix, then find an Ambix decoder.
 
-Quick start/Example workflows
+Quick start/Example workflow tools
 ---
-* 3D: 1.0 to 15.1 Panner (S).txt >>> 15.1 to * downmix | 15.1 to 3oA Downmix (M).txt
-* 3D Delivery: 15.1 to 7.x Downmix (M).txt for 11.1h (DTS-X) | 15.1 to 3D Downmix (M).txt for 9.1h (Auro3D, AMBEO speaker),  15.1 to 7.1 Downmix v2 (L).txt for 7.1 PL2z/DSU
-* 3D Playback: 15.1 to 8.0 Speaker Tool (M).txt
-* 2D: 7.1 Mono panner.txt >>> 7.1 to 5.1 Downmix (M).txt >>> 5.1 * >>> 5.1 to 2.0 Downmix (L).txt
-* Mono track to center: 2.0 to 3.0 Upmix (C).txt
-* 3oA FUMA: * to 3oA * Panner >>> 3oA Rotator (M).txt >>> * oA decoder
+### 2D workflow:
+* 3.1 Panner (M).txt (for center channel dialog, front SFX, and LFE use)
+* 7.1 Mono panner.txt (for phantom center & surround panning)
+* 7.1 to 5.1 Downmix (M).txt
+* < 5.1 Effects & manipulators >
+* 5.1 to 2.0 Downmix (L).txt
+For a full GUI panner, see "Effects (Third-Party, external)"
+
+### 3D workflow:
+* 1.0 to 15.1 Panner (S).txt
+* 15.1 to 7.1 Downmix v2 (L).txt
+* 15.1 to 8.0 Speaker Tool (M).txt
+* 15.1 to 3oA Downmix (M).txt
+* 15.1 to 7.x Downmix (M).txt (11.1h DTS-X) or 15.1 to 3D Downmix (M).txt (9.1h Auro3D, AMBEO speaker)
+
+### Fuma Ambisonics workflow:
+- 1.0 to 3oA 3D Panner (S).txt
+- 2.0 to 3oA 2D Panner (M).txt
+- 3oA Rotator (M).txt
+- 15.1 Ambisonics decoder.txt	(phantom)
+- 7.1 Ambisonics decoder.txt	(phantom)
+- 4.0 Ambisonics codec.txt		(phantom)
 
 Note on sizes & CPU use
 ---
 There may be different sizes of the same FX, eg, M(U)cro, (C)ommon, (S)mall, (M)edium, (L)arge, (X)tra Large. Different variations are provided for your convenience if CPU performance is of the utmost concern to you or if you are on a low-performance system (e.g, Atom, Celeron, etc). Obviously, a larger size of the same FX will provide more controls, but also more CPU consumption. On a fast CPU, each FX should use on average 1% of a core, or on a slow system, 5% of a core. The heaviest functions (those involving trig functions) should be optimized although it is not always possible to, and there is a balance to be struck between performance & code debt.
 
 # Effects listing
- (for more info, refer to JSFX. It is advised to disable JSFX descriptions)
+Listed below are the most common/useful effects. For more info, refer to JSFX. It is advised to disable JSFX descriptions.
 
 Ambisonics Panners (FuMa)
 ---
 - 1.0 to 3oA 3D Panner (S).txt
 - 2.0 to 3oA 2D Panner (M).txt
 - 2.0 to 3oA 3D Panner (M).txt
-- 15.1 to 1oA Downmix (L).txt (These 2 can convert 2.0 to 15.1 to ambisonics, as long as the channel order is correct, see above)
-- 15.1 to 3oA Downmix (M).txt
+- 15.1 to 3oA Downmix (M).txt (convert 2.0 to 15.1 to ambisonics, as long as the channel order is correct, see above)
 
 Ambisonics Manipulators
 ---
@@ -48,9 +63,8 @@ Ambisonics Manipulators
 Ambisonics Decoders (phantom)
 ---
 - 15.1 Ambisonics decoder.txt (hand-tuned)
-- 4 to 3 codec.txt (not really Ambisonics)
-- 4.0 Ambisonics codec.txt (padded to 5.1)
 - 7.1 Ambisonics decoder.txt
+- 4.0 Ambisonics codec.txt (padded to 5.1)
 - 1oA 11.1bf decoder.txt (wrong)
 - 1oA 3D cube decoder v3.txt
 - 1oA prism.txt
@@ -59,42 +73,39 @@ Decoders are provided for your convenience but they're not that great.
 
 Panners
 ---
-- 1.0 to 15.1 Panner (S).txt
+- 3.1 Panner (M).txt: 3.0 front surround panner, with width control. Move & Copy actions are supported for LFE use, and  Mixing & Monitoring modes for a total of 4 combinations. The specification for LFE in digital mixes, is to gain it by 10dB on playback. Hence while mixing, it is gained by -10dB. For monitoring, this is not applied.
 - 7.1 Mono Panner.txt
+- 1.0 to 15.1 Panner (S).txt
 - 7.1 to 15.1 Height Panner v2 (M).txt
 
 Upmixers (Experimental, except for "2.0 to 3.0 Upmix (C)")
 ---
 Upmixers are considered experimental & are based on matrixes. It's advisable to use DTS Neural upmix (DTS edition like http://i54.tinypic.com/xq9xt5.png , NOT waves edition - waves has a bug with LFE). I've also tried about 10 other upmixers and they're all deficient in some way.
 
-- 15.1 to 22.2 Upmix (U).txt
 - 2.0 to 3.0 Upmix (C).txt
 - 2.0 to 4.0 Upmix (M).txt
 - 2.0 to 5.0 Upmix (M).txt
 - 5.1 to 7.1 Upmix (U).txt
 - 6.1 to 7.1 Upmix (M).txt
+- 15.1 to 22.2 Upmix (U).txt
 
 Manipulators
 ---
-- 15.1 Width Control (M).txt
 - 3.0 Spread Control (U).txt
-- 5.1 Cross Width (S).txt
 - 5.1 Level Control.txt
 - 5.1 Mix Balance (C).txt
-- 5.1 Mix Control (C).txt
 - 5.1 Mix Control (M).txt
-- 7.1 Depth Mixer (M).txt
+- 15.1 Width Control (M).txt
 
 Downmixers
 ---
-- 15.1 to 3D Downmix (M).txt
+- 5.1 to 2.0 Downmix (L).txt
+- 7.1 to 5.1 Downmix (M).txt
 - 15.1 to 5.1 Downmix (M).txt
 - 15.1 to 7.1 Downmix (S).txt
 - 15.1 to 7.1 Downmix v2 (L).txt
 - 15.1 to 7.x Downmix (M).txt
-- 5.1 to 2.0 Downmix (L).txt
-- 7.1 to 5.1 Downmix (M).txt
-- 7.1 to 6.0 Downmix (M).txt
+- 15.1 to 3D Downmix (M).txt
 
 Effects (Audio)
 ---
@@ -108,7 +119,7 @@ Effects (MIDI)
 - KeyTracker 2 (M).txt: shows current MIDI note via slider. Use with PMOD for adding movement/width to a song.
 - Octaver (S).txt
 
-Effects (Third-Party)
+Effects (Third-Party, external)
 ---
 - EQ 16ch: please use the mcfx suite from http://www.matthiaskronlachner.com/?p=1910
 - Reverb 64ch:  please use fdnReverb from https://plugins.iem.at/
