@@ -1,6 +1,5 @@
 desc: medium functions
 
-
 @init
 
 coeff_A=0;
@@ -8,6 +7,7 @@ coeff_B=0;
 coeff_C=0;
 coeff_D=0;
 
+//scaled from 0-100 to 0>half pi, see 5.1 mix control
 function calculate_depth_coeffs(depth_coeff)
 (
 	(  depth_coeff >= 0 )? 
@@ -138,4 +138,29 @@ function ELL_Side_Depth_71_to_71(ELL_Side_Depth)
 	spl6= (spl6)*(1-ELL_Side_Depth);
 	spl7= (spl7)*(1-ELL_Side_Depth);
 	);
+);
+
+delaylen=0;
+
+function calculate_delay_2ch(delay_slider_ms)
+(
+	delaylen=delay_slider_ms*srate/1000;
+);
+
+function delay_2ch(chan_offset)
+(
+	dpintA = delayposA*2;
+	dpintB = delayposB*2;
+
+	os0 = dpintA[0];
+	os1 = dpintB[1];
+
+	dpintA[0] = spl(chan_offset);
+	dpintB[1] = spl(chan_offset+1);
+
+	(delayposA+=1) >= delaylen ? delayposA=0;
+	(delayposB+=1) >= delaylen ? delayposB=0;
+
+	spl(chan_offset) = os0;
+	spl(chan_offset+1) = os1;
 );
