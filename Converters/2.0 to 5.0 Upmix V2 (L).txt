@@ -11,6 +11,7 @@ slider7:1024<512,8192,512>Blocksize
 slider8:0.1<0.05,1,0.05>Responsiveness
 
 import surroundlib2.txt
+import surroundlib3.txt
 
 @init
 //lopass
@@ -51,11 +52,19 @@ count+=samplesblock;
 	count=0;
 );
 
-
+// slider6=min((slider1/1000)+slider6,1)
 
 @sample
-mid = 0.7*(spl0+spl1);
-side= 0.7*(spl0-spl1);
+
+mid = 0.5*(spl0+spl1);
+side= 0.5*(spl0-spl1);
+
+//collect stats
+Mid_abs =mid*sign(mid) ; //get magnitude
+Side_abs=side*sign(side) ;
+
+sumMid+=Mid_abs;
+sumSide+=Side_abs;
 
 spl0 = (0.70*mid*(slider6)) + (side*0.2); 
 spl1 = (0.70*mid*(slider6)) - (side*0.2); 
@@ -92,12 +101,4 @@ delay_2ch(4); //delay ch4-5
 // polarity
 spl5 *=polarity; 
 
-// MidSide_stats_collect(0);
-Mid=( spl4+spl5*0.5);//compute Mid/Side
-Side=(spl4-spl5*0.5);
-
-Mid_abs =Mid*sign(Mid) ; //get magnitude
-Side_abs=Side*sign(Side) ;
-	
-sumMid+=Mid_abs;
-sumSide+=Side_abs;
+do_width(slider1/100);
