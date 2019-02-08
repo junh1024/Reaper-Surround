@@ -1,0 +1,90 @@
+desc: 
+//includes code from stock lowpass, delay JSFX.
+
+slider1:0<0,100,2>Width
+slider2:0<-100,100,2>Depth
+slider3:0<0,1,{Narrow,Wide}>Polarity of SR
+slider4:5000<1000,15000,500>rear LP freq  (Hz)
+slider5:10<0,100,1>delay ms
+slider6:0<0,2,0.01>Pan
+slider7:1024<128,8192,128>Blocksize
+slider8:0.5<0.1,1,0.1>Responsiveness
+
+import surroundlib2.txt
+
+
+@init
+//lopass
+shape = 0.2 ;  //filter shape (0=sharp, 1=dull)
+
+//delay
+delayposA = 0;
+delayposB = 0;
+delaylen=slider5*srate/1000;
+
+
+
+
+@slider
+//depth
+depth_coeff=(slider2*$pi)/200; //depth scaled from 0-100 to 0>half pi
+calculate_depth_coeffs(depth_coeff);
+
+
+//lopass
+damp=0.01+shape*20;
+c = 1/tan($pi*slider4/srate);
+fk = 1 / (1 + c*(c+damp));
+fa1 = 2 * (1 - c*c) * fk;
+fa0 = (1 + c*(c-damp)) * fk;
+
+//delay
+delaylen=slider5*srate/1000;
+
+//polarity
+polarity=(slider3-0.5)*2; 
+
+@block
+
+@sample
+mid = 0.7*(spl0+spl1);
+side= 0.7*(spl0-spl1);
+
+spl0 = (0.70*mid) + (side*0.2); 
+spl1 = (0.70*mid) - (side*0.2); 
+// spl2 = mid * 0.5 * (slider1/100); 
+
+
+spl4 = 0.5*side; //preupscale
+
+//lopass
+fd0l = (fk*spl4) - (fa1*fd1l) - (fa0*fd2l);
+spl4 = fd0l + fd1l + fd1l + fd2l;
+fd2l = fd1l;
+fd1l = fd0l;
+
+spl5=spl4*-1;
+
+//Depth
+do_depth(depth_coeff);
+
+
+// delay
+dpintA = delayposA*2;
+dpintB = delayposB*2;
+
+os0 = dpintA[0];
+os1 = dpintB[1];
+
+dpintA[0] = spl4;
+dpintB[1] = spl5;
+
+(delayposA+=1) >= delaylen ? delayposA=0;
+(delayposB+=1) >= delaylen ? delayposB=0;
+
+spl4 = os0;
+spl5 = os1;
+
+// polarity
+spl5 *=polarity; 
+
