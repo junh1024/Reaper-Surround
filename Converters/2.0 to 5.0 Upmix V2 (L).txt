@@ -4,27 +4,17 @@ desc:
 slider1:0<0,100,2>Width
 slider2:0<-100,100,2>Depth
 slider3:0<0,1,{Reverse (Narrow), Normal (Wide)}>Polarity of SR (Rear width)
-slider4:5000<2000,18000,1000>rear LP freq  (Hz)
+slider4:10000<2000,18000,500>rear LP freq  (Hz)
 slider5:10<0,100,1>delay ms
 slider6:0<0,1,0.01>Pan
 slider7:1024<512,8192,512>Blocksize
 slider8:0.1<0.05,1,0.05>Responsiveness
 
 import surroundlib2.txt
-import surroundlib3.txt
-
 
 @init
 //lopass
 shape = 0.2 ;  //filter shape (0=sharp, 1=dull)
-
-//delay
-// delayposA = 0;
-// delayposB = 0;
-// delaylen=slider5*srate/1000;
-
-// init_
-
 
 @slider
 //depth
@@ -42,7 +32,8 @@ fa1 = 2 * (1 - c*c) * fk;
 fa0 = (1 + c*(c-damp)) * fk;
 
 //delay
-calculate_delay_2ch(slider5);
+// calculate_delay_2ch(slider5);
+delaylen=calculate_delay_2ch(slider5);
 
 //polarity
 polarity=(slider3-0.5)*2;
@@ -57,7 +48,6 @@ count+=samplesblock;
 (count>blocksize)?
 (
 	slider6=MidSide_stats_analyze(slider6,response);
-	// (((sumR-sumL)/(sumR+sumL))*response)+(slider4*(1-response));//do avg of all samples, with time weighting
 	count=0;
 );
 
@@ -74,23 +64,40 @@ spl2=mid*1.4*(1-slider6);
 spl4 = 0.5*side; //preupscale
 
 //lopass
+// slider4<18000?
+// (
 fd0l = (fk*spl4) - (fa1*fd1l) - (fa0*fd2l);
 spl4 = fd0l + fd1l + fd1l + fd2l;
 fd2l = fd1l;
 fd1l = fd0l;
+// );
 
 spl5=spl4*-1;
 
-//Depth
+//depth
 do_depth(depth_coeff);
-
 
 // delay
 delay_2ch(4); //delay ch4-5
 
+// dpintA[0] = spl4;
+// dpintB[1] = spl5;
+
+// (delayposA+=1) >= delaylen ? delayposA=0;
+// (delayposB+=1) >= delaylen ? delayposB=0;
+
+// spl4 = os0;
+// spl5 = os1;
+	
 // polarity
 spl5 *=polarity; 
 
-MidSide_stats_collect(0);
+// MidSide_stats_collect(0);
+Mid=( spl4+spl5*0.5);//compute Mid/Side
+Side=(spl4-spl5*0.5);
 
-// do_width(slider6);
+Mid_abs =Mid*sign(Mid) ; //get magnitude
+Side_abs=Side*sign(Side) ;
+	
+sumMid+=Mid_abs;
+sumSide+=Side_abs;
