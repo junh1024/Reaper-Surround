@@ -4,13 +4,14 @@ desc:
 slider1:0<0,100,2>Width
 slider2:0<-100,100,2>Depth
 slider3:0<0,1,{Reverse (Narrow), Normal (Wide)}>Polarity of SR (Rear width)
-slider4:5000<1000,15000,500>rear LP freq  (Hz)
+slider4:5000<2000,18000,1000>rear LP freq  (Hz)
 slider5:10<0,100,1>delay ms
-slider6:0<0,2,0.01>Pan
+slider6:0<0,1,0.01>Pan
 slider7:1024<512,8192,512>Blocksize
-slider8:0.5<0.05,1,0.05>Responsiveness
+slider8:0.1<0.05,1,0.05>Responsiveness
 
 import surroundlib2.txt
+import surroundlib3.txt
 
 
 @init
@@ -30,6 +31,8 @@ shape = 0.2 ;  //filter shape (0=sharp, 1=dull)
 depth_coeff=(slider2*$pi)/200; //depth scaled from 0-100 to 0>half pi
 calculate_depth_coeffs(depth_coeff);
 
+blocksize=slider7;
+response=slider8;
 
 //lopass
 damp=0.01+shape*20;
@@ -46,18 +49,27 @@ polarity=(slider3-0.5)*2;
 
 //behaviour quirks
 // slider3==0?(slider5=10):(slider5=0);
-slider5==0?(slider3=1);
+slider5==0?(slider3=1); //if delay is 0, should be wide to reduce artefacts.
 
 @block
+count+=samplesblock;
+
+(count>blocksize)?
+(
+	slider6=MidSide_stats_analyze(slider6,response);
+	// (((sumR-sumL)/(sumR+sumL))*response)+(slider4*(1-response));//do avg of all samples, with time weighting
+	count=0;
+);
+
+
 
 @sample
 mid = 0.7*(spl0+spl1);
 side= 0.7*(spl0-spl1);
 
-spl0 = (0.70*mid) + (side*0.2); 
-spl1 = (0.70*mid) - (side*0.2); 
-// spl2 = mid * 0.5 * (slider1/100); 
-
+spl0 = (0.70*mid*(slider6)) + (side*0.2); 
+spl1 = (0.70*mid*(slider6)) - (side*0.2); 
+spl2=mid*1.4*(1-slider6);
 
 spl4 = 0.5*side; //preupscale
 
@@ -79,3 +91,6 @@ delay_2ch(4); //delay ch4-5
 // polarity
 spl5 *=polarity; 
 
+MidSide_stats_collect(0);
+
+// do_width(slider6);

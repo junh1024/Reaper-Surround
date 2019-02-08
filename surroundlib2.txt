@@ -164,3 +164,33 @@ function delay_2ch(chan_offset)
 	spl(chan_offset) = os0;
 	spl(chan_offset+1) = os1;
 );
+
+
+delta=0.01;
+
+sumMid=0+delta;
+sumSide=0;
+
+
+function MidSide_stats_collect(ch_offs_ms)
+(
+	Mid=( spl(ch_offs_ms)+spl(ch_offs_ms+1))*0.5;//compute Mid/Side
+	Side=(spl(ch_offs_ms)-spl(ch_offs_ms+1))*0.5;
+
+	Mid_abs =Mid*sign(Mid) ; //get magnitude
+	Side_abs=Side*sign(Side) ;
+		
+	sumMid+=Mid_abs;
+	sumSide+=Side_abs;
+
+);
+
+function MidSide_stats_analyze(pan,response)
+(
+	newpan=(((sumSide)/(sumMid))*response)+(pan*(1-response));
+
+	sumMid=0+delta;
+	sumSide=0;
+	
+	min(newpan,1);
+);
