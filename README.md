@@ -10,6 +10,9 @@ NO warranty is provided, and these are provided as-is. Although I have been usin
 
 Introduction to 15.1
 ---
+
+
+
 * 15.1 is HQ channel-based system for 3D surround, based on combining the best of NHK's 22.2, and 7.1 surround.
 * Best used as an intermediary, since delivery of 15.1 is tricky.
 * Order as follows for 15.1: L R C LFE BL BR SL SR, HL HR, BtL BtR, HBL HBR HSL HSR (applies to 5.1/7.1 too)
@@ -85,8 +88,9 @@ Upmixers are considered experimental & are based on matrixes. It's advisable to 
 
 - 2.0 to 3.0 Upmix (C).txt
 - 2.0 to 4.0 Upmix (M).txt
-- 2.0 to 5.0 Upmix (M).txt
+- 2.0 to 5.0 Upmix V2 (L).txt
 - 5.1 to 7.1 Upmix (U).txt
+- 5.1 to 7.1 Upmix V2 (M).txt
 - 6.1 to 7.1 Upmix (M).txt
 - 15.1 to 22.2 Upmix (U).txt
 
@@ -108,6 +112,8 @@ Downmixers
 - 15.1 to 7.x Downmix (M).txt
 - 15.1 to 3D Downmix (M).txt
 - 15.1 to 8.0 Speaker Tool (M).txt (8.0h Order: L R, HL HR, BL BR, SL SR, which is similar & backwards compatible with SMPTE-MS 7.1, for 3D surround playback using commonly available 7.1 sound cards)
+
+
 
 Effects (Audio)
 ---
