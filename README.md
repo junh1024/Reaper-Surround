@@ -11,7 +11,7 @@ NO warranty is provided, and these are provided as-is. Although I have been usin
 Introduction to 15.1
 ---
 
-
+![15.1](https://i.imgur.com/0H320GZ.png)
 
 * 15.1 is HQ channel-based system for 3D surround, based on combining the best of NHK's 22.2, and 7.1 surround.
 * Best used as an intermediary, since delivery of 15.1 is tricky.
@@ -46,8 +46,24 @@ For a full GUI panner, see "Effects (Third-Party, external)"
 - 7.1 Ambisonics decoder.txt	(phantom)
 - 4.0 Ambisonics codec.txt		(phantom)
 
-Note on sizes & CPU use
----
+### Note 1
+**Block-based effects**
+
+These effects analyse a chunk of audio, then make a decision. The audio is not delayed, but the reaction is delayed by half a blocksize. This is done for performance & audio stability reasons. These are NOT based on FFT. To make it react on time would be a big hassle with PDC due to differing pathes, for small benefit & hence isn't implemented. The minimum blocksize that happens in practice is set in Reaper preferences under Audio Device.
+* A small block makes it change faster, and a high response makes it change more, so these 2 things make it behave quicker.
+* A big blocksize would make reactions happen inappropriately, hence blocksize is a suggested 2048 or lower (23+ blocks/sec @48k)
+* A high response would make the audio unstable, hence response shouldn't go above 0.3
+
+I have tried to set sensible defaults.
+
+### Note 2
+**Surround upmixers**
+
+As said above, these are based on matrixes & are rudimentary, as such they come with ceveats & compromises. The back channels, by default, are purely the side channel of the original. When decoded to stereo, the are completely wide & out of phase. Wide sounds at the back is distracting, hence the default is to reverse the polarity of 1 channel, and make it narrow, pleasing, and undistracting. Unfortunately, this has the effect of making a downmix being lopsided & the surround image sounding strange, so a delay is applied to decorrelate the front & back further. This makes the surround image acceptable, at the cost of phasing when downmixed. A wide back with no delay is, however, downmix-compatible. You may need to change the polarity depending on the depth slider. Controls are provided for convenience but I can't guarantee you won't abuse them to make bad sound. The best I can do is explain the compromises above.
+
+### Note 3
+**Sizes & CPU use**
+
 There may be different sizes of the same FX, eg, M(U)cro, (C)ommon, (S)mall, (M)edium, (L)arge, (X)tra Large. Different variations are provided for your convenience if CPU performance is of the utmost concern to you or if you are on a low-performance system (e.g, Atom, Celeron, etc). Obviously, a larger size of the same FX will provide more controls, but also more CPU consumption. On a fast CPU, each FX should use on average 1% of a core, or on a slow system, 5% of a core. The heaviest functions (those involving trig functions) should be optimized although it is not always possible to, and there is a balance to be struck between performance & code debt.
 
 # Effects listing
@@ -82,17 +98,19 @@ Panners
 - 1.0 to 15.1 Panner (S).txt
 - 7.1 to 15.1 Height Panner v2 (M).txt
 
-Upmixers (Experimental, except for "2.0 to 3.0 Upmix (C)")
+Upmixers
 ---
 Upmixers are considered experimental & are based on matrixes. It's advisable to use DTS Neural upmix (DTS edition like http://i54.tinypic.com/xq9xt5.png , NOT waves edition - waves has a bug with LFE). I've also tried about 10 other upmixers and they're all deficient in some way.
 
 - 2.0 to 3.0 Upmix (C).txt
-- 2.0 to 4.0 Upmix (M).txt
-- 2.0 to 5.0 Upmix V2 (L).txt
-- 5.1 to 7.1 Upmix (U).txt
-- 5.1 to 7.1 Upmix V2 (M).txt
+- 2.0 to 4.0 Upmix (M).txt: [Note 2](#note-2)
+- 2.0 to 5.0 Upmix V2 (L).txt: 80% feature-complete DPL1-like surround upmixer, with more controls. [Note 1](#note-1), [Note 2](#note-2)
+- 5.1 to 7.1 Upmix (U).txt:
+- 5.1 to 7.1 Upmix V2 (M).txt: These 2 5>7 upmixers are so rudimentary that they will probably have limited use. Side/Back balance uses the same mid/side detection as the 2>5 upmix. A balance control is provided for convenience, but may be 'bouncy' near the ends. [Note 1](#note-1)
 - 6.1 to 7.1 Upmix (M).txt
 - 15.1 to 22.2 Upmix (U).txt
+
+
 
 Manipulators
 ---
@@ -113,13 +131,13 @@ Downmixers
 - 15.1 to 3D Downmix (M).txt
 - 15.1 to 8.0 Speaker Tool (M).txt (8.0h Order: L R, HL HR, BL BR, SL SR, which is similar & backwards compatible with SMPTE-MS 7.1, for 3D surround playback using commonly available 7.1 sound cards)
 
-
+![8.0sh](https://i.imgur.com/1nivgkz.png)
 
 Effects (Audio)
 ---
 - dc_remove_6: DC remover for 6ch
 - limiter_6: limiter (or clipper) for 6ch
-- compressor_6.txt: multichannel compressor, intended as a long-term compressor (ie, leveler). Works for 16ch, but you can type in more. As the key & affector are all selected channels, it's suitable for holistic compression of ambisonics.
+- compressor_6.txt: multichannel compressor, intended as a long-term compressor (ie, leveler). Works for 16ch, but you can type in more. As the key & affector are all selected channels, it's suitable for holistic compression of ambisonics. [Note 1](#note-1)
 - loop_slicer_6.txt: beat-synced realtime loop slicer, which sequentially splits slices to multiple outs, according to split length
 
 Effects (MIDI)
