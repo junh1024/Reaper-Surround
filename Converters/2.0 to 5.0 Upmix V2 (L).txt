@@ -4,7 +4,7 @@ desc:
 slider1:0<0,100,2>Width
 slider2:0<-100,100,2>Depth
 slider3:0<0,1,{Reverse (Narrow), Normal (Wide)}>Polarity of SR (Rear width)
-slider4:10000<2000,18000,500>rear LP freq  (Hz)
+slider4:15000<2000,18000,500>rear LP freq  (Hz)
 slider5:10<0,100,1>delay ms
 slider6:0<0,1,0.01>Pan
 slider7:1024<512,8192,512>Blocksize
