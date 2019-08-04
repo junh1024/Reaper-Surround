@@ -4,8 +4,6 @@ by="junh1024"
 from reaper_python import *
 from contextlib import contextmanager
 
-threshold=0.02 #20ms
-
 @contextmanager
 def undoable(message):
 	RPR_Undo_BeginBlock2(0)
@@ -32,7 +30,7 @@ with undoable(desc):
 	
 	#get file BPM
 	BPM_file = RPR_GetUserInputs("BPM",1,"What is the BPM of this item?","",64)[4]
-	BPM_file = int(BPM_file.strip())
+	BPM_file = float(BPM_file.strip())
 	# RPR_ShowConsoleMsg(BPM_file)
 	
 	#get items
