@@ -1,0 +1,81 @@
+desc: Selects the maximum of main or sidechain. Flashing = Working
+//gfx section modified from Liteon's deesser (GPL)
+
+slider1:1<0,1,{Reserved,Max}>Mode
+slider2:0.0<-1,1,0.05>Bias ( A <-> B )
+
+@slider
+A_bias=(slider2-1)*-0.5;
+B_bias=1-A_bias;
+
+
+@block
+A_compare=(sqrt(A_sum))*A_Bias;
+B_compare=(sqrt(B_sum))*B_Bias;
+
+(B_compare>A_compare) ? 
+(use_sidechain=1;  gr_meter=1; )
+:
+(use_sidechain=0; gr_meter=0;);
+
+A_sum=0;
+B_sum=0;
+
+@sample
+
+
+A_sum=(spl0)^2;
+B_sum=(spl2)^2;
+
+// compare the max
+
+spl0=(spl0*(1-use_sidechain))+ (spl2*use_sidechain);
+spl1=(spl1*(1-use_sidechain))+ (spl3*use_sidechain);
+
+spl2=0;
+spl3=0;
+
+@gfx 425 16
+//---------------------------------
+// set gr meter
+//---------------------------------
+// gr_meter *= exp(1/30);
+gr_meter > 1 ? gr_meter=1;
+gfx_r=0.6;
+gfx_g=0.4;
+gfx_b=0.5;
+gfx_a=0.8;
+meter_bot=20;
+meter_h=min(gfx_h,21);
+xscale=gfx_w*20/meter_bot;
+gfx_y=0;
+gfx_x=gfx_w + log10(gr_meter)*xscale;
+gfx_rectto(gfx_w,meter_h);
+//---------------------------------
+// draw scale
+//---------------------------------
+gfx_r=1;
+gfx_b=1;
+gfx_g=1;
+gfx_a=0.6;
+g = s2;
+// while(
+// gfx_x=gfx_w + log10(g)*xscale;
+// gfx_x >= 0 ? (
+// gfx_y=0;
+// gfx_lineto(gfx_x,meter_h-1,0);
+// gfx_y=meter_h-gfx_texth-5;
+// gfx_x+=4;
+// gfx_drawnumber(log10(g)*20,0);
+// gfx_drawchar($'d');
+// gfx_drawchar($'B');
+// );
+// g*=s2;
+// gfx_x >=0;
+// );
+gfx_x=0;
+gfx_y=meter_h;
+gfx_lineto(gfx_w,meter_h,0);
+gfx_a=0.9;
+gfx_x=gfx_w - 61;
+gfx_y=meter_h + gfx_texth - 1;
