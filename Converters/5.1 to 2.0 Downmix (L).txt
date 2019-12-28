@@ -3,9 +3,9 @@ desc:Downmix based on Steinberg MixConvert
 slider1:100<0,100,10>Front Width
 slider2:100<0,100,10>Rear Width
 slider3:1<0,1,1{On,Off}>DPL I Downmix (reverse polarity of SR)
-slider4:100<0,200,1>L/R Gain (dB)
-slider5:100<0,200,1>C Gain (dB)
-slider6:100<0,200,1>Rear Gain (dB)
+slider4:100<0,200,1>L/R Gain  (%)
+slider5:100<0,200,1>C Gain    (%)
+slider6:100<0,200,1>Rear Gain (%)
 
 import surroundlib3.txt
 

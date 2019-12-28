@@ -1,6 +1,8 @@
 desc: Selects the maximum of main or sidechain. Flashing = Working
 //gfx section modified from Liteon's deesser (GPL)
 
+//This was originally intended for combining the results of 2 different ML extractions of vox, where they miss content, but on different sections. It may switch every sample. It makes distortion if it switches too fast, or if they're misaligned. In practice, too much distortion was made to be useful.
+
 slider1:1<0,1,{Reserved,Max}>Mode
 slider2:0.0<-1,1,0.05>Bias ( A <-> B )
 

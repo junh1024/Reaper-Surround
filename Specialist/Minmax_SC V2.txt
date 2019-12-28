@@ -1,6 +1,8 @@
 desc: Selects the maximum of main or sidechain. Flashing = Working
 //gfx section modified from Liteon's deesser (GPL)
 
+//Switches every block.
+
 slider1:1<0,1,{Reserved,Max}>Mode
 slider2:0.0<-1,1,0.05>Bias ( A <-> B )
 
@@ -24,8 +26,8 @@ B_sum=0;
 @sample
 
 
-A_sum=(spl0)^2;
-B_sum=(spl2)^2;
+A_sum+=(spl0)^2;
+B_sum+=(spl2)^2;
 
 // compare the max
 
