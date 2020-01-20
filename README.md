@@ -168,6 +168,20 @@ Scripts
 - Set item start to position.py
 - SetPanAccordingToName.py: Useful for implementing directional dialogue for films.
 
+- Set item [BPM](#bpm).py: This is intended for *mashups & mixes*. In the case of your item BPM differing from your project BPM you want to strech the item to fit your project. This script makes it quick, just input the BPM of selected item(s), and it will handle the maths. REAPER actually has no concept of item BPM so this is done via play rate & timebase.
+- Get item BPM.py: This is intended to be used in mixes. You can get the BPM of a single item, but this is intended to be used at the completion of a mix, as you can calculate the WEIGHTED average BPM of multiple items so that you can set a better project BPM. Note that this is appropriate due to the imprecision of floating point. 
+
+- Adjust Take Pitch.py: If you're playing around with item pitches in say, a mashup, you might find this useful. If you have items with different pitches, you can adjust them by the same offset.
+- Bitperfect Take Gain.py: You can set the gain of items directly, in a bitperfect way with this (not an adjustment/offset). Note that 1 bit = 6.02 dB (approx). 
+
+Reascript Python Setup for Windows
+---
+To install Python for Windows, go to https://www.python.org/downloads/windows/  and download a 3.x version of Python. I suggest using a version of Python that is around the time that your version of REAPER was released. I'm using py 3.1 with REAPER 4.52 but it's probably possible to use newer ones.
+
+If you're using REAPER 64bit you'll probably want a 64bit version of Python & vice versa. Afterwards, open the Reascript panel in REAPER preferences, and set the path to C:\Windows\SysWOW64\ (32bit) or C:\Windows\System32 (64bit) and the python DLL should be detected. Then you're ready to go.
+
+Run a Reascript by going Actions > Show > Load, Run.
+
 FAQ
 ---
 
