@@ -25,7 +25,7 @@ with undoable(desc):
 	
 	#get file BPM
 	dialogstring="amount"
-	theoffset = RPR_GetUserInputs("Adjust take by how much secs",1,dialogstring,"",64)[4]
+	theoffset = RPR_GetUserInputs("Adjust take by how many semitones?",1,dialogstring,"",64)[4]
 	theoffset = float(theoffset.strip())
 	# RPR_ShowConsoleMsg(new_gain_bits)
 	
