@@ -2,7 +2,7 @@
 
 Introduction
 ---
-A collection of my mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). These are JSFX so DOWNLOAD ZIP & Put them in your Reaper EFFECTS folder. Note if you're cherry picking FX to DL (or updating), that you'll need surroundlib1-3 so get those too [1]. Bugs/suggestions? File an issue or contact me on twitter.
+A collection of mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). These are JSFX so DOWNLOAD ZIP & Put them in your Reaper EFFECTS folder. Note if you're cherry picking FX to DL (or updating), that you'll need surroundlib1-3 so get those too [1]. Bugs/suggestions? File an issue or contact me on twitter.
 
 Disclaimer
 ---
@@ -23,20 +23,17 @@ Introduction to 15.1
 Quick start/Example workflow tools
 ---
 ### 2D workflow:
-* 3.1 Panner (M).txt (for center channel dialog, front SFX, and LFE use)
-* 7.1 Mono panner.txt (for phantom center & surround panning)
-* 7.1 to 5.1 Downmix (M).txt
+* 3.1 Panner (M).txt (for center channel dialog, front SFX, and LFE use), 7.1 Mono panner.txt (for phantom center & surround panning), 7.1 to 5.1 Downmix (M).txt
+* Surround Pan (5.1 GUI panner)
 * < 5.1 Effects & manipulators >
 * 5.1 to 2.0 Downmix (L).txt
-
-For a full GUI panner, see "Effects (Third-Party, external)"
 
 ### 3D workflow:
 * 1.0 to 15.1 Panner (S).txt
 * 15.1 to 7.1 Downmix v2 (L).txt
 * 15.1 to 8.0 Speaker Tool (M).txt
 * 15.1 to 3oA Downmix (M).txt
-* 15.1 to 7.x Downmix (M).txt (11.1h DTS-X) or 15.1 to 3D Downmix (M).txt (9.1h Auro3D, AMBEO speaker)
+* 15.1 to 7.x Downmix (M).txt (11.1h/7.1.4 DTS-X) or 15.1 to 3D Downmix (M).txt (9.1h/5.1.4 Auro3D, AMBEO speaker)
 
 ### Fuma Ambisonics workflow:
 - 1.0 to 3oA 3D Panner (S).txt
@@ -97,6 +94,8 @@ Panners
 - 7.1 Mono Panner.txt
 - 1.0 to 15.1 Panner (S).txt
 - 7.1 to 15.1 Height Panner v2 (M).txt
+- Surround Pan: 5.1 GUI panner courtesy of Sonic Anomaly. Doesn't work well with UI embedding in REAPER 6+ because the UI doesn't resize.
+- "xtra surround panners.zip" has Sonic Anomaly's V2 & V3 (beta) panners. His V3 has 7.1 panning. These require REAPER 4.59+
 
 Upmixers
 ---
@@ -138,7 +137,7 @@ Effects (Audio)
 - dc_remove_6: DC remover for 6ch
 - limiter_6: limiter (or clipper) for 6ch
 - compressor_6.txt: multichannel compressor, intended as a long-term compressor (ie, leveler). Works for 16ch, but you can type in more. As the key & affector are all selected channels, it's suitable for holistic compression of ambisonics. [Note 1](#note-1)
-- loop_slicer_6.txt: beat-synced realtime loop slicer, which sequentially splits slices to multiple outs, according to split length
+- loop_slicer_6.txt: beat-synced realtime loop slicer, which sequentially splits slices up to 4x stereo, according to split length
 
 Effects (MIDI)
 ---
@@ -149,7 +148,7 @@ Effects (Third-Party, external)
 ---
 - EQ 16ch: please use the mcfx suite from http://www.matthiaskronlachner.com/?p=1910
 - Reverb 64ch:  please use fdnReverb from https://plugins.iem.at/
-- A GUI 5.1 panner & several 5.1 DRCs are available here http://sonic.supermaailma.net/plugins
+- Sonic Anomaly's other JSFX are available https://github.com/Sonic-Anomaly/Sonic-Anomaly-JSFX/tree/master/Plugins or in ReaPack
 
 Specialist & Utility
 ---
@@ -187,7 +186,7 @@ FAQ
 
 *How do I pan a sound flying directly overhead if your tools only seem to pan to the sides*?
 
-You can (ab)use 5.1 Mix Control (M).txt as a X-Y panner, pan around in 7.1 then push it up & reduce width with 15.1 Width Control (M).txt, or play around with 1.0 to 3oA 3D Panner (S).txt. Elevation for 3oA 3D panners go from 0-180* for exactly this reason.
+You can (ab)use 5.1 Mix Control (M).txt as a X-Y panner, pan around in 7.1 then push it up & reduce width with 15.1 Width Control (M).txt, or play around with 1.0 to 3oA 3D Panner (S).txt. Elevation for 3oA 3D panners go from 0-180* for exactly this reason. Or use "Surround Pan".
 
 Future Directions
 ---
