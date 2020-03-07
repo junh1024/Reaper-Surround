@@ -14,15 +14,22 @@ slider8:8<0,8,1>pan threshold
 import surroundlib1.txt
 
 @init
-pan_x=gfx_h/2;
+pan_x=gfx_w/2;
 pan_y=0;
 theta=rad=0;
 
+box_width=16;
+
+function drawbox(x,y)
+(
+	gfx_x=x-box_width/2;
+	gfx_y=y-box_width/2;
+	gfx_rectto(x+box_width/2,y+box_width/2)
+);
+
+
 @slider
-pan=slider1;//pan, from clockwise, degrees
-calculate_10_to_71_coeffs (pan);
-calculate_71_to_151_coeffs_pc(slider2);
-pan_thresh=slider8;
+
 
 @sample 
 in0=(spl0+spl1)*0.7071; //loudness compensation
@@ -31,7 +38,10 @@ do_10_to_71_pan(in0);
 do_71_to_151_pan(slider2);
 
 @gfx 500 500
-
+pan=slider1;//pan, from clockwise, degrees
+calculate_10_to_71_coeffs (pan);
+calculate_71_to_151_coeffs_pc(slider2);
+pan_thresh=slider8;
 
 // draw box
 // draw speaker
@@ -40,27 +50,61 @@ do_71_to_151_pan(slider2);
 // convert polar rect 
 
 gfx_a = 0.8;
-gfx_r = gfx_g = gfx_b = 1;
+gfx_r = gfx_g = gfx_b = 0;
+
 gfx_x = 0; gfx_y = 0;
 
-v_w=min(gfx_w,gfx_h);
-v_h=v_w;
+// v_w=min(gfx_w,gfx_h);
+// v_h=v_w;
 
-box_width=16;
 
-(mouse_cap ==1 && mouse_x >=pan_x-box_width*pan_thresh && mouse_y >= pan_y -box_width*pan_thresh && mouse_x <=pan_x+box_width*pan_thresh && mouse_y <= pan_y +box_width*pan_thresh ) ?
+//draw ELL
+
+//LR cyan
+gfx_g =1;
+gfx_b =1;
+drawbox(gfx_w/3,0);
+drawbox(gfx_w*2/3,0);
+
+//Surround
+gfx_b =0;
+drawbox(gfx_w/3,gfx_h);
+drawbox(gfx_w*2/3,gfx_h);
+
+drawbox(0,gfx_h/2);
+drawbox(gfx_w,gfx_h/2);
+
+//draw height
+gfx_g = gfx_b = 0;
+gfx_r = 1;
+
+drawbox(gfx_w/3,gfx_h/3);
+drawbox(gfx_w*2/3,gfx_h/3);
+
+//H S
+drawbox(gfx_w/3,gfx_h*2/3);
+drawbox(gfx_w*2/3,gfx_h*2/3);
+
+drawbox(gfx_w/3,gfx_h/2);
+drawbox(gfx_w*2/3,gfx_h/2);
+
+
+(mouse_cap ==1 && mouse_x >=pan_x-box_width*pan_thresh && mouse_y >= pan_y -box_width*pan_thresh && mouse_x <=pan_x+box_width*pan_thresh && mouse_y <= pan_y +box_width*pan_thresh ) ? //if mouse is within threshold of pan knob
 (
 	gfx_x = mouse_x-box_width/2;
 	gfx_y = mouse_y-box_width/2;
 
 
-	gfx_rectto(mouse_x+box_width/2,mouse_y+box_width/2);
+	;
 
 	pan_x=mouse_x  ;
 	pan_y=mouse_y ;	
+	
+	//compute numbers as if the origin was the center
 	pan_x2=pan_x-gfx_w/2  ;
 	pan_y2=-(pan_y-gfx_h/2);
 	
+	//convert to polar for pan
 	theta = atan2(pan_y2,pan_x2);
 	slider1=(theta*-180/$pi)+90;
 	slider1>180?slider1=-180 + ( slider1-180 );
@@ -69,6 +113,11 @@ box_width=16;
 	slider2=rad;
 	
 );
+
+
+
+gfx_r = gfx_g = gfx_b = 1;
+drawbox(pan_x,pan_y);
 
 /*
 
