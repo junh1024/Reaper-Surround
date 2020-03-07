@@ -1,17 +1,17 @@
-desc: mono to 15.1 panner. (phantom center) ALPHA.
+desc: mono to 15.1/7.1 panner GUI. (phantom center) ALPHA.
 
-slider1:0<-180,180>the pan (deg)
-slider2:0<-100,100,5>Height (+ve up, -ve down)
-slider3:100<0,100,5>width  
+slider1:0<-180,180>Pan (deg)
+slider2:0<-100,100,5>Height
+slider3:100<0,100,5>Width  
 slider4:0<-100,100,5>Center (NOT IMPLEMENTED)
 
 slider5:0<0,3,{Move (Mixing),Copy (Mixing),Move (Monitoring),Copy (Monitoring)}>LFE Mode
-slider6:0<0,100,1>LFE Amount(%)
-slider7:1<0,1,{2D,3D}>Pan mode
-slider8:8<0,8,1>pan threshold
+slider6:0<0,100,1>LFE amount (%)
+slider7:1<0,1,{2D 7.1,3D 15.1}>Pan mode
+slider8:8<0,16,1>Pan threshold
 
-slider9:0<0,500,1>posX
-slider10:0<-100,500,1>posY
+slider9:.5<0,1,0.01>posX
+slider10:0<-0.5,1,.01>posY
 
 import surroundlib1.txt
 
@@ -19,13 +19,13 @@ import surroundlib2.txt
 import surroundlib3.txt
 
 @init
-pan_x=slider9;
-pan_y=slider10;
+pan_x=0;
+pan_y=0;
 theta=rad=0;
+in0=0;
 
-box_width=16;
 
-polarity=1;
+// polarity=1;
 
 function drawbox(x,y)
 (
@@ -125,6 +125,9 @@ calculate_10_to_71_coeffs (pan);
 calculate_71_to_151_coeffs_pc(slider2);
 pan_thresh=slider8;
 
+// box_width=16;
+box_width=floor(0.7*sqrt((gfx_w+gfx_h)/2));
+
 // draw box
 // draw speaker
 
@@ -176,16 +179,9 @@ drawbox(gfx_w*2/3-height_toe_in,gfx_h*2/3);
 drawbox(gfx_w/3-height_toe_in/2,gfx_h/2);
 drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 
-
-(mouse_cap ==1 && mouse_x >=pan_x-box_width*pan_thresh && mouse_y >= pan_y -box_width*pan_thresh && mouse_x <=pan_x+box_width*pan_thresh && mouse_y <= pan_y +box_width*pan_thresh ) ? //if mouse is within threshold of pan knob
+//if mouse is within threshold of pan knob
+(mouse_cap ==1 /*&& mouse_x >=pan_x-box_width*pan_thresh && mouse_y >= pan_y -box_width*pan_thresh && mouse_x <=pan_x+box_width*pan_thresh && mouse_y <= pan_y +box_width*pan_thresh */ ) ? 
 (
-	gfx_x = mouse_x-box_width/2;
-	gfx_y = mouse_y-box_width/2;
-
-
-	slider_automate(slider1);
-	slider_automate(slider2);
-	slider_automate(slider3);
 
 	pan_x=mouse_x  ;
 	pan_y=mouse_y ;	
@@ -196,15 +192,15 @@ drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 	
 	//convert to polar for pan
 	theta = atan2(pan_y2,pan_x2);
-	slider1=(theta*-180/$pi)+90;
+	slider1=floor(theta*-180/$pi)+90;
 	slider1>180?slider1=-180 + ( slider1-180 );
 	
-	rad=sqrt( (pan_x2^2+pan_y2^2 )/2);
-	slider2=(110-(rad*100/( (gfx_w+gfx_h)/6) ))*1.5;
+	rad=((abs(pan_x2)+abs(pan_y2) )/(gfx_w+gfx_h));
+	slider2=(0.25-rad )*(620)-box_width/4;
 	
 	slider2>100? //width to emulate top pan
 	(
-		slider3=min(100-(slider2-100)*1.5,100);
+		slider3=min(100-(slider2-100)*2,100);
 		slider2=100;
 
 
@@ -215,20 +211,29 @@ drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 		slider3=100;//not top
 	);
 	
-	 !(slider1<=30 && slider1>=-30)? (slider2=max(0,slider2) );// restrict bottom panning to front
+	 !(slider1<=30 && slider1>=-30)? 
+	 (
+	 slider2=max(0,slider2) // restrict bottom panning to front
+	 // slider3+ // circular correction
+	 );
 	
 	slider7==0?(slider2=0;);// restrict height panning to 3D
 	
-ELL_W=slider3/100   ;
-top_W=slider3/100   ;
+	ELL_W=slider3/100   ;
+	top_W=slider3/100   ;
+	
+	slider_automate(slider1);
+	slider_automate(slider2);
+	slider_automate(slider3);
 
-slider9=pan_x;
-slider10=pan_y;
+	slider9=pan_x/gfx_w;
+	slider10=pan_y/gfx_h;
 
 );
 
 
 
 gfx_r = gfx_g = gfx_b = 1;
-drawbox(pan_x,pan_y);
+gfx_a+=in0*0.5;
+drawbox(slider9*gfx_w,slider10*gfx_h);
 
