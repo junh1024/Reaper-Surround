@@ -2,16 +2,19 @@ desc: mono to 15.1 panner. (phantom center) ALPHA.
 
 slider1:0<-180,180>the pan (deg)
 slider2:0<-100,100,5>Height (+ve up, -ve down)
-slider3:100<-100,100,5>width (+ve up, -ve down)
+slider3:100<0,100,5>width (+ve up, -ve down)
 slider4:0<-100,100,5>Center (+ve up, -ve down)
 
 slider5:0<0,3,{Move (Mixing),Copy (Mixing),Move (Monitoring),Copy (Monitoring)}>LFE Mode
 slider6:0<0,100,1>LFE Amount(%)
-slider7::1<0,1,{2D,3D}>Pan mode
+slider7:1<0,1,{2D,3D}>Pan mode
 slider8:8<0,8,1>pan threshold
 
 
 import surroundlib1.txt
+
+import surroundlib2.txt
+import surroundlib3.txt
 
 @init
 pan_x=gfx_w/2;
@@ -29,13 +32,48 @@ function drawbox(x,y)
 
 
 @slider
-
+ELL_W=slider3/100   ;
+top_W=slider3/100   ;
 
 @sample 
 in0=(spl0+spl1)*0.7071; //loudness compensation
 
 do_10_to_71_pan(in0);
 do_71_to_151_pan(slider2);
+
+//top width for top panning
+MS_encode_ELL();
+
+//MS decode ELL
+spl0=(front_M)+ (front_S * ELL_W) ;
+spl1=(front_M)- (front_S * ELL_W) ;
+spl4=(back_M )+ (back_S  * ELL_W) ;
+spl5=(back_M )- (back_S  * ELL_W) ;
+spl6=(side_M )+ (side_S  * ELL_W) ;
+spl7=(side_M )- (side_S  * ELL_W) ;
+
+//need top first otherwise bottom gets silenced, convert top to M/S
+ MS_encode_Top();
+
+//decode M/S with polarity
+spl8 = ( (top_front_M)+ (top_front_S * top_W) ) ;
+spl9 = ( (top_front_M)- (top_front_S * top_W) ) ;
+spl12= ( (top_back_M )+ (top_back_S  * top_W) ) ;
+spl13= ( (top_back_M )- (top_back_S  * top_W) ) ;
+spl14= ( (top_side_M )+ (top_side_S  * top_W) ) ;
+spl15= ( (top_side_M )- (top_side_S  * top_W) ) ;
+
+//top depth bleed for top panning
+
+spl14 +=    (spl8+sp9) * (100-slider3 )/100 ;
+spl15 += (spl12+spl13) * (100-slider3 )/100 ;
+
+spl8 *= slider3/100 ;
+spl9 *= slider3/100 ;
+spl12*= slider3/100 ;
+spl13*= slider3/100 ;
+
+
 
 @gfx 500 500
 pan=slider1;//pan, from clockwise, degrees
@@ -118,11 +156,22 @@ drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 	(
 		slider3=min(100-(slider2-100)*1.5,100);
 		slider2=100;
+
+
+
+		
 	):
 	(
-		slider3=100;
+		slider3=100;//not top
 	);
 	
+	 !(slider1<=30 && slider1>=-30)? (slider2=max(0,slider2) );// restrict bottom panning to front
+	
+	slider7==0?(slider2=0;);// restrict height panning to 3D
+	
+ELL_W=slider3/100   ;
+top_W=slider3/100   ;
+
 );
 
 
