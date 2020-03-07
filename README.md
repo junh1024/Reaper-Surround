@@ -30,6 +30,7 @@ Quick start/Example workflow tools
 
 ### 3D workflow:
 * 1.0 to 15.1 Panner (S).txt
+* 1.0 to 15.1 Panner GUI (M).txt
 * 15.1 to 7.1 Downmix v2 (L).txt
 * 15.1 to 8.0 Speaker Tool (M).txt
 * 15.1 to 3oA Downmix (M).txt
@@ -93,6 +94,7 @@ Panners
 - 3.1 Panner (M).txt: 3.0 front surround panner, with width control. Move & Copy actions are supported for LFE use, and  Mixing & Monitoring modes for a total of 4 combinations. The specification for LFE in digital mixes, is to gain it by 10dB on playback. Hence while mixing, it is gained by -10dB. For monitoring, this is not applied.
 - 7.1 Mono Panner.txt
 - 1.0 to 15.1 Panner (S).txt
+- 1.0 to 15.1 Panner GUI (M).txt
 - 7.1 to 15.1 Height Panner v2 (M).txt
 - Surround Pan: 5.1 GUI panner courtesy of Sonic Anomaly. Doesn't work well with UI embedding in REAPER 6+ because the UI doesn't resize.
 - "xtra surround panners.zip" has Sonic Anomaly's V2 & V3 (beta) panners. His V3 has 7.1 panning. These require REAPER 4.59+

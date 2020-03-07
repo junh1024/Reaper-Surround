@@ -23,6 +23,8 @@ theta=rad=0;
 
 box_width=16;
 
+polarity=1;
+
 function drawbox(x,y)
 (
 	gfx_x=x-box_width/2;
@@ -65,8 +67,8 @@ spl15= ( (top_side_M )- (top_side_S  * top_W) ) ;
 
 //top depth bleed for top panning
 
-spl14 +=    (spl8+sp9) * (100-slider3 )/100 ;
-spl15 += (spl12+spl13) * (100-slider3 )/100 ;
+spl14 +=    (spl8+spl12) * (100-slider3 )/100 ;
+spl15 += (spl9+spl13) * (100-slider3 )/100 ;
 
 spl8 *= slider3/100 ;
 spl9 *= slider3/100 ;
