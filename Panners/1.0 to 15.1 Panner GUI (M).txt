@@ -2,8 +2,8 @@ desc: mono to 15.1 panner. (phantom center) ALPHA.
 
 slider1:0<-180,180>the pan (deg)
 slider2:0<-100,100,5>Height (+ve up, -ve down)
-slider3:100<0,100,5>width (+ve up, -ve down)
-slider4:0<-100,100,5>Center (+ve up, -ve down)
+slider3:100<0,100,5>width  
+slider4:0<-100,100,5>Center (NOT IMPLEMENTD)
 
 slider5:0<0,3,{Move (Mixing),Copy (Mixing),Move (Monitoring),Copy (Monitoring)}>LFE Mode
 slider6:0<0,100,1>LFE Amount(%)
@@ -108,8 +108,8 @@ spl5*= slider3/100 ;
 
 //lfe
 spl3=in0*LFE_mode_gain*coeff_A;
-spl0=in0*main_gain;
-spl1=in0*main_gain;
+spl0*=main_gain;
+spl1*=main_gain;
 
 @gfx 500 500
 pan=slider1;//pan, from clockwise, degrees
@@ -149,8 +149,12 @@ drawbox(0,gfx_h/2);
 drawbox(gfx_w,gfx_h/2);
 
 //draw height
-gfx_g = gfx_b = 0;
-gfx_r = 0.8;
+
+slider7==1?
+(
+	gfx_g = gfx_b = 0;
+	gfx_r = 0.8;
+);
 
 height_toe_in=gfx_w/20;
 
@@ -171,7 +175,9 @@ drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 	gfx_y = mouse_y-box_width/2;
 
 
-	;
+	slider_automate(slider1);
+	slider_automate(slider2);
+	slider_automate(slider3);
 
 	pan_x=mouse_x  ;
 	pan_y=mouse_y ;	
