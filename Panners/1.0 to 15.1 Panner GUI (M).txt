@@ -3,13 +3,15 @@ desc: mono to 15.1 panner. (phantom center) ALPHA.
 slider1:0<-180,180>the pan (deg)
 slider2:0<-100,100,5>Height (+ve up, -ve down)
 slider3:100<0,100,5>width  
-slider4:0<-100,100,5>Center (NOT IMPLEMENTD)
+slider4:0<-100,100,5>Center (NOT IMPLEMENTED)
 
 slider5:0<0,3,{Move (Mixing),Copy (Mixing),Move (Monitoring),Copy (Monitoring)}>LFE Mode
 slider6:0<0,100,1>LFE Amount(%)
 slider7:1<0,1,{2D,3D}>Pan mode
 slider8:8<0,8,1>pan threshold
 
+slider9:0<0,500,1>posX
+slider10:0<-100,500,1>posY
 
 import surroundlib1.txt
 
@@ -17,8 +19,8 @@ import surroundlib2.txt
 import surroundlib3.txt
 
 @init
-pan_x=gfx_w/2;
-pan_y=0;
+pan_x=slider9;
+pan_y=slider10;
 theta=rad=0;
 
 box_width=16;
@@ -214,6 +216,9 @@ drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 ELL_W=slider3/100   ;
 top_W=slider3/100   ;
 
+slider9=pan_x;
+slider10=pan_y;
+
 );
 
 
@@ -221,37 +226,3 @@ top_W=slider3/100   ;
 gfx_r = gfx_g = gfx_b = 1;
 drawbox(pan_x,pan_y);
 
-/*
-
-gfx_rectto(x,y)
-Fills a rectangle from gfx_x,gfx_y to x,y. Updates gfx_x,gfx_y to x,y.
-
-gfx_rect(x,y,w,h) -- REAPER 4.59+
-Fills a rectngle at x,y, w,h pixels in dimension.
-
-gfx_setpixel(r,g,b)
-Writes a pixel of r,g,b to gfx_x,gfx_y. 
-
-gfx_r, gfx_g, gfx_b, gfx_a
-These represent the current red, green, blue, and alpha components used by drawing operations (0.0..1.0). 
-
-gfx_w, gfx_h
-These are set to the current width and height of the UI framebuffer.
-
-gfx_x, gfx_y
-These set the "current" graphics position in x,y. You can set these yourselves, and many of the drawing functions update them as well.
-
-gfx_mode
-Set to 0 for default options. Add 1.0 for additive blend mode (if you wish to do subtractive, set gfx_a to negative and use gfx_mode as additive). Add 2.0 to disable source alpha for gfx_blit(). Add 4.0 to disable filtering for gfx_blit().
-
-gfx_clear
-If set to a value greater than -1.0, this will result in the framebuffer being cleared to that color. the color for this one is packed RGB (0..255), i.e. red+green*256+blue*65536. The default is 0 (black). 
-
-mouse_x, mouse_y
-mouse_x and mouse_y are set to the coordinates of the mouse within the graphics area of the window.
-
-mouse_cap
-mouse_cap is a bitfield of mouse and keyboard modifier state.
-
-    1: left mouse button 
-*/
