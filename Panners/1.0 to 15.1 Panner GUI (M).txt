@@ -1,0 +1,106 @@
+desc: mono to 15.1 panner. (phantom center) ALPHA.
+
+slider1:0<-180,180>the pan (deg)
+slider2:0<-100,100,5>Height (+ve up, -ve down)
+slider3:0<-100,100,5>width (+ve up, -ve down)
+slider4:0<-100,100,5>Center (+ve up, -ve down)
+
+slider5:0<0,3,{Move (Mixing),Copy (Mixing),Move (Monitoring),Copy (Monitoring)}>LFE Mode
+slider6:0<0,100,1>LFE Amount(%)
+slider7::0<0,1,{2D,3D}>Pan mode
+slider8:8<0,8,1>pan threshold
+
+
+import surroundlib1.txt
+
+@init
+pan_x=gfx_h/2;
+pan_y=0;
+theta=rad=0;
+
+@slider
+pan=slider1;//pan, from clockwise, degrees
+calculate_10_to_71_coeffs (pan);
+calculate_71_to_151_coeffs_pc(slider2);
+pan_thresh=slider8;
+
+@sample 
+in0=(spl0+spl1)*0.7071; //loudness compensation
+
+do_10_to_71_pan(in0);
+do_71_to_151_pan(slider2);
+
+@gfx 500 500
+
+
+// draw box
+// draw speaker
+
+// convert rect polar
+// convert polar rect 
+
+gfx_a = 0.8;
+gfx_r = gfx_g = gfx_b = 1;
+gfx_x = 0; gfx_y = 0;
+
+v_w=min(gfx_w,gfx_h);
+v_h=v_w;
+
+box_width=16;
+
+(mouse_cap ==1 && mouse_x >=pan_x-box_width*pan_thresh && mouse_y >= pan_y -box_width*pan_thresh && mouse_x <=pan_x+box_width*pan_thresh && mouse_y <= pan_y +box_width*pan_thresh ) ?
+(
+	gfx_x = mouse_x-box_width/2;
+	gfx_y = mouse_y-box_width/2;
+
+
+	gfx_rectto(mouse_x+box_width/2,mouse_y+box_width/2);
+
+	pan_x=mouse_x  ;
+	pan_y=mouse_y ;	
+	pan_x2=pan_x-gfx_w/2  ;
+	pan_y2=-(pan_y-gfx_h/2);
+	
+	theta = atan2(pan_y2,pan_x2);
+	slider1=(theta*-180/$pi)+90;
+	slider1>180?slider1=-180 + ( slider1-180 );
+	
+	rad=sqrt(pan_x2^2+pan_y2^2);
+	slider2=rad;
+	
+);
+
+/*
+
+gfx_rectto(x,y)
+Fills a rectangle from gfx_x,gfx_y to x,y. Updates gfx_x,gfx_y to x,y.
+
+gfx_rect(x,y,w,h) -- REAPER 4.59+
+Fills a rectngle at x,y, w,h pixels in dimension.
+
+gfx_setpixel(r,g,b)
+Writes a pixel of r,g,b to gfx_x,gfx_y. 
+
+gfx_r, gfx_g, gfx_b, gfx_a
+These represent the current red, green, blue, and alpha components used by drawing operations (0.0..1.0). 
+
+gfx_w, gfx_h
+These are set to the current width and height of the UI framebuffer.
+
+gfx_x, gfx_y
+These set the "current" graphics position in x,y. You can set these yourselves, and many of the drawing functions update them as well.
+
+gfx_mode
+Set to 0 for default options. Add 1.0 for additive blend mode (if you wish to do subtractive, set gfx_a to negative and use gfx_mode as additive). Add 2.0 to disable source alpha for gfx_blit(). Add 4.0 to disable filtering for gfx_blit().
+
+gfx_clear
+If set to a value greater than -1.0, this will result in the framebuffer being cleared to that color. the color for this one is packed RGB (0..255), i.e. red+green*256+blue*65536. The default is 0 (black). 
+
+mouse_x, mouse_y
+mouse_x and mouse_y are set to the coordinates of the mouse within the graphics area of the window.
+
+mouse_cap
+mouse_cap is a bitfield of mouse and keyboard modifier state.
+
+    1: left mouse button 
+*/
