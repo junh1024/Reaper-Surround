@@ -65,6 +65,8 @@ in0=(spl0+spl1)*0.7071; //loudness compensation
 do_10_to_71_pan(in0);
 do_71_to_151_pan(slider2);
 
+slider7==0 &&slider3<100 ? //activate only in 2D & close panning
+(
 //top width for top panning
 MS_encode_ELL();
 
@@ -76,6 +78,18 @@ spl5=(back_M )- (back_S  * ELL_W) ;
 spl6=(side_M )+ (side_S  * ELL_W) ;
 spl7=(side_M )- (side_S  * ELL_W) ;
 
+//ell depth bleed for ell panning
+
+spl16 += (spl0+spl4) * (100-slider3 )/100 ;
+spl17 += (spl1+spl5) * (100-slider3 )/100 ;
+
+spl0 *= slider3/100 ;
+spl1 *= slider3/100 ;
+spl4*= slider3/100 ;
+spl5*= slider3/100 ;
+);
+slider7==1 &&slider3<100? //activate only in 3D & top panning
+(
 //need top first otherwise bottom gets silenced, convert top to M/S
  MS_encode_Top();
 
@@ -97,16 +111,8 @@ spl9 *= slider3/100 ;
 spl12*= slider3/100 ;
 spl13*= slider3/100 ;
 
+);
 
-//ell depth bleed for ell panning
-
-spl16 += (spl0+spl4) * (100-slider3 )/100 ;
-spl17 += (spl1+spl5) * (100-slider3 )/100 ;
-
-spl0 *= slider3/100 ;
-spl1 *= slider3/100 ;
-spl4*= slider3/100 ;
-spl5*= slider3/100 ;
 
 //lfe
 spl3=in0*LFE_mode_gain*coeff_A;
