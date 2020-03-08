@@ -195,12 +195,12 @@ drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 	slider1=floor(theta*-180/$pi)+90;
 	slider1>180?slider1=-180 + ( slider1-180 );
 	
-	rad=((abs(pan_x2)+abs(pan_y2) )/(gfx_w+gfx_h));
-	slider2=(0.25-rad )*(620)-box_width/4;
+	rad=sqrt(pan_x2^2+pan_y2^2 )/(gfx_w+gfx_h);
+	slider2=(0.25-rad*1.01 )*620;
 	
 	slider2>100? //width to emulate top pan
 	(
-		slider3=min(100-(slider2-100)*2,100);
+		slider3=min(100-(slider2-100)*1.8,100);
 		slider2=100;
 
 
