@@ -7,7 +7,7 @@ slider4:0<-100,100,5>Center (NOT IMPLEMENTED)
 
 slider5:0<0,3,{Move (Mixing),Copy (Mixing),Move (Monitoring),Copy (Monitoring)}>LFE Mode
 slider6:0<0,100,1>LFE amount (%)
-slider7:1<0,1,{2D 7.1,3D 15.1}>Pan mode
+slider7:1<0,2,1,{2D 7.1,2.5D 15.1,3D-ish 15.1}>Pan mode
 slider8:8<0,16,1>Pan threshold
 
 slider9:.5<0,1,0.01>posX
@@ -161,7 +161,7 @@ drawbox(gfx_w,gfx_h/2);
 
 //draw height
 
-slider7==1?
+slider7>0?
 (
 	gfx_g = gfx_b = 0;
 	gfx_r = 0.8;
@@ -211,13 +211,12 @@ drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 		slider3=100;//not top
 	);
 	
-	 !(slider1<=30 && slider1>=-30)? 
+	 !(slider1<=30 && slider1>=-30&&slider7==2)? 
 	 (
-	 slider2=max(0,slider2) // restrict bottom panning to front
-	 // slider3+ // circular correction
+		slider2=max(0,slider2) // restrict bottom panning to front
 	 );
 	
-	slider7==0?(slider2=0;);// restrict height panning to 3D
+	slider7<1?(slider2=0;);// restrict height panning to 3D
 	
 	ELL_W=slider3/100   ;
 	top_W=slider3/100   ;
