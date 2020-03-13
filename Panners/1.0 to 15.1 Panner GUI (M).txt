@@ -190,6 +190,12 @@ drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 	pan_x2=pan_x-gfx_w/2  ;
 	pan_y2=-(pan_y-gfx_h/2);
 	
+	
+// x = cos(theta)
+// y = sin(theta) 
+
+	
+	
 	//convert to polar for pan
 	theta = atan2(pan_y2,pan_x2);
 	slider1=floor(theta*-180/$pi)+90;
@@ -228,11 +234,31 @@ drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 	slider9=pan_x/gfx_w;
 	slider10=pan_y/gfx_h;
 
+gfx_r = gfx_g = gfx_b = 1;
+gfx_a+=in0*0.2;
+drawbox(slider9*gfx_w,slider10*gfx_h);
+	
+):
+(
+
+	
+gfx_g =  0.8; //yellow due to set red previously
+
+	// conv polar to cart for displ automation
+	temp_rad=(155-((100-slider3)/1.8+ slider2))/(155*2);
+	temp_theta=(slider1*$pi/180)+$pi/2;
+	new_x=-cos(temp_theta)*temp_rad*gfx_w+(gfx_w/2);
+	new_y=-sin(temp_theta)*temp_rad*gfx_h+(gfx_h/2);
+
+	box_width=2*floor(0.7*sqrt((gfx_w+gfx_h)/2)); //enlarged box 
+	drawbox(new_x,new_y);
+	box_width=floor(0.7*sqrt((gfx_w+gfx_h)/2));//set back to original box 
 );
 
 
 
-gfx_r = gfx_g = gfx_b = 1;
-gfx_a+=in0*0.5;
-drawbox(slider9*gfx_w,slider10*gfx_h);
+
+// pan automation test box 
+// gfx_a=0.2;
+
 
