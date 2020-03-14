@@ -10,9 +10,6 @@ slider6:0<0,100,1>LFE amount (%)
 slider7:1<0,2,1,{2D 7.1,2.5D 15.1,3D-ish 15.1}>Pan mode
 slider8:8<0,16,1>Pan threshold
 
-// slider9:.5<0,1,0.01>posX
-// slider10:0<-0.5,1,.01>posY
-
 import surroundlib1.txt
 
 import surroundlib2.txt
@@ -56,7 +53,6 @@ slider5<2?(LFE_mode_gain=0.316):(LFE_mode_gain=1;);
 
 @sample 
 in0=(spl0+spl1)*0.7071; //loudness compensation
-
 
 
 do_10_to_71_pan(in0);
@@ -125,22 +121,13 @@ pan_thresh=slider8;
 // box_width=16;
 box_width=floor(0.7*sqrt((gfx_w+gfx_h)/2));
 
-// draw box
-// draw speaker
-
-// convert rect polar
-// convert polar rect 
-
 gfx_a = 0.8;
 gfx_r = gfx_g = gfx_b = 0;
 
 gfx_x = 0; gfx_y = 0;
 
-// v_w=min(gfx_w,gfx_h);
-// v_h=v_w;
 
-
-//draw ELL
+//draw ELL speakers
 
 //LR cyan
 gfx_g =1;
@@ -220,8 +207,6 @@ drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 	slider_automate(slider2);
 	slider_automate(slider3);
 
-	// slider9=/gfx_w;
-	// slider10=/gfx_h;
 
 	gfx_r = gfx_g = gfx_b = 1;
 	gfx_a+=in0*0.2;
@@ -237,9 +222,9 @@ drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 	new_x=-cos(temp_theta)*temp_rad*gfx_w+(gfx_w/2);
 	new_y=-sin(temp_theta)*temp_rad*gfx_h+(gfx_h/2);
 
-	box_width=2*floor(0.7*sqrt((gfx_w+gfx_h)/2)); //enlarged box 
+	box_width*=2; //enlarged box 
 	drawbox(new_x,new_y);
-	box_width=floor(0.7*sqrt((gfx_w+gfx_h)/2));//set back to original box 
+	box_width/=2;//set back to original box 
 );
 
 
