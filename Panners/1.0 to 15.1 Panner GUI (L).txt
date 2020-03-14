@@ -3,7 +3,7 @@ desc: mono to 15.1/7.1 panner GUI. (phantom center) ALPHA.
 slider1:0<-180,180>Pan (deg)
 slider2:0<-100,100,5>Height
 slider3:100<0,100,5>Width  
-slider4:0<-100,100,5>Center (NOT IMPLEMENTED)
+slider4:0<0,100,5>Center (NOT IMPLEMENTED)
 
 slider5:0<0,3,{Move (Mixing),Copy (Mixing),Move (Monitoring),Copy (Monitoring)}>LFE Mode
 slider6:0<0,100,1>LFE amount (%)
@@ -206,7 +206,7 @@ drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 
 
 	gfx_r = gfx_g = gfx_b = 1;
-	gfx_a+=in0*0.2;
+	gfx_a+=in0*0.2; //blink box according to input
 	drawbox(mouse_x,mouse_y );
 	
 ):
