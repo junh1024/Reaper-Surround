@@ -16,8 +16,6 @@ import surroundlib2.txt
 import surroundlib3.txt
 
 @init
-pan_x=0;
-pan_y=0;
 theta=rad=0;
 in0=0;
 
@@ -60,49 +58,49 @@ do_71_to_151_pan(slider2);
 
 slider7==0 &&slider3<100 ? //activate only in 2D & close panning
 (
-//top width for top panning
-MS_encode_ELL();
+	//top width for top panning
+	MS_encode_ELL();
 
-//MS decode ELL
-spl0=(front_M)+ (front_S * ELL_W) ;
-spl1=(front_M)- (front_S * ELL_W) ;
-spl4=(back_M )+ (back_S  * ELL_W) ;
-spl5=(back_M )- (back_S  * ELL_W) ;
-spl6=(side_M )+ (side_S  * ELL_W) ;
-spl7=(side_M )- (side_S  * ELL_W) ;
+	//MS decode ELL
+	spl0=(front_M)+ (front_S * ELL_W) ;
+	spl1=(front_M)- (front_S * ELL_W) ;
+	spl4=(back_M )+ (back_S  * ELL_W) ;
+	spl5=(back_M )- (back_S  * ELL_W) ;
+	spl6=(side_M )+ (side_S  * ELL_W) ;
+	spl7=(side_M )- (side_S  * ELL_W) ;
 
-//ell depth bleed for ell panning
+	//ell depth bleed for ell panning
 
-spl16 += (spl0+spl4) * (100-slider3 )/100 ;
-spl17 += (spl1+spl5) * (100-slider3 )/100 ;
+	spl16 += (spl0+spl4) * (100-slider3 )/100 ;
+	spl17 += (spl1+spl5) * (100-slider3 )/100 ;
 
-spl0 *= slider3/100 ;
-spl1 *= slider3/100 ;
-spl4*= slider3/100 ;
-spl5*= slider3/100 ;
+	spl0 *= slider3/100 ;
+	spl1 *= slider3/100 ;
+	spl4*= slider3/100 ;
+	spl5*= slider3/100 ;
 );
 slider7==1 &&slider3<100? //activate only in 3D & top panning
 (
-//need top first otherwise bottom gets silenced, convert top to M/S
- MS_encode_Top();
+	//need top first otherwise bottom gets silenced, convert top to M/S
+	 MS_encode_Top();
 
-//decode M/S with polarity
-spl8 = ( (top_front_M)+ (top_front_S * top_W) ) ;
-spl9 = ( (top_front_M)- (top_front_S * top_W) ) ;
-spl12= ( (top_back_M )+ (top_back_S  * top_W) ) ;
-spl13= ( (top_back_M )- (top_back_S  * top_W) ) ;
-spl14= ( (top_side_M )+ (top_side_S  * top_W) ) ;
-spl15= ( (top_side_M )- (top_side_S  * top_W) ) ;
+	//decode M/S with polarity
+	spl8 = ( (top_front_M)+ (top_front_S * top_W) ) ;
+	spl9 = ( (top_front_M)- (top_front_S * top_W) ) ;
+	spl12= ( (top_back_M )+ (top_back_S  * top_W) ) ;
+	spl13= ( (top_back_M )- (top_back_S  * top_W) ) ;
+	spl14= ( (top_side_M )+ (top_side_S  * top_W) ) ;
+	spl15= ( (top_side_M )- (top_side_S  * top_W) ) ;
 
-//top depth bleed for top panning
+	//top depth bleed for top panning
 
-spl14 +=    (spl8+spl12) * (100-slider3 )/100 ;
-spl15 += (spl9+spl13) * (100-slider3 )/100 ;
+	spl14 += (spl8+spl12) * (100-slider3 )/100 ;
+	spl15 += (spl9+spl13) * (100-slider3 )/100 ;
 
-spl8 *= slider3/100 ;
-spl9 *= slider3/100 ;
-spl12*= slider3/100 ;
-spl13*= slider3/100 ;
+	spl8 *= slider3/100 ;
+	spl9 *= slider3/100 ;
+	spl12*= slider3/100 ;
+	spl13*= slider3/100 ;
 
 );
 
@@ -119,6 +117,8 @@ calculate_71_to_151_coeffs_pc(slider2);
 pan_thresh=slider8;
 
 // box_width=16;
+//box size scales with window size, hits 16 at 500x500
+//while not being too small for smaller sizes, like MCP embedding
 box_width=floor(0.7*sqrt((gfx_w+gfx_h)/2));
 
 gfx_a = 0.8;
@@ -129,7 +129,7 @@ gfx_x = 0; gfx_y = 0;
 
 //draw ELL speakers
 
-//LR cyan
+//LR = cyan = includes bottom
 gfx_g =1;
 gfx_b =1;
 drawbox(gfx_w/3,0);
@@ -166,15 +166,12 @@ drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 //if mouse is within threshold of pan knob
 (mouse_cap ==1 /*&& mouse_x >=pan_x-box_width*pan_thresh && mouse_y >= pan_y -box_width*pan_thresh && mouse_x <=pan_x+box_width*pan_thresh && mouse_y <= pan_y +box_width*pan_thresh */ ) ? 
 (
-
-	// pan_x=mouse_x  ;
-	// pan_y=mouse_y ;	
 	
 	//compute numbers as if the origin was the center
 	pan_x2=mouse_x-gfx_w/2  ;
 	pan_y2=-(mouse_y-gfx_h/2);
 	
-	
+	//the floor calls are to make whole numbers for sliders/UI
 	
 	//convert to polar for pan
 	theta = atan2(pan_y2,pan_x2);
@@ -182,11 +179,11 @@ drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 	slider1>180?slider1=-180 + ( slider1-180 );
 	
 	rad=sqrt(pan_x2^2+pan_y2^2 )/(gfx_w+gfx_h);
-	slider2=(0.25-rad*1.01 )*620;
+	slider2=floor((0.25-rad*1.01 )*620);
 	
 	slider2>100? //width to emulate top pan
 	(
-		slider3=min(100-(slider2-100)*1.8,100);
+		slider3=floor(min(100-(slider2-100)*1.8,100));
 		slider2=100;
 	):
 	(
@@ -203,7 +200,7 @@ drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 	ELL_W=slider3/100   ;
 	top_W=slider3/100   ;
 	
-	slider_automate(slider1);
+	slider_automate(slider1);//to draw automation outside of the @slider section
 	slider_automate(slider2);
 	slider_automate(slider3);
 
@@ -224,7 +221,7 @@ drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 
 	box_width*=2; //enlarged box 
 	drawbox(new_x,new_y);
-	box_width/=2;//set back to original box 
+	// box_width/=2;//set back to original box 
 );
 
 
