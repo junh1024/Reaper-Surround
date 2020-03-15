@@ -18,6 +18,8 @@ import surroundlib3.txt
 @init
 theta=rad=0;
 in0=0;
+new_x=new_y=0;
+height_temp=0;
 
 function drawbox(x,y)
 (
@@ -109,6 +111,15 @@ slider7==1 &&slider3<100? //activate only in 3D & top panning
 spl3=in0*LFE_mode_gain*coeff_A;
 spl0*=main_gain;
 spl1*=main_gain;
+
+
+// conv polar to cart for displ automation
+(slider7==0)?(height_temp=100;):(height_temp=slider2;);
+temp_rad=(155-((100-slider3)/1.8+ height_temp))/(155*2);
+temp_theta=(slider1*$pi/180)+$pi/2;
+new_x=-cos(temp_theta)*temp_rad*gfx_w+(gfx_w/2);
+new_y=-sin(temp_theta)*temp_rad*gfx_h+(gfx_h/2);
+
 
 @gfx 500 500
 pan=slider1;//pan, from clockwise, degrees
@@ -213,11 +224,7 @@ drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 (	//no mouse activity, displ automation
 	gfx_g =  0.8; //yellow due to set red previously
 
-	// conv polar to cart for displ automation
-	temp_rad=(155-((100-slider3)/1.8+ slider2))/(155*2);
-	temp_theta=(slider1*$pi/180)+$pi/2;
-	new_x=-cos(temp_theta)*temp_rad*gfx_w+(gfx_w/2);
-	new_y=-sin(temp_theta)*temp_rad*gfx_h+(gfx_h/2);
+
 
 	box_width*=2; //enlarged box 
 	drawbox(new_x,new_y);
