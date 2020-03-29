@@ -1,0 +1,71 @@
+desc: based on http://www.blueripplesound.com/decoding v3
+
+//W originally .7072 w/o 0.75 adjustment
+slider1:0<0,1,1{Furse-Malham,Not ACN}>Channel Order (disabled)
+slider2:0<0,2,0.01>Width
+slider3:1024<512,2048,512>Blocksize
+slider4:0.1<0.05,1,0.05>Response
+
+import surroundlib2.txt
+
+@init
+Mid=Side=0;
+Mid_abs =Side_abs=0;
+sumMid=sumSide=0;
+
+width_2=0.8; // MaxRE-like correction for in-phase coefficients
+
+@slider
+
+blocksize=slider3;
+response=slider4;
+
+@block
+count+=samplesblock;
+
+(count>blocksize)?
+(
+	// slider2=MidSide_stats_analyze(slider2,response);
+	newpan=(((sumSide)/(sumMid))*response)+(slider2*(1-response));
+	delta=0.01;
+	sumMid=0+delta;
+	sumSide=0;
+	
+	slider2=newpan;
+	count=0;
+);
+
+
+@sample
+
+slider1==0?
+(//fuma
+	W=spl0  ;
+	X=spl1  ;
+	Y=spl2  ;
+):
+(//acn
+	W=spl0  ;
+	Y=spl1  ;
+	X=spl3  ;
+);
+
+Mid = W;
+Side= X;
+
+Mid_abs =Mid*sign(Mid) ; //get magnitude
+Side_abs=Side*sign(Side) ; //todo: make sole panning not sound bad
+
+sumMid+=Mid_abs;
+sumSide+=Side_abs;
+
+
+  
+spl0=0.7956*W*width_2*slider2+ 0.4332*X+   0.4332*Y ;
+spl1=0.7956*W*width_2*slider2+ 0.4332*X+  -0.4332*Y ;
+spl4=0.7956*W*width_2*slider2+-0.4332*X+   0.4332*Y ;
+spl5=0.7956*W*width_2*slider2+-0.4332*X+  -0.4332*Y ;
+
+spl2=0;
+spl3=0;
+
