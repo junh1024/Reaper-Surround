@@ -1,0 +1,45 @@
+desc: bitutils V2 ALPHA
+
+//W originally .7072 w/o 0.75 adjustment
+slider1:1<0,1,1{Auto,Manual}>Mode
+slider2:16<8,24,1>Bits
+slider3:0<-4,4,1>Shift
+slider4:2<1,16,1>Channels
+slider5:1024<512,2048,512>Blocksize
+slider6:0.1<0.05,0.5,0.05>Response
+
+import surroundlib2.txt
+
+@init
+
+@slider
+
+// blocksize=slider3;
+// response=slider4;
+
+// bits=slider2;
+multiply=2^(slider2-1);
+inv_multiply=1/multiply;
+chans=slider4;
+shift=2^slider3;
+
+@block
+count+=samplesblock;
+
+// (count>blocksize)?
+// (
+
+// );
+
+
+@sample
+n = 0;
+
+//add all chans to a temp
+loop(chans,
+
+	
+	spl(n)=floor(spl(n)*multiply+0.5)*inv_multiply*shift;
+
+	n+=1;
+);
