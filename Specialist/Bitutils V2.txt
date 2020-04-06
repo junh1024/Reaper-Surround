@@ -1,45 +1,81 @@
 desc: bitutils V2 ALPHA
 
-//W originally .7072 w/o 0.75 adjustment
-slider1:1<0,1,1{Auto,Manual}>Mode
+slider1:0<0,2,1{Manual,Auto Slow,Auto Fast}>Mode
 slider2:16<8,24,1>Bits
 slider3:0<-4,4,1>Shift
-slider4:2<1,16,1>Channels
-slider5:1024<512,2048,512>Blocksize
+slider4:6<1,16,1>Channels
+slider5:1024<8,24,1>Actual bits
 slider6:0.1<0.05,0.5,0.05>Response
 
-import surroundlib2.txt
-
 @init
+count=0;
+
+
+// bitz=0;
+multiply=0;
+
+loudness_LT=0;
+loudness_LT_ALL=99;
+loudness_IM=100;
+loudness_IM_ALL=0;
+
+bits=200;
+multiply=300;
+
 
 @slider
+blocksize=4096;
+// blocksize=slider5;
 
-// blocksize=slider3;
 // response=slider4;
 
 // bits=slider2;
-multiply=2^(slider2-1);
-inv_multiply=1/multiply;
+// multiply=2^(slider2-1);
+
 chans=slider4;
 shift=2^slider3;
 
 @block
 count+=samplesblock;
+n = 0;
+(count>blocksize)?
+(	
+	n = 0;
+	loudness_IM_ALL=0;
+	
+	loop //make an average of all chans
+	(chans,
+		
+		loudness_IM_ALL+=loudness_IM[n]/(chans-0.5); //cuz LFE is too quiet
+		n+=1;
+	
+	);
+	n = 0;
+	loop //calculate the bits based on difference to average
+	(chans,
+		bits[n]=floor(loudness_IM_ALL*slider2/loudness_IM[n]);
+		bits[n]=max(min(bits[n],slider2+1),slider2-1);
+		slider5=bits[1];
+		sliderchange(slider5);
+		multiply[n]=2^(bits[n]-1);
+		loudness_IM[n]=0;
+		n+=1;
+	);
+	count=0;
 
-// (count>blocksize)?
-// (
+);
 
-// );
+
 
 
 @sample
-n = 0;
+m = 0;
 
 //add all chans to a temp
 loop(chans,
 
+	loudness_IM[m]+=abs(spl(m));
+	spl(m)=floor(spl(m)*multiply[m]+0.5)*(1/multiply[m])*shift;
 	
-	spl(n)=floor(spl(n)*multiply+0.5)*inv_multiply*shift;
-
-	n+=1;
+	m+=1;
 );
