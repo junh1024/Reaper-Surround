@@ -79,3 +79,30 @@ loop(chans,
 	
 	m+=1;
 );
+
+@gfx 500 100
+box_width=gfx_w/(chans*1.2);
+function drawbox(x,y)
+(
+	gfx_x=x-box_width/2;
+	gfx_y=y-box_width/2;
+	gfx_rectto(x+box_width/2,y+box_width/2)
+);
+
+//code for ASCII
+gfx_x=gfx_y=16;
+gfx_a = 0.8;
+gfx_r = gfx_g = gfx_b = 1;
+
+g=0;
+
+loop(chans,
+
+	// gfx_drawchar(bits[g]+64);//draw ASCII
+	gfx_a = 0.6;
+	bits[g]>slider2?gfx_a = 0.4;
+	bits[g]<slider2?gfx_a = 0.8;
+	drawbox((g*1.2*box_width)+(box_width/2),0); //1+0.2 cuz add gap
+
+	g+=1;
+);
