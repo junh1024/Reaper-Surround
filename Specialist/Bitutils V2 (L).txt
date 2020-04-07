@@ -1,10 +1,10 @@
-desc: bitutils V2 ALPHA
+desc: bit reduction & shifter w/ GUI.
 
 slider1:0<0,2,1{Manual,Auto Slow,Auto Fast}>Mode
 slider2:16<8,24,1>Bits
 slider3:0<-4,4,1>Shift
 slider4:6<1,16,1>Channels
-slider5:1024<8,24,1>Actual bits
+slider5:1024<512,2048,512>Blocksize
 slider6:0.1<0.05,0.5,0.05>Response
 
 import surroundlib3.txt
@@ -13,27 +13,21 @@ import surroundlib3.txt
 @init
 count=0;
 
-
-// bitz=0;
-multiply=0;
-
 loudness_LT=0;
-loudness_LT_ALL=99;
-loudness_IM=100;
+loudness_LT_ALL=0;
+
+loudness_IM=100; //array offset
 loudness_IM_ALL=0;
 
-bits=200;
-multiply=300;
+bits=200; //array offset
+multiply=300; //array offset
 
 
 @slider
-blocksize=4096;
-// blocksize=slider5;
+// blocksize=4096;
+blocksize=slider5;
 
 // response=slider4;
-
-// bits=slider2;
-// multiply=2^(slider2-1);
 
 chans=slider4;
 shift=2^slider3;
@@ -57,9 +51,8 @@ n = 0;
 	loop //calculate the bits based on difference to average
 	(chans,
 		bits[n]=floor(loudness_IM_ALL*slider2/loudness_IM[n]);
-		bits[n]=max(min(bits[n],slider2+1),slider2-1);
-		slider5=bits[1];
-		sliderchange(slider5);
+		bits[n]=max(min(bits[n],slider2+1),slider2-1); //limit to the deviation to +-1 bits
+		
 		multiply[n]=2^(bits[n]-1);
 		loudness_IM[n]=0;
 		n+=1;
@@ -72,10 +65,10 @@ n = 0;
 
 
 @sample
-m = 0;
+m = 0;//loop index
 
 //add all chans to a temp
-loop(chans,
+loop(chans-0,
 
 	loudness_IM[m]+=abs(spl(m));
 	spl(m)=floor(spl(m)*multiply[m]+0.5)*(1/multiply[m])*shift;
@@ -84,19 +77,15 @@ loop(chans,
 );
 
 @gfx 500 100
+gfx_x=gfx_y=16;
+gfx_r = gfx_g = gfx_b = 1;
 box_width=gfx_w/(chans*1.2);
 
+g=0;//loop index
 
-//code for ASCII
-gfx_x=gfx_y=16;
-gfx_a = 0.8;
-gfx_r = gfx_g = gfx_b = 1;
-
-g=0;
 
 loop(chans,
 
-	// gfx_drawchar(bits[g]+64);//draw ASCII
 	gfx_a = 0.6;
 	bits[g]>slider2?gfx_a = 0.4;
 	bits[g]<slider2?gfx_a = 0.8;
