@@ -39,7 +39,7 @@ shift=2^slider3;
 count+=samplesblock;
 (count>blocksize)?
 (	
-	n = count=loudness_IM_ALL=max_bits=0;
+	n = count=max_bits=0;
 
 	(mode==0)?
 	(
@@ -53,13 +53,13 @@ count+=samplesblock;
 	)
 	:
 	(
-		loop //make an average of all chans
-		(chans,
+		// loop //make an average of all chans
+		// (chans,
 			
-			loudness_IM_ALL+=loudness_IM[n]/(chans-0.5); //cuz LFE is too quiet
-			n+=1;
+			loudness_IM_ALL/=(chans-0.5); //cuz LFE is too quiet
+			// n+=1;
 		
-		);
+		// );
 		
 		(mode>1)?(max_bits=slider2+1;):(max_bits=slider2;); //limit bits deviation to - if MQ
 		
@@ -75,6 +75,7 @@ count+=samplesblock;
 			loudness_IM[n]=0;
 			n+=1;
 		);
+		loudness_IM_ALL=0;
 	);
 
 );
@@ -88,7 +89,9 @@ m = 0;//loop index
 //add all chans to a temp
 loop(chans-0,
 
-	loudness_IM[m]+=abs(spl(m));
+	temp1=abs(spl(m));
+	loudness_IM[m]+=temp1;
+	loudness_IM_ALL+=temp1;
 	spl(m)=floor(spl(m)*multiply[m]+0.5)*inv_multiply_shift[m];
 	
 	m+=1;
