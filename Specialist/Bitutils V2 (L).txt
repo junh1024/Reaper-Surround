@@ -22,7 +22,8 @@ loudness_IM_OLD=400; //array offset
 
 bits=200; //array offset
 multiply=300; //array offset
-
+inv_multiply_shift=500;
+shift=0;
 
 @slider
 // blocksize=4096;
@@ -46,7 +47,7 @@ count+=samplesblock;
 		(chans,
 			bits[n]=slider2;
 			multiply[n]=2^(bits[n]-1);
-
+			inv_multiply_shift[n]=(1/multiply[n])*shift;
 			n+=1;
 		);
 	)
@@ -69,6 +70,8 @@ count+=samplesblock;
 			bits[n]=max(min(bits[n],max_bits),slider2-1); //limit bits deviation to +-1 bits
 			
 			multiply[n]=2^(bits[n]-1);
+			inv_multiply_shift[n]=(1/multiply[n])*shift;
+			
 			loudness_IM[n]=0;
 			n+=1;
 		);
@@ -86,7 +89,7 @@ m = 0;//loop index
 loop(chans-0,
 
 	loudness_IM[m]+=abs(spl(m));
-	spl(m)=floor(spl(m)*multiply[m]+0.5)*(1/multiply[m])*shift;
+	spl(m)=floor(spl(m)*multiply[m]+0.5)*inv_multiply_shift[m];
 	
 	m+=1;
 );
