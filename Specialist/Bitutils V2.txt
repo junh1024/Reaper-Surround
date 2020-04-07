@@ -7,6 +7,9 @@ slider4:6<1,16,1>Channels
 slider5:1024<8,24,1>Actual bits
 slider6:0.1<0.05,0.5,0.05>Response
 
+import surroundlib3.txt
+
+
 @init
 count=0;
 
@@ -82,12 +85,7 @@ loop(chans,
 
 @gfx 500 100
 box_width=gfx_w/(chans*1.2);
-function drawbox(x,y)
-(
-	gfx_x=x-box_width/2;
-	gfx_y=y-box_width/2;
-	gfx_rectto(x+box_width/2,y+box_width/2)
-);
+
 
 //code for ASCII
 gfx_x=gfx_y=16;

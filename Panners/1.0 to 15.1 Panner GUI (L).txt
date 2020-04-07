@@ -21,12 +21,7 @@ in0=0;
 new_x=new_y=0;
 height_temp=0;
 
-function drawbox(x,y)
-(
-	gfx_x=x-box_width/2;
-	gfx_y=y-box_width/2;
-	gfx_rectto(x+box_width/2,y+box_width/2)
-);
+
 
 //LFE
 LFE_mode_gain=1;//monitoring 0dB default;

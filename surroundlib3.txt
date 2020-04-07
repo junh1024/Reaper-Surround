@@ -21,10 +21,10 @@ function front_width(F_width_coeff)
 );
 
 
-function rear_width(R_width_coeff)
+function rear_width(R_width)
 (
 	R_M=(spl4+spl5)*0.5;
-	R_S=(spl4-spl5)*0.5*R_width_coeff;
+	R_S=((spl4-spl5)*0.5)*R_width;
 
 	spl4=R_M+R_S;
 	spl5=R_M-R_S;
@@ -44,4 +44,13 @@ function Top_Side_Depth_71_to_51(Top_Side_Depth)
 	spl9 +=(spl15)*   Top_Side_Depth;
 	spl12+=(spl14)*(1-Top_Side_Depth);
 	spl13+=(spl15)*(1-Top_Side_Depth);
+);
+
+box_width=0;
+
+function drawbox(x,y)
+(
+	gfx_x=x-box_width/2;
+	gfx_y=y-box_width/2;
+	gfx_rectto(x+box_width/2,y+box_width/2)
 );
