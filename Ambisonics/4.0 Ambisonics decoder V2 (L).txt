@@ -1,10 +1,14 @@
-desc: based on http://www.blueripplesound.com/decoding v3
+desc: Reactive 1oA quad surround decoder.
 
 //W originally .7072 w/o 0.75 adjustment
-slider1:0<0,1,1{Furse-Malham,Not ACN}>Channel Order (disabled)
-slider2:0<0,2,0.01>Width
-slider3:1024<512,2048,512>Blocksize
-slider4:0.1<0.05,0.5,0.05>Response
+slider1:1<0,1,1{Manual,Auto}>Mode
+slider2:0<0,1,1{Furse-Malham,Not ACN}>Channel Order (disabled)
+ // 0.8 is MaxRE-like correction for in-phase coefficients
+slider3:0.8<0.2,1.8,0.01>Adjustment
+slider4:1<0.2,1.8,0.01>Auto Width
+
+slider5:1024<512,2048,512>Blocksize
+slider6:0.1<0.05,0.5,0.05>Response
 
 import surroundlib2.txt
 
@@ -13,12 +17,12 @@ Mid=Side=0;
 Mid_abs =Side_abs=0;
 sumMid=sumSide=0;
 
-width_2=0.8; // MaxRE-like correction for in-phase coefficients
+width_2=0.8; 
 
 @slider
 
-blocksize=slider3;
-response=slider4;
+blocksize=slider5;
+response=slider6;
 
 @block
 count+=samplesblock;
@@ -26,19 +30,19 @@ count+=samplesblock;
 (count>blocksize)?
 (
 	// slider2=MidSide_stats_analyze(slider2,response);
-	newpan=(((sumSide)/(sumMid))*response)+(slider2*(1-response));
+	newpan=(((sumSide)/(sumMid))*response)+(slider4*(1-response));
 	delta=0.01;
 	sumMid=0+delta;
 	sumSide=0;
 	
-	slider2=newpan;
+	slider4=min(newpan,2);
 	count=0;
 );
 
 
 @sample
 
-slider1==0?
+slider2==0?
 (//fuma
 	W=spl0  ;
 	X=spl1  ;
@@ -61,10 +65,10 @@ sumSide+=Side_abs;
 
 
   
-spl0=0.7956*W*width_2*slider2+ 0.4332*X+   0.4332*Y ;
-spl1=0.7956*W*width_2*slider2+ 0.4332*X+  -0.4332*Y ;
-spl4=0.7956*W*width_2*slider2+-0.4332*X+   0.4332*Y ;
-spl5=0.7956*W*width_2*slider2+-0.4332*X+  -0.4332*Y ;
+spl0=0.7956*W*slider3*slider4+ 0.4332*X+   0.4332*Y ;
+spl1=0.7956*W*slider3*slider4+ 0.4332*X+  -0.4332*Y ;
+spl4=0.7956*W*slider3*slider4+-0.4332*X+   0.4332*Y ;
+spl5=0.7956*W*slider3*slider4+-0.4332*X+  -0.4332*Y ;
 
 spl2=0;
 spl3=0;
