@@ -13,16 +13,9 @@ slider6:0.1<0.05,0.5,0.05>Response
 import surroundlib2.txt
 
 @init
-Mid=Side=0;
-Mid_abs =Side_abs=0;
 sumMid=sumSide=0;
-
-width_2=0.8; 
-
-@slider
-
-blocksize=slider5;
-response=slider6;
+W_coeff=W_W_coeff=0;
+XY_POS=XY_NEG=0;
 
 @block
 count+=samplesblock;
@@ -35,10 +28,16 @@ count+=samplesblock;
 	sumMid=0+delta;
 	sumSide=0;
 	
-	slider4=min(newpan,2);
+	slider4=min(newpan,2); //limit the gain
 	count=0;
 );
 
+@slider
+
+blocksize=slider5;
+response=slider6;
+
+W_coeff=0.7956*slider3*slider4;
 
 @sample
 
@@ -57,18 +56,18 @@ slider2==0?
 // Mid = W;
 // Side= X;
 
-Mid_abs =W*sign(W) ; //get magnitude
-Side_abs=(X*sign(X)+Y*sign(Y))/2 ; //make sole 2D panning not sound bad
+sumMid+= abs(W) ; //get magnitude
+sumSide+= (abs(X)+abs(Y))/2 ; //make sole 2D panning not sound bad
 
-sumMid+=Mid_abs;
-sumSide+=Side_abs;
-
-
+W_W_coeff=W*W_coeff;
+XY_POS=0.4332*X+   0.4332*Y ;
+XY_NEG=0.4332*X+  -0.4332*Y ;
   
-spl0=0.7956*W*slider3*slider4+ 0.4332*X+   0.4332*Y ;
-spl1=0.7956*W*slider3*slider4+ 0.4332*X+  -0.4332*Y ;
-spl4=0.7956*W*slider3*slider4+-0.4332*X+   0.4332*Y ;
-spl5=0.7956*W*slider3*slider4+-0.4332*X+  -0.4332*Y ;
+spl0=W_W_coeff+ XY_POS ;
+spl1=W_W_coeff+ XY_NEG ;
+spl4=W_W_coeff- XY_NEG ;
+spl5=W_W_coeff- XY_POS ;
+
 
 spl2=0;
 spl3=0;
