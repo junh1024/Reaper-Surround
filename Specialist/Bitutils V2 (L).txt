@@ -29,17 +29,15 @@ gfx_r = gfx_g = gfx_b = 1;
 
 
 @slider
-// blocksize=4096;
 blocksize=slider5;
 response=10^slider6;
-// response=slider4;
 
 mode=slider1;
 chans=slider4;
 shift=2^slider3;
 
-chans==2?slider1=0;//manual is better for stereo
-// slider4=min(chans,num_ch);//limit chans to what exists
+chans==2?slider1=0;//manual mode is better for stereo
+// slider4=min(chans,num_ch);//limit chans to what exists, doesn't work.
 
 
 (mode==0)?
@@ -110,7 +108,7 @@ count+=samplesblock;
 
 m = 2;//loop index, already did 2
 
-loop(chans-2,
+loop(chans-2, //doing chans in pairs doesnt seem to make it faster
 
 	temp1=abs(spl(m));
 	loudness_IM[m]+=temp1;
