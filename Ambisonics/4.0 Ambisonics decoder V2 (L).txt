@@ -29,15 +29,18 @@ count+=samplesblock;
 	sumSide=0;
 	
 	slider4=min(newpan,2); //limit the gain
+	// sliderchange(slider4);
 	count=0;
 );
+
+W_coeff=0.7956*slider3*slider4;
 
 @slider
 
 blocksize=slider5;
 response=slider6;
 
-W_coeff=0.7956*slider3*slider4;
+
 
 @sample
 
