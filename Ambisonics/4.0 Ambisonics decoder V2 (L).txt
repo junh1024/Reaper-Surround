@@ -4,8 +4,8 @@ desc: Reactive 1oA quad surround decoder.
 slider1:1<0,1,1{Manual,Auto}>Mode
 slider2:0<0,1,1{Furse-Malham,Not ACN}>Channel Order (disabled)
  // 0.8 is MaxRE-like correction for in-phase coefficients
-slider3:0.8<0.2,1.8,0.01>Adjustment
-slider4:1<0.2,1.8,0.01>Auto Width
+slider3:0.8<0.2,1.8,0.02>Adjustment
+slider4:1<0.2,1.8,0.02>Auto Width
 
 slider5:1024<512,2048,512>Blocksize
 slider6:0.1<0.05,0.5,0.05>Response
@@ -20,7 +20,7 @@ XY_POS=XY_NEG=0;
 @block
 count+=samplesblock;
 
-(count>blocksize)?
+(count>blocksize&&slider1==1)?
 (
 	// slider2=MidSide_stats_analyze(slider2,response);
 	newpan=(((sumSide)/(sumMid))*response)+(slider4*(1-response));
@@ -40,6 +40,7 @@ W_coeff=0.7956*slider3*slider4;
 blocksize=slider5;
 response=slider6;
 
+slider1==0?(slider4=1;);//reset sliders to 1 if manual mode
 
 
 @sample
@@ -56,8 +57,6 @@ slider2==0?
 	X=spl3  ;
 );
 
-// Mid = W;
-// Side= X;
 
 sumMid+= abs(W) ; //get magnitude
 sumSide+= (abs(X)+abs(Y))/2 ; //make sole 2D panning not sound bad
