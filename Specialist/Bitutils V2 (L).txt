@@ -29,16 +29,36 @@ gfx_r = gfx_g = gfx_b = 1;
 
 chans=slider4;
 
-n=0;
-loop //calculate the bits based on difference to average
-(chans,
 
-	bits[n]=slider2;
-	multiply[n]=2^(bits[n]-1);
-	inv_multiply_shift[n]=(1/multiply[n])*2^slider3;
-	
-	n+=1;
+n=0;
+
+
+function set_bits_flexi()
+(
+		multiply[n]=2^(bits[n]-1);
+		inv_multiply_shift[n]=(1/multiply[n])*2^slider3;//s3=shift
 );
+
+function set_bits_fixed()
+(
+	loop //calculate the bits based on difference to average
+	(chans,
+
+		bits[n]=slider2;
+		set_bits_flexi();
+		
+		n+=1;
+	);
+
+);
+
+
+
+set_bits_fixed();
+
+
+
+
 
 
 @slider
@@ -56,13 +76,7 @@ chans==2?slider1=0;//manual mode is better for stereo
 (mode==0)?
 (
 	n=0;
-	loop //calculate the bits based on difference to average
-	(chans,
-		bits[n]=slider2;
-		multiply[n]=2^(bits[n]-1);
-		inv_multiply_shift[n]=(1/multiply[n])*shift;
-		n+=1;
-	);
+	set_bits_fixed();
 );
 
 
@@ -91,8 +105,7 @@ count+=samplesblock;
 			bits[n]=floor(loudness_IM_ALL*slider2/loudness_IM[n]);
 			bits[n]=max(min(bits[n],max_bits),slider2-1); //limit bits deviation to +-1 bits
 			
-			multiply[n]=2^(bits[n]-1);
-			inv_multiply_shift[n]=(1/multiply[n])*shift;
+			set_bits_flexi();
 			
 			loudness_IM[n]=0;
 			n+=1;
@@ -112,12 +125,12 @@ count+=samplesblock;
 	temp1=abs(spl0);
 	loudness_IM[0]+=temp1;
 	loudness_IM_ALL+=temp1;
-	spl0=floor(spl0*multiply[0]+0.5)*inv_multiply_shift[0];
-	
+	spl0=floor(spl0*multiply[0])*inv_multiply_shift[0];
+	 //multiply[0]+0.5 without a *sign(spl0) wont make a more accurate rounding
 	temp1=abs(spl1);
 	loudness_IM[1]+=temp1;
 	loudness_IM_ALL+=temp1;
-	spl1=floor(spl1*multiply[1]+0.5)*inv_multiply_shift[1];
+	spl1=floor(spl1*multiply[1])*inv_multiply_shift[1];
 
 m = 2;//loop index, already did 2
 
@@ -126,7 +139,7 @@ loop(chans-2, //doing chans in pairs doesnt seem to make it faster
 	temp1=abs(spl(m));
 	loudness_IM[m]+=temp1;
 	loudness_IM_ALL+=temp1;
-	spl(m)=floor(spl(m)*multiply[m]+0.5)*inv_multiply_shift[m];
+	spl(m)=floor(spl(m)*multiply[m])*inv_multiply_shift[m];
 	
 	m+=1;
 );
