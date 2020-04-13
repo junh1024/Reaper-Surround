@@ -27,6 +27,19 @@ shift=0;
 
 gfx_r = gfx_g = gfx_b = 1;
 
+chans=slider4;
+
+n=0;
+loop //calculate the bits based on difference to average
+(chans,
+
+	bits[n]=slider2;
+	multiply[n]=2^(bits[n]-1);
+	inv_multiply_shift[n]=(1/multiply[n])*2^slider3;
+	
+	n+=1;
+);
+
 
 @slider
 blocksize=slider5;
