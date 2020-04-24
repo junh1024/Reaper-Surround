@@ -1,8 +1,12 @@
-desc:Stereo Phase Rotator
-//tags: processing FFT phase
+desc:FFT max tool in ALPHA. Takes the maximum of in1 & in2 for every FFT bin & outputs it.
+//tags: requested by James HE , modded by geraintluff, modded by junh1024,
+//via https://forum.cockos.com/showpost.php?p=1962348&postcount=18
 
-slider1:0<-180,180,1.0>Phase Adjustment Left
-slider2:0<-180,180,1.0>Phase Adjustment Right
+//there's a lot I dont understand.
+// TODO: performance improvements like moving FFT stuff to @block
+
+slider1:0<-180,180,1.0>Phase Adjustment Left  UNUSED
+slider2:0<-180,180,1.0>Phase Adjustment Right UNUSED
 slider3:2<0,4,1{1024,2048,4096,8192}>FFT Size
 
 in_pin:left input
@@ -25,6 +29,8 @@ out_pin:right output
   buf0 = sixteen_k*1;
   buf1 = sixteen_k*2;
   
+  
+  //my arrays for analysis
 Magnitudes1=sixteen_k*5;
 Magnitudes2=sixteen_k*6;
 Magnitudes3=sixteen_k*7;
@@ -35,6 +41,8 @@ Angles1=sixteen_k*9;
 Angles2=sixteen_k*10;
 Angles3=sixteen_k*11;
 Angles4=sixteen_k*12;
+
+use_input_1=0;
 
 @slider
 
@@ -54,12 +62,9 @@ Angles4=sixteen_k*12;
     pdc_delay = fftsize;
   );  
 
-  phaseadj_l = -$pi*slider1/180.0;
-  phaseadj_r = -$pi*slider2/180.0;
-  cadj_l = cos(phaseadj_l);
-  sadj_l = sin(phaseadj_l);
-  cadj_r = cos(phaseadj_r);
-  sadj_r = sin(phaseadj_r);
+  // phaseadj_l = -$pi*slider1/180.0;
+  // phaseadj_r = -$pi*slider2/180.0;
+
 
 @sample
 
@@ -78,6 +83,8 @@ Angles4=sixteen_k*12;
       a2 = 2*fftsize-i;
       b2 = a2+1;
 
+	  //like, what is this voodoo? Untangling L&R from a single FFT? Wynaut use 2 FFT for clarity?
+	  
       x = buf0[a];
       y = buf0[b];
       x2 = buf0[a2];
@@ -88,29 +95,43 @@ Angles4=sixteen_k*12;
       real_r = (y + y2)*0.5;
       imag_r = (x2 - x)*0.5;
       
-      // real_l2 = real_l*cadj_l - imag_l*sadj_l;
-      // imag_l2 = real_l*sadj_l + imag_l*cadj_l;
-      // real_r2 = real_r*cadj_r - imag_r*sadj_r;
-      // imag_r2 = real_r*sadj_r + imag_r*cadj_r;
+//convert to polar. This is like, pythagoras trig stuff
 	  
       Magnitudes1[i]=sqrt(real_l^2+imag_l^2);
       Magnitudes2[i]=sqrt(real_r^2+imag_r^2);
-	  
 
-	  
 	  Angles1[i]=atan2(real_l,imag_l)*180/$pi;
 	  Angles2[i]=atan2(real_r,imag_r)*180/$pi;
 
-	  //x=r cos theta
+	  //analyse the magnitudes, which one is biggest out of in1 & in2?
+	  (Magnitudes1[i]>Magnitudes2[i])?
+	  (use_input_1=1;)
+	  :
+	  (use_input_1=0;);
 	  
+	  //copy the largest magnitude to the smaller one
+	  (use_input_1==1)?
+	  (
+		  Magnitudes2[i]=Magnitudes1[i];
+		  Angles2[i]=Angles1[i];
+	  )
+	  :
+	  (
+		  Magnitudes1[i]=Magnitudes2[i];
+		  Angles1[i]=Angles2[i];
+	  );
 	  
-	  // Angles1_test=Angles1[i];
+	  // convert to cartesian
+	  //x=R cos (theta)
 	  
+	  //somehow sin for X/real & cos for Y/im is correct in JSFX
       real_l2 = Magnitudes1[i]*sin(Angles1[i]*$pi/180) ;
       imag_l2 = Magnitudes1[i]*cos(Angles1[i]*$pi/180) ;
       real_r2 = Magnitudes2[i]*sin(Angles2[i]*$pi/180) ;
       imag_r2 = Magnitudes2[i]*cos(Angles2[i]*$pi/180) ;
       
+	  
+	  //more voodoo
       x = real_l2 - imag_r2;
       x2 = real_l2 + imag_r2;
       y = imag_l2 + real_r2;
