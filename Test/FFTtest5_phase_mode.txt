@@ -5,8 +5,8 @@ desc:FFT max tool in ALPHA. Takes the maximum of in1 & in2 for every FFT bin & o
 //there's a lot I dont understand.
 // TODO: performance improvements like moving FFT stuff to @block
 
-slider1:0<0,3,1{Max,FPA,Phase limit,Phase reflect}>Mode
-slider2:0<-180,180,1.0>Phase Adjustment Right UNUSED
+slider1:0<0,3,1{Max,FFT Phase Aligner,Phase limit,Phase reflect}>Mode
+slider2:10<0,100,1>Starting frequency to process (%)
 slider3:2<0,4,1{1024,2048,4096,8192}>FFT Size
 
 // in_pin:left input
@@ -47,6 +47,9 @@ Angles1=sixteen_k*9;
 Angles2=sixteen_k*10;
 Angles3=sixteen_k*11;
 Angles4=sixteen_k*12;
+
+Angle_Difference1=sixteen_k*13;
+Angle_Difference2=sixteen_k*14;
 
 use_input_1=0;
 
@@ -167,9 +170,17 @@ gfx_r = gfx_g = gfx_b = 1;
 	  )
 	  :
 	  (	
-	  //copy phase form sidechain
+	  //copy phase from sidechain
+		  Angle_Difference1[i]=Angles3[i]-Angles1[i];
+		  Angle_Difference2[i]=Angles4[i]-Angles2[i];
+		  
+		  // Angles1[i]+=Angle_Difference1[i]*slider2/100;
+		  // Angles2[i]+=Angle_Difference2[i]*slider2/100;
+		  (i>slider2*fftsize/100)? //only process frequencies higher than this percent
+		  (
 		  Angles1[i]=Angles3[i];
 		  Angles2[i]=Angles4[i];
+		  );
 	  );
 	  // convert to cartesian
 	  //x=R cos (theta)
