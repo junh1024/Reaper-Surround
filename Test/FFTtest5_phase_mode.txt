@@ -5,9 +5,10 @@ desc:FFT max tool in ALPHA. Takes the maximum of in1 & in2 for every FFT bin & o
 //there's a lot I dont understand.
 // TODO: performance improvements like moving FFT stuff to @block
 
-slider1:0<0,3,1{Max,FFT Phase Aligner,Phase limit,Phase reflect}>Mode
+slider1:0<0,3,1{Max,FFT Phase Aligner,subtract,Phase limit,Phase reflect}>Mode
 slider2:10<0,100,1>Starting frequency to process (%)
-slider3:2<0,4,1{1024,2048,4096,8192}>FFT Size
+slider3:100<0,100,1>amount
+slider4:2<0,4,1{1024,2048,4096,8192}>FFT Size
 
 // in_pin:left input
 // in_pin:right input
@@ -57,7 +58,7 @@ gfx_r = gfx_g = gfx_b = 1;
 
 @slider
 
-  sliderfft = (2^(slider3+10))|0;
+  sliderfft = (2^(slider4+10))|0;
   fftsize != sliderfft ? (
     pos = 0;
     memset(buf0, 0, 2*fftsize);
@@ -148,40 +149,49 @@ gfx_r = gfx_g = gfx_b = 1;
 
 	  //analyse the magnitudes, which one is biggest out of in1 & in2?
 	  
-	  slider1<1?
+	  slider1==0? //Max mode
 	  (
-		  (Magnitudes1[i]>Magnitudes2[i])?
+		  (Magnitudes1[i]>Magnitudes3[i])?
 		  (use_input_1=1;)
 		  :
 		  (use_input_1=0;);
 		  
 		  //copy the largest magnitude to the smaller one
 		  
-		  (use_input_1==1)?
+		  (use_input_1==0)?
+		  // (
+			  // Magnitudes2[i]=Magnitudes1[i];
+			  // Angles2[i]=Angles1[i];
+		  // )
+		  // :
 		  (
-			  Magnitudes2[i]=Magnitudes1[i];
-			  Angles2[i]=Angles1[i];
-		  )
-		  :
-		  (
-			  Magnitudes1[i]=Magnitudes2[i];
+			  Magnitudes1[i]=Magnitudes3[i];
+			  Magnitudes2[i]=Magnitudes4[i];
 			  Angles1[i]=Angles2[i];
+			  Angles2[i]=Angles4[i];
 		  );
-	  )
-	  :
+	  );
+	  
+	  slider1==1? //FPA
 	  (	
 	  //copy phase from sidechain
-		  Angle_Difference1[i]=Angles3[i]-Angles1[i];
-		  Angle_Difference2[i]=Angles4[i]-Angles2[i];
+		  // Angle_Difference1[i]=Angles3[i]-Angles1[i];
+		  // Angle_Difference2[i]=Angles4[i]-Angles2[i];
 		  
 		  // Angles1[i]+=Angle_Difference1[i]*slider2/100;
 		  // Angles2[i]+=Angle_Difference2[i]*slider2/100;
-		  (i>slider2*fftsize/100)? //only process frequencies higher than this percent
+		  (abs(( Magnitudes1[i]-Magnitudes3[i])/ (Magnitudes1[i]+Magnitudes3[i] ))<slider3/100 )? //align only close magnitudes
 		  (
 		  Angles1[i]=Angles3[i];
 		  Angles2[i]=Angles4[i];
 		  );
 	  );
+	  
+	   slider1==2? //subtract
+	   (
+			max(Magnitudes1[i]-=Magnitudes3[i]*slider3/100,0);
+			max(Magnitudes2[i]-=Magnitudes4[i]*slider3/100,0);
+	   );
 	  // convert to cartesian
 	  //x=R cos (theta)
 	  
