@@ -1,0 +1,21 @@
+1
+---
+4in 2out
+max magnitude of input pairs, OR copy phase from set 2 to set1 (align phase), FFT phase limiter
+
+2
+---
+2i 2o
+FFT stereo imager
+select pan, phase, transient, eq, like Adobe CCX
+
+
+3
+---
+2i 5o
+2>5 upmix
+
+4
+---
+4i 8o
+4>8 upmix spatial

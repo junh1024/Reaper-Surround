@@ -4,6 +4,11 @@ Introduction
 ---
 A collection of mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). These are JSFX so DOWNLOAD ZIP & Put them in your Reaper EFFECTS folder. Note if you're cherry picking FX to DL (or updating), that you'll need surroundlib1-3 so get those too [1]. Bugs/suggestions? File an issue or contact me on twitter.
 
+
+Donations
+---
+Please PM me on reddit/Twitter/DC for donation info.
+
 Disclaimer
 ---
 NO warranty is provided, and these are provided as-is. Although I have been using these since 2015, I reserve the right to make changes, including backwards-incompatible changes. Although it is not in my intrest to do so, as I, too, have projects to keep working. Tools may be added, changed, or deleted at ANY time. Although old versions of this repo are available in the worst case. Experimental tools should be especially prone to change (pending my time & effort), and tools in **/Old** are prone to deletion/already deprecated/may be wrong. Some FX may have unused controls, which are TBD.

@@ -5,28 +5,24 @@ desc:FFT max tool in ALPHA. Takes the maximum of in1 & in2 for every FFT bin & o
 //there's a lot I dont understand.
 // TODO: performance improvements like moving FFT stuff to @block
 
-slider1:0<0,3,1{Max,FFT Phase Aligner,subtract,Phase limit,Phase reflect}>Mode
+slider1:0<0,3,1{Max,Align (FPA),Subtract,Phase limit (unused),Phase reflect (unused)}>Mode
 slider2:10<0,100,1>Starting frequency to process (%)
-slider3:100<0,100,1>amount
+slider3:100<0,100,1>Amount
 slider4:2<0,4,1{1024,2048,4096,8192}>FFT Size
 
-// in_pin:left input
-// in_pin:right input
-// out_pin:left output
-// out_pin:right output
 
-import surroundlib3.txt
+// import surroundlib3.txt
 
 @init 
 
-  fftsize = -1;
-  pdc_bot_ch = 0;
-  pdc_top_ch = 4;
+fftsize = -1;
+pdc_bot_ch = 0;
+pdc_top_ch = 4;
 
-  // array pointers
-  window=0;
-  
-  sixteen_k=16384;
+// array pointers
+window=0;
+
+sixteen_k=16384;
   
   
 buf0 = sixteen_k*1;
@@ -221,39 +217,39 @@ gfx_r = gfx_g = gfx_b = 1;
     pos=0;
   );
 
-  //windowing?
-  w1 = window[pos/2];
-  w2 = window[(fftsize-pos)/2-1];
-  sw = (w1+w2)*fftsize;
-  
-  out0 = (buf0[pos]+buf1[fftsize+pos])/sw;
-  out1 = (buf0[pos+1]+buf1[fftsize+pos+1])/sw;
+//windowing?
+w1 = window[pos/2];
+w2 = window[(fftsize-pos)/2-1];
+sw = (w1+w2)*fftsize;
 
-  
-  // out2 = (buf2[pos]+buf1[fftsize+pos])/sw;
-  // out3 = (buf2[pos+1]+buf1[fftsize+pos+1])/sw;
-  
-  buf0[pos] = w1*spl0;
-  buf0[pos+1] = w1*spl1;
-  buf1[fftsize+pos] = w2*spl0;
-  buf1[fftsize+pos+1] = w2*spl1;
-  
-  //more stuff for 2nd input
-  buf2[pos] = w1*spl2;
-  buf2[pos+1] = w1*spl3;
-  buf3[fftsize+pos] = w2*spl2;
-  buf3[fftsize+pos+1] = w2*spl3;
-
-  spl0 = out0;
-  spl1 = out1;
-
-  pos += 2;
-  
-@gfx 500 16
-
-box_width=8;
+out0 = (buf0[pos]+buf1[fftsize+pos])/sw;
+out1 = (buf0[pos+1]+buf1[fftsize+pos+1])/sw;
 
 
-gfx_a = 0.8; 
-drawbox(floor((pos/fftsize)*gfx_w),8);
+// out2 = (buf2[pos]+buf1[fftsize+pos])/sw;
+// out3 = (buf2[pos+1]+buf1[fftsize+pos+1])/sw;
 
+buf0[pos] = w1*spl0;
+buf0[pos+1] = w1*spl1;
+buf1[fftsize+pos] = w2*spl0;
+buf1[fftsize+pos+1] = w2*spl1;
+
+//more stuff for 2nd input
+buf2[pos] = w1*spl2;
+buf2[pos+1] = w1*spl3;
+buf3[fftsize+pos] = w2*spl2;
+buf3[fftsize+pos+1] = w2*spl3;
+
+spl0 = out0;
+spl1 = out1;
+
+spl2=spl3=0;//silence set2
+
+pos += 2;
+
+// @gfx 500 16
+
+// box_width=8;
+
+// gfx_a = 0.8; 
+// drawbox(floor((pos/fftsize)*gfx_w),8);
