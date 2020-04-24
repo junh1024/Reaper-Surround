@@ -1,0 +1,147 @@
+desc:Stereo Phase Rotator
+//tags: processing FFT phase
+
+slider1:0<-180,180,1.0>Phase Adjustment Left
+slider2:0<-180,180,1.0>Phase Adjustment Right
+slider3:2<0,4,1{1024,2048,4096,8192}>FFT Size
+
+in_pin:left input
+in_pin:right input
+out_pin:left output
+out_pin:right output
+
+@init 
+
+  fftsize = -1;
+  pdc_bot_ch = 0;
+  pdc_top_ch = 2;
+
+  // array pointers
+  window=0;
+  
+  sixteen_k=16384;
+  
+  
+  buf0 = sixteen_k*1;
+  buf1 = sixteen_k*2;
+  
+Magnitudes1=sixteen_k*5;
+Magnitudes2=sixteen_k*6;
+Magnitudes3=sixteen_k*7;
+Magnitudes4=sixteen_k*8;
+
+
+Angles1=sixteen_k*9;
+Angles2=sixteen_k*10;
+Angles3=sixteen_k*11;
+Angles4=sixteen_k*12;
+
+@slider
+
+  sliderfft = (2^(slider3+10))|0;
+  fftsize != sliderfft ? (
+    pos = 0;
+    memset(buf0, 0, 2*fftsize);
+    memset(buf1, 0, 2*fftsize);  
+    memset(window, 0, fftsize); 
+    fftsize = sliderfft;
+    w = 2.0*$pi/fftsize;
+    i = 0;
+    loop(fftsize/2,
+      window[i] = 0.42-0.50*cos(i*w)+0.08*cos(2.0*i*w);
+      i += 1;
+    ); 
+    pdc_delay = fftsize;
+  );  
+
+  phaseadj_l = -$pi*slider1/180.0;
+  phaseadj_r = -$pi*slider2/180.0;
+  cadj_l = cos(phaseadj_l);
+  sadj_l = sin(phaseadj_l);
+  cadj_r = cos(phaseadj_r);
+  sadj_r = sin(phaseadj_r);
+
+@sample
+
+  pos >= fftsize ? (
+    tmp = buf0;
+    buf0 = buf1;
+    buf1 = tmp;
+    
+    fft(buf0, fftsize);
+    fft_permute(buf0, fftsize);
+
+    i = 2;
+    loop(fftsize/2 - 1, 
+      a = i;
+      b = a+1;
+      a2 = 2*fftsize-i;
+      b2 = a2+1;
+
+      x = buf0[a];
+      y = buf0[b];
+      x2 = buf0[a2];
+      y2 = buf0[b2];
+      
+      real_l = (x + x2)*0.5;
+      imag_l = (y - y2)*0.5;
+      real_r = (y + y2)*0.5;
+      imag_r = (x2 - x)*0.5;
+      
+      // real_l2 = real_l*cadj_l - imag_l*sadj_l;
+      // imag_l2 = real_l*sadj_l + imag_l*cadj_l;
+      // real_r2 = real_r*cadj_r - imag_r*sadj_r;
+      // imag_r2 = real_r*sadj_r + imag_r*cadj_r;
+	  
+      Magnitudes1[i]=sqrt(real_l^2+imag_l^2);
+      Magnitudes2[i]=sqrt(real_r^2+imag_r^2);
+	  
+
+	  
+	  Angles1[i]=atan2(real_l,imag_l)*180/$pi;
+	  Angles2[i]=atan2(real_r,imag_r)*180/$pi;
+
+	  //x=r cos theta
+	  
+	  
+	  // Angles1_test=Angles1[i];
+	  
+      real_l2 = Magnitudes1[i]*sin(Angles1[i]*$pi/180) ;
+      imag_l2 = Magnitudes1[i]*cos(Angles1[i]*$pi/180) ;
+      real_r2 = Magnitudes2[i]*sin(Angles2[i]*$pi/180) ;
+      imag_r2 = Magnitudes2[i]*cos(Angles2[i]*$pi/180) ;
+      
+      x = real_l2 - imag_r2;
+      x2 = real_l2 + imag_r2;
+      y = imag_l2 + real_r2;
+      y2 = real_r2 - imag_l2;
+      
+      buf0[a] = x;
+      buf0[b] = y;
+      buf0[a2] = x2;
+      buf0[b2] = y2;
+
+      i += 2);
+
+    fft_ipermute(buf0, fftsize);
+    ifft(buf0, fftsize);
+
+    pos=0;
+  );
+
+  w1 = window[pos/2];
+  w2 = window[(fftsize-pos)/2-1];
+  sw = (w1+w2)*fftsize;
+  
+  out0 = (buf0[pos]+buf1[fftsize+pos])/sw;
+  out1 = (buf0[pos+1]+buf1[fftsize+pos+1])/sw;
+  
+  buf0[pos] = w1*spl0;
+  buf0[pos+1] = w1*spl1;
+  buf1[fftsize+pos] = w2*spl0;
+  buf1[fftsize+pos+1] = w2*spl1;
+
+  spl0 = out0;
+  spl1 = out1;
+
+  pos += 2;
