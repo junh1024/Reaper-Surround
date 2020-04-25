@@ -1,13 +1,13 @@
-desc:FFT max tool in ALPHA. Takes the maximum of in1 & in2 for every FFT bin & outputs it.
+desc: FFT Multi Tool. Max, Phase Align, Subtract.
 //tags: requested by James HE , modded by geraintluff, modded by junh1024,
 //via https://forum.cockos.com/showpost.php?p=1962348&postcount=18
 
 //there's a lot I dont understand.
 // TODO: performance improvements like moving FFT stuff to @block
 
-slider1:2<0,3,1{Max,Align (FPA),Subtract,Phase limit (unused),Phase reflect (unused)}>Mode
-slider2:10<0,100,1>Starting frequency to process (%)
-slider3:100<0,200,1>Amount
+slider1:0<0,3,1{Max,Align (FPA),Subtract,Phase limit (unused),Phase reflect (unused)}>Mode
+slider2:100<0,200,1>Amount
+slider3:1<0,1,0.1>Response
 slider4:2<0,4,1{1024,2048,4096,8192}>FFT Size
 
 
@@ -158,7 +158,7 @@ pos >= fftsize ?
 
 		(	//FPA mode, align only close magnitudes
 			slider1==1 &&
-			(abs(( Magnitudes1[i]-Magnitudes3[i])/ (Magnitudes1[i]+Magnitudes3[i] ))<slider3/100 )
+			(abs(( Magnitudes1[i]-Magnitudes3[i])/ (Magnitudes1[i]+Magnitudes3[i] ))<slider2/100 )
 		)
 		? 
 		(
@@ -182,8 +182,9 @@ pos >= fftsize ?
 
 			//somehow magnitudes can be negative???	
 			
-			Magnitudes1[i]=max(Magnitudes1[i]-Magnitudes3[i]*slider3/100,0);
-			Magnitudes2[i]=max(Magnitudes2[i]-Magnitudes4[i]*slider3/100,0);
+			//don't subtract more than in set1, otherwise will make more sound
+			Magnitudes1[i]=max(Magnitudes1[i]-Magnitudes3[i]*slider2/100,0);
+			Magnitudes2[i]=max(Magnitudes2[i]-Magnitudes4[i]*slider2/100,0);
 
 		);
 		// convert to cartesian
