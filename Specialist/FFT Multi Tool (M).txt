@@ -7,7 +7,7 @@ desc:FFT max tool in ALPHA. Takes the maximum of in1 & in2 for every FFT bin & o
 
 slider1:0<0,3,1{Max,Align (FPA),Subtract,Phase limit (unused),Phase reflect (unused)}>Mode
 slider2:10<0,100,1>Starting frequency to process (%)
-slider3:100<0,100,1>Amount
+slider3:100<0,200,1>Amount
 slider4:2<0,4,1{1024,2048,4096,8192}>FFT Size
 
 
@@ -23,8 +23,8 @@ pdc_top_ch = 4;
 window=0;
 
 sixteen_k=16384;
-  
-  
+
+
 buf0 = sixteen_k*1;
 buf1 = sixteen_k*2;
 
@@ -38,17 +38,18 @@ Magnitudes1=sixteen_k*5;
 Magnitudes2=sixteen_k*6;
 Magnitudes3=sixteen_k*7;
 Magnitudes4=sixteen_k*8;
+Magnitudes3_old=sixteen_k*9;
+Magnitudes4_old=sixteen_k*10;
 
 
-Angles1=sixteen_k*9;
-Angles2=sixteen_k*10;
-Angles3=sixteen_k*11;
-Angles4=sixteen_k*12;
+Angles1=sixteen_k*21;
+Angles2=sixteen_k*22;
+Angles3=sixteen_k*23;
+Angles4=sixteen_k*24;
 
-Angle_Difference1=sixteen_k*13;
-Angle_Difference2=sixteen_k*14;
+Angle_Difference1=sixteen_k*31;
+Angle_Difference2=sixteen_k*32;
 
-use_input_1=0;
 
 gfx_r = gfx_g = gfx_b = 1;
 
@@ -128,7 +129,7 @@ pos >= fftsize ?
 		real_r_two = ( y_two + y2_two)*0.5;
 		imag_r_two = (x2_two -  x_two )*0.5;
 
-		difference=real_l-real_l_two;
+		difference=real_l-real_l_two;//debug variable to make sure set1&2 are synchronized if they're the same
 
 		//convert to polar. This is like, pythagoras trig stuff
 
@@ -146,51 +147,41 @@ pos >= fftsize ?
 
 		//analyse the magnitudes, which one is biggest out of in1 & in2?
 
-		slider1==0? //Max mode
+		(slider1==0&&Magnitudes1[i]<Magnitudes3[i])? //Max mode
 		(
-			(Magnitudes1[i]>Magnitudes3[i])?
-			(use_input_1=1;)
-			:
-			(use_input_1=0;);
-			
-			//copy the largest magnitude to the smaller one
-			
-			(use_input_1==0)?
-			// (
-				  // Magnitudes2[i]=Magnitudes1[i];
-				  // Angles2[i]=Angles1[i];
-			  // )
-			  // :
-			  (
-					Magnitudes1[i]=Magnitudes3[i];
-					Magnitudes2[i]=Magnitudes4[i];
-					Angles1[i]=Angles2[i];
-					Angles2[i]=Angles4[i];
-			  );
-		  );
-		  
-		  slider1==1? //FPA
-		  (	
-				//copy phase from sidechain
-				// Angle_Difference1[i]=Angles3[i]-Angles1[i];
-				// Angle_Difference2[i]=Angles4[i]-Angles2[i];
+			//If set2 is louder than set1, copy the bin to set1
+			Magnitudes1[i]=Magnitudes3[i];
+			Magnitudes2[i]=Magnitudes4[i];
+			Angles1[i]=Angles2[i];
+			Angles2[i]=Angles4[i];
+		);
 
-				// Angles1[i]+=Angle_Difference1[i]*slider2/100;
-				// Angles2[i]+=Angle_Difference2[i]*slider2/100;
-				(abs(( Magnitudes1[i]-Magnitudes3[i])/ (Magnitudes1[i]+Magnitudes3[i] ))<slider3/100 )? //align only close magnitudes
-				(
-				Angles1[i]=Angles3[i];
-				Angles2[i]=Angles4[i];
-				);
-			);
+		(	//FPA mode, align only close magnitudes
+			slider1==1 &&
+			(abs(( Magnitudes1[i]-Magnitudes3[i])/ (Magnitudes1[i]+Magnitudes3[i] ))<slider3/100 )
+		)
+		? 
+		(
+			//copy phase from sidechain
+			// Angle_Difference1[i]=Angles3[i]-Angles1[i];
+			// Angle_Difference2[i]=Angles4[i]-Angles2[i];
 
-			slider1==2? //subtract
-			(
-				max(Magnitudes1[i]-=Magnitudes3[i]*slider3/100,0);
-				max(Magnitudes2[i]-=Magnitudes4[i]*slider3/100,0);
-			);
-			// convert to cartesian
-			//x=R cos (theta)
+			// Angles1[i]+=Angle_Difference1[i]*slider2/100;
+			// Angles2[i]+=Angle_Difference2[i]*slider2/100;
+
+
+			Angles1[i]=Angles3[i];
+			Angles2[i]=Angles4[i];
+
+		);
+
+		slider1==2? //subtract
+		(
+			max(Magnitudes1[i]-=Magnitudes3[i]*slider3/100,0);
+			max(Magnitudes2[i]-=Magnitudes4[i]*slider3/100,0);
+		);
+		// convert to cartesian
+		//x=R cos (theta)
 
 		//somehow sin for X/real & cos for Y/im is correct in JSFX
 		real_l = Magnitudes1[i]*sin(Angles1[i]*$pi/180) ;
