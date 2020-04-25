@@ -5,7 +5,7 @@ desc:FFT max tool in ALPHA. Takes the maximum of in1 & in2 for every FFT bin & o
 //there's a lot I dont understand.
 // TODO: performance improvements like moving FFT stuff to @block
 
-slider1:0<0,3,1{Max,Align (FPA),Subtract,Phase limit (unused),Phase reflect (unused)}>Mode
+slider1:2<0,3,1{Max,Align (FPA),Subtract,Phase limit (unused),Phase reflect (unused)}>Mode
 slider2:10<0,100,1>Starting frequency to process (%)
 slider3:100<0,200,1>Amount
 slider4:2<0,4,1{1024,2048,4096,8192}>FFT Size
@@ -177,8 +177,14 @@ pos >= fftsize ?
 
 		slider1==2? //subtract
 		(
-			max(Magnitudes1[i]-=Magnitudes3[i]*slider3/100,0);
-			max(Magnitudes2[i]-=Magnitudes4[i]*slider3/100,0);
+			// M1=Magnitudes1[400];
+			// M3=Magnitudes3[400];
+
+			//somehow magnitudes can be negative???	
+			
+			Magnitudes1[i]=max(Magnitudes1[i]-Magnitudes3[i]*slider3/100,0);
+			Magnitudes2[i]=max(Magnitudes2[i]-Magnitudes4[i]*slider3/100,0);
+
 		);
 		// convert to cartesian
 		//x=R cos (theta)
