@@ -5,9 +5,9 @@ desc: Surround upscale ALPHA
 //there's a lot I dont understand.
 // TODO: performance improvements like moving FFT stuff to @block
 
-slider1:0<0,3,1{upscale}>Mode
-slider2:100<0,200,1>Amount
-slider3:1<0,1,0.1>Response
+slider1:0<0,100,2>Width
+slider2:50<0,180,2>Rear threshold
+slider3:10<0,180,2>Crossover width
 slider4:2<0,4,1{1024,2048,4096,8192}>FFT Size
 
 
@@ -31,8 +31,8 @@ buf1 = sixteen_k*2;
 buf2 = sixteen_k*3;
 buf3 = sixteen_k*4;
 
-// buf2 = sixteen_k*5;
-// buf3 = sixteen_k*6;
+buf4 = sixteen_k*5;
+buf5 = sixteen_k*6;
 
 pos=0;
 
@@ -45,6 +45,7 @@ Magnitudes3=sixteen_k*13;
 // Magnitudes6=sixteen_k*16;
 
 
+
 Angles1=sixteen_k*21;
 Angles2=sixteen_k*22;
 Angles3=sixteen_k*23;
@@ -52,11 +53,14 @@ Angles3=sixteen_k*23;
 // Angles5=sixteen_k*25;
 // Angles6=sixteen_k*26;
 
-Angle_Difference1=sixteen_k*31;
-Angle_Difference2=sixteen_k*32;
+Angle_Difference=sixteen_k*31;
+Pan_Array=sixteen_k*32;
 
+Rear_threshold=Crossover_width=0;
 
 gfx_r = gfx_g = gfx_b = 1;
+
+
 
 @slider
 
@@ -68,8 +72,8 @@ fftsize != sliderfft ?
 	memset(buf1, 0, 2*fftsize);
 	memset(buf2, 0, 2*fftsize);
 	memset(buf3, 0, 2*fftsize);
-	// memset(buf4, 0, 2*fftsize);
-	// memset(buf5, 0, 2*fftsize);
+	memset(buf4, 0, 2*fftsize);
+	memset(buf5, 0, 2*fftsize);
 	memset(window, 0, fftsize);
 	fftsize = sliderfft;
 	w = 2.0*$pi/fftsize;
@@ -82,6 +86,8 @@ fftsize != sliderfft ?
 	pdc_delay = fftsize;
 );
 
+Rear_threshold= slider2*$pi/180;
+Crossover_width=slider3*$pi/180;
 
 
 @sample
@@ -132,11 +138,24 @@ pos >= fftsize ?
 		Magnitudes1[i]=sqrt(real_l^2+imag_l^2);
 		Magnitudes2[i]=sqrt(real_r^2+imag_r^2);
 
-		Angles1[i]=atan2(real_l,imag_l)*180/$pi;
-		Angles2[i]=atan2(real_r,imag_r)*180/$pi;
+		Angles1[i]=atan2(real_l,imag_l);
+		Angles2[i]=atan2(real_r,imag_r);
+		
+		Angle_Difference[i]=abs(Angles2[i]-Angles1[i]);
+		
+		(Angle_Difference[i]>Rear_threshold-Crossover_width&&Angle_Difference[i]<Rear_threshold+Crossover_width)?
+		(
+			dummy=1;
+		)
+		:
+		(
+			(Angle_Difference[i]>Rear_threshold)?
+			Magnitudes1[i]=Magnitudes2[i]=0;
+		
+		);
 
-		Magnitudes3[i]=Magnitudes1[i];
-		Angles3[i]=Angles1[i];
+		Magnitudes3[i]=0;
+		Angles3[i]    =0;
 
  // Magnitudes3[i]
 
@@ -144,13 +163,13 @@ pos >= fftsize ?
 		//x=R cos (theta)
 
 		//somehow sin for X/real & cos for Y/im is correct in JSFX
-		real_l = Magnitudes1[i]*sin(Angles1[i]*$pi/180) ;
-		imag_l = Magnitudes1[i]*cos(Angles1[i]*$pi/180) ;
-		real_r = Magnitudes2[i]*sin(Angles2[i]*$pi/180) ;
-		imag_r = Magnitudes2[i]*cos(Angles2[i]*$pi/180) ;
+		real_l = Magnitudes1[i]*sin(Angles1[i]) ;
+		imag_l = Magnitudes1[i]*cos(Angles1[i]) ;
+		real_r = Magnitudes2[i]*sin(Angles2[i]) ;
+		imag_r = Magnitudes2[i]*cos(Angles2[i]) ;
 		
-		real_c = Magnitudes3[i]*sin(Angles3[i]*$pi/180) ;
-		imag_c = Magnitudes3[i]*cos(Angles3[i]*$pi/180) ;
+		real_c = Magnitudes3[i]*sin(Angles3[i]) ;
+		imag_c = Magnitudes3[i]*cos(Angles3[i]) ;
 
 
 		//more voodoo
@@ -196,8 +215,13 @@ out0 = (buf0[pos]+buf1[fftsize+pos])/sw;
 out1 = (buf0[pos+1]+buf1[fftsize+pos+1])/sw;
 
 
-out2 = (buf2[pos]+buf1[fftsize+pos])/sw;
+out2 = (buf2[pos]+buf3[fftsize+pos])/sw;
 // out3 = (buf2[pos+1]+buf1[fftsize+pos+1])/sw;
+
+//rear
+out4 = (buf4[pos]+buf5[fftsize+pos])/sw;
+out5 = (buf4[pos+1]+buf5[fftsize+pos+1])/sw;
+
 
 buf0[pos] = w1*spl0;
 buf0[pos+1] = w1*spl1;
@@ -209,6 +233,18 @@ buf2[pos] = w1*spl2;
 // buf2[pos+1] = w1*spl3;
 buf3[fftsize+pos] = w2*spl2;
 // buf3[fftsize+pos+1] = w2*spl3;
+
+//rear
+buf4[pos] = w1*spl4;
+buf4[pos+1] = w1*spl5;
+buf5[fftsize+pos] = w2*spl4;
+buf5[fftsize+pos+1] = w2*spl5;
+
+
+// spl4=spl0-out0;
+// spl5=spl1-out1;
+spl4==out4;
+spl5==out5;
 
 spl0 = out0;
 spl1 = out1;
