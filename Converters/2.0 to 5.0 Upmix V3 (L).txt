@@ -101,6 +101,10 @@ pos >= fftsize ?
 	tmp = buf2;
 	buf2 = buf3;
 	buf3 = tmp;
+	
+	tmp = buf4;
+	buf5 = buf5;
+	buf4 = tmp;
 
 	fft(buf0, fftsize);
 	fft_permute(buf0, fftsize);
@@ -218,9 +222,6 @@ out1 = (buf0[pos+1]+buf1[fftsize+pos+1])/sw;
 out2 = (buf2[pos]+buf3[fftsize+pos])/sw;
 // out3 = (buf2[pos+1]+buf1[fftsize+pos+1])/sw;
 
-//rear
-out4 = (buf4[pos]+buf5[fftsize+pos])/sw;
-out5 = (buf4[pos+1]+buf5[fftsize+pos+1])/sw;
 
 
 buf0[pos] = w1*spl0;
@@ -235,16 +236,14 @@ buf3[fftsize+pos] = w2*spl2;
 // buf3[fftsize+pos+1] = w2*spl3;
 
 //rear
-buf4[pos] = w1*spl4;
-buf4[pos+1] = w1*spl5;
-buf5[fftsize+pos] = w2*spl4;
-buf5[fftsize+pos+1] = w2*spl5;
+out4 = (buf4[pos]  );
+out5 = (buf4[pos+1]);
 
+buf4[pos] =    spl0;
+buf4[pos+1] =  spl1;
 
-// spl4=spl0-out0;
-// spl5=spl1-out1;
-spl4==out4;
-spl5==out5;
+spl4=out4;
+spl5=out5;
 
 spl0 = out0;
 spl1 = out1;
