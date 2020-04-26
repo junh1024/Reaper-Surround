@@ -1,0 +1,255 @@
+desc: FFT Multi Tool. Max, Phase Align, Subtract.
+//tags: requested by James HE , modded by geraintluff, modded by junh1024,
+//via https://forum.cockos.com/showpost.php?p=1962348&postcount=18
+
+//there's a lot I dont understand.
+// TODO: performance improvements like moving FFT stuff to @block
+
+slider1:0<0,3,1{Max,Align (FPA),Subtract,Phase limit (unused),Phase reflect (unused)}>Mode
+slider2:100<0,200,1>Amount
+slider3:1<0,1,0.1>Response
+slider4:2<0,4,1{1024,2048,4096,8192}>FFT Size
+
+
+// import surroundlib3.txt
+
+@init 
+
+fftsize = -1;
+pdc_bot_ch = 0;
+pdc_top_ch = 4;
+
+// array pointers
+window=0;
+
+sixteen_k=16384;
+
+
+buf0 = sixteen_k*1;
+buf1 = sixteen_k*2;
+
+buf2 = sixteen_k*3;
+buf3 = sixteen_k*4;
+
+pos=0;
+
+//my arrays for analysis
+Magnitudes1=sixteen_k*5;
+Magnitudes2=sixteen_k*6;
+Magnitudes3=sixteen_k*7;
+Magnitudes4=sixteen_k*8;
+Magnitudes3_old=sixteen_k*9;
+Magnitudes4_old=sixteen_k*10;
+
+
+Angles1=sixteen_k*21;
+Angles2=sixteen_k*22;
+Angles3=sixteen_k*23;
+Angles4=sixteen_k*24;
+
+Angle_Difference1=sixteen_k*31;
+Angle_Difference2=sixteen_k*32;
+
+
+gfx_r = gfx_g = gfx_b = 1;
+
+@slider
+
+sliderfft = (2^(slider4+10))|0;
+fftsize != sliderfft ?
+(
+	pos = 0;
+	memset(buf0, 0, 2*fftsize);
+	memset(buf1, 0, 2*fftsize);
+	memset(buf2, 0, 2*fftsize);
+	memset(buf3, 0, 2*fftsize);
+	memset(window, 0, fftsize);
+	fftsize = sliderfft;
+	w = 2.0*$pi/fftsize;
+	i = 0;
+	
+	loop(fftsize/2,
+		window[i] = 0.42-0.50*cos(i*w)+0.08*cos(2.0*i*w); //can make this a triangle?
+		i += 1;
+	); 
+	pdc_delay = fftsize;
+);
+
+
+
+@sample
+
+pos >= fftsize ?
+(
+	tmp = buf0;
+	buf0 = buf1;
+	buf1 = tmp;
+
+	tmp = buf2;
+	buf2 = buf3;
+	buf3 = tmp;
+
+	fft(buf0, fftsize);
+	fft_permute(buf0, fftsize);
+
+	fft(buf2, fftsize);
+	fft_permute(buf2, fftsize);
+
+	i = 2;
+	loop(fftsize/2 - 1, 
+		
+		//loop indexes
+		a = i;
+		b = a+1;
+		a2 = 2*fftsize-i;
+		b2 = a2+1;
+
+
+		//like, what is this voodoo? Untangling L&R from a single FFT? Wynaut use 2 FFT for clarity?
+
+		x = buf0[a];
+		y = buf0[b];
+		x2 = buf0[a2];
+		y2 = buf0[b2];
+
+		real_l = (x + x2)*0.5;
+		imag_l = (y - y2)*0.5;
+		real_r = (y + y2)*0.5;
+		imag_r = (x2 - x)*0.5;
+
+		x_two = buf2[a];
+		y_two = buf2[b];
+		x2_two = buf2[a2];
+		y2_two = buf2[b2];
+
+
+
+		real_l_two = ( x_two + x2_two)*0.5;
+		imag_l_two = ( y_two - y2_two)*0.5;
+		real_r_two = ( y_two + y2_two)*0.5;
+		imag_r_two = (x2_two -  x_two )*0.5;
+
+		difference=real_l-real_l_two;//debug variable to make sure set1&2 are synchronized if they're the same
+
+		//convert to polar. This is like, pythagoras trig stuff
+
+		Magnitudes1[i]=sqrt(real_l^2+imag_l^2);
+		Magnitudes2[i]=sqrt(real_r^2+imag_r^2);
+
+		Angles1[i]=atan2(real_l,imag_l)*180/$pi;
+		Angles2[i]=atan2(real_r,imag_r)*180/$pi;
+
+		Magnitudes3[i]=sqrt(real_l_two^2+imag_l_two^2);
+		Magnitudes4[i]=sqrt(real_r_two^2+imag_r_two^2);
+
+		Angles3[i]=atan2(real_l_two,imag_l_two)*180/$pi;
+		Angles4[i]=atan2(real_r_two,imag_r_two)*180/$pi;
+
+		//analyse the magnitudes, which one is biggest out of in1 & in2?
+
+		(slider1==0&&Magnitudes1[i]<Magnitudes3[i])? //Max mode
+		(
+			//If set2 is louder than set1, copy the bin to set1
+			Magnitudes1[i]=Magnitudes3[i];
+			Magnitudes2[i]=Magnitudes4[i];
+			Angles1[i]=Angles2[i];
+			Angles2[i]=Angles4[i];
+		);
+
+		(	//FPA mode, align only close magnitudes
+			slider1==1 &&
+			(abs(( Magnitudes1[i]-Magnitudes3[i])/ (Magnitudes1[i]+Magnitudes3[i] ))<slider2/100 )
+		)
+		? 
+		(
+			//copy phase from sidechain
+			// Angle_Difference1[i]=Angles3[i]-Angles1[i];
+			// Angle_Difference2[i]=Angles4[i]-Angles2[i];
+
+			// Angles1[i]+=Angle_Difference1[i]*slider2/100;
+			// Angles2[i]+=Angle_Difference2[i]*slider2/100;
+
+
+			Angles1[i]=Angles3[i];
+			Angles2[i]=Angles4[i];
+
+		);
+
+		slider1==2? //subtract
+		(
+			// M1=Magnitudes1[400];
+			// M3=Magnitudes3[400];
+
+			//somehow magnitudes can be negative???	
+			
+			//don't subtract more than in set1, otherwise will make more sound
+			Magnitudes1[i]=max(Magnitudes1[i]-Magnitudes3[i]*slider2/100,0);
+			Magnitudes2[i]=max(Magnitudes2[i]-Magnitudes4[i]*slider2/100,0);
+
+		);
+		// convert to cartesian
+		//x=R cos (theta)
+
+		//somehow sin for X/real & cos for Y/im is correct in JSFX
+		real_l = Magnitudes1[i]*sin(Angles1[i]*$pi/180) ;
+		imag_l = Magnitudes1[i]*cos(Angles1[i]*$pi/180) ;
+		real_r = Magnitudes2[i]*sin(Angles2[i]*$pi/180) ;
+		imag_r = Magnitudes2[i]*cos(Angles2[i]*$pi/180) ;
+
+
+		//more voodoo
+		x = real_l - imag_r;
+		x2 = real_l + imag_r;
+		y = imag_l + real_r;
+		y2 = real_r - imag_l;
+
+		buf0[a] = x;
+		buf0[b] = y;
+		buf0[a2] = x2;
+		buf0[b2] = y2;
+
+		i += 2
+	);
+
+	fft_ipermute(buf0, fftsize);
+	ifft(buf0, fftsize);
+
+	pos=0;
+);
+
+//windowing?
+w1 = window[pos/2];
+w2 = window[(fftsize-pos)/2-1];
+sw = (w1+w2)*fftsize;
+
+out0 = (buf0[pos]+buf1[fftsize+pos])/sw;
+out1 = (buf0[pos+1]+buf1[fftsize+pos+1])/sw;
+
+
+// out2 = (buf2[pos]+buf1[fftsize+pos])/sw;
+// out3 = (buf2[pos+1]+buf1[fftsize+pos+1])/sw;
+
+buf0[pos] = w1*spl0;
+buf0[pos+1] = w1*spl1;
+buf1[fftsize+pos] = w2*spl0;
+buf1[fftsize+pos+1] = w2*spl1;
+
+//more stuff for 2nd input
+buf2[pos] = w1*spl2;
+buf2[pos+1] = w1*spl3;
+buf3[fftsize+pos] = w2*spl2;
+buf3[fftsize+pos+1] = w2*spl3;
+
+spl0 = out0;
+spl1 = out1;
+
+spl2=spl3=0;//silence set2
+
+pos += 2;
+
+// @gfx 500 16
+
+// box_width=8;
+
+// gfx_a = 0.8; 
+// drawbox(floor((pos/fftsize)*gfx_w),8);
