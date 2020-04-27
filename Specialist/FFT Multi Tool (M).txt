@@ -1,13 +1,13 @@
-desc: FFT Multi Tool. Max, Phase Align, Subtract.
+desc: FFT Multi Tool. Max, Phase Align, Subtract. in ALPHA
 //tags: requested by James HE , modded by geraintluff, modded by junh1024,
 //via https://forum.cockos.com/showpost.php?p=1962348&postcount=18
 
 //there's a lot I dont understand.
 // TODO: performance improvements like moving FFT stuff to @block
 
-slider1:0<0,3,1{Max,Align (FPA),Subtract,Phase limit (unused),Phase reflect (unused)}>Mode
+slider1:7<0,3,1{Max,Align (FPA),Subtract,Phase limit (unused),Phase reflect (unused),cen chan,6,Gap filler}>Mode
 slider2:100<0,200,1>Amount
-slider3:1<0,1,0.1>Response
+slider3:0.1<0,1,0.01>Response
 slider4:2<0,4,1{1024,2048,4096,8192}>FFT Size
 
 
@@ -50,6 +50,7 @@ Angles4=sixteen_k*24;
 Angle_Difference1=sixteen_k*31;
 Angle_Difference2=sixteen_k*32;
 
+old_magnitude=0;
 
 gfx_r = gfx_g = gfx_b = 1;
 
@@ -76,6 +77,12 @@ fftsize != sliderfft ?
 );
 
 
+
+
+Amount=slider2/100;
+slider1==7?Amount=min(0.8,Amount);
+
+Response=slider3;
 
 @sample
 
@@ -150,6 +157,7 @@ pos >= fftsize ?
 		(slider1==0&&Magnitudes1[i]<Magnitudes3[i])? //Max mode
 		(
 			//If set2 is louder than set1, copy the bin to set1
+			//Not completely correct cuz only analyzing L
 			Magnitudes1[i]=Magnitudes3[i];
 			Magnitudes2[i]=Magnitudes4[i];
 			Angles1[i]=Angles2[i];
@@ -180,13 +188,25 @@ pos >= fftsize ?
 			// M1=Magnitudes1[400];
 			// M3=Magnitudes3[400];
 
-			//somehow magnitudes can be negative???	
-			
 			//don't subtract more than in set1, otherwise will make more sound
-			Magnitudes1[i]=max(Magnitudes1[i]-Magnitudes3[i]*slider2/100,0);
-			Magnitudes2[i]=max(Magnitudes2[i]-Magnitudes4[i]*slider2/100,0);
+			Magnitudes1[i]=max(Magnitudes1[i]-Magnitudes3[i]*Amount,0);
+			Magnitudes2[i]=max(Magnitudes2[i]-Magnitudes4[i]*Amount,0);
+			
+			//somehow magnitudes can be negative???	
+			//might not be completely correct to handle all 4 cases where set1 & set2 are different polarities
 
 		);
+		(slider1==7&&Magnitudes1[i]<old_magnitude)?// Gap filler}
+		(
+			Magnitudes1[i]=old_magnitude*Amount;
+			Magnitudes2[i]=old_magnitude*Amount;
+			// Angles1[i]=rand(2*$pi);
+			// Angles2[i]=rand(2*$pi);
+			using=1;
+			//Not completely correct cuz only analyzing L
+		);
+		old_magnitude=Magnitudes1[i]*Response/10+old_magnitude*(1-Response/10);
+		
 		// convert to cartesian
 		//x=R cos (theta)
 
@@ -222,6 +242,7 @@ w1 = window[pos/2];
 w2 = window[(fftsize-pos)/2-1];
 sw = (w1+w2)*fftsize;
 
+//i think this is FFT-size inverse scaling
 out0 = (buf0[pos]+buf1[fftsize+pos])/sw;
 out1 = (buf0[pos+1]+buf1[fftsize+pos+1])/sw;
 
