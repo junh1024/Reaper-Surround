@@ -142,21 +142,39 @@ pos >= fftsize ?
 		Magnitudes1[i]=sqrt(real_l^2+imag_l^2);
 		Magnitudes2[i]=sqrt(real_r^2+imag_r^2);
 
-		Angles1[i]=atan2(real_l,imag_l);
+		Angles1[i]=atan2(real_l,imag_l);//radians, normalize to 0,2pi
 		Angles2[i]=atan2(real_r,imag_r);
 		
-		Angle_Difference[i]=abs(Angles2[i]-Angles1[i]);
+		//TODO: still an error in measuring angles
+		// Angles1[i]<0?Angles1[i]+=$pi*2;
+		// Angles2[i]<0?Angles2[i]+=$pi*2;
+		// an1=Angles1[i] ;
+		// an2=Angles2[i] ;
+
 		
 		//from -1 to 1, L to R.
 		pan=(Magnitudes2[i]-Magnitudes1[i])/(Magnitudes2[i]+Magnitudes1[i]);
-		center_mag_level=1-abs(pan);
+		Angle_Difference[i]=abs(Angles2[i]-Angles1[i]);
 		
+		// ang1=Angles1[i] ;
+		// ang2=Angles2[i] ;
+		ad=Angle_Difference[i];
+		
+		//reduce C if the bin is wide
+		center_mag_level=(1-abs(pan))*(1-(Angle_Difference[i]/$pi));
+
 		//move to center if centered
 		Magnitudes3[i]=center_mag_level*(Magnitudes1[i]+Magnitudes2[i])*0.7071;
 		Magnitudes1[i]*=1-center_mag_level;
 		Magnitudes2[i]*=1-center_mag_level;
 		
-		Angles3[i]    =Angles1[i];
+		Angles3[i]    =Angles1[i]; //prolly wrong, but sounds bad if i add A1 & A2.
+		
+		//widen LR to compensate for wide sounds getting put in C
+		// Angles1[i]=+($pi/2)* ($pi-Angle_Difference[i]);
+		// Angles2[i]=-($pi/2)* ($pi-Angle_Difference[i]);
+		
+	
 		
 		
 		//rear stuff
