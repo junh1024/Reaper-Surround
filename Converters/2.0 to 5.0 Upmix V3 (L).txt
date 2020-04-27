@@ -147,19 +147,32 @@ pos >= fftsize ?
 		
 		Angle_Difference[i]=abs(Angles2[i]-Angles1[i]);
 		
-		(Angle_Difference[i]>Rear_threshold-Crossover_width&&Angle_Difference[i]<Rear_threshold+Crossover_width)?
-		(
-			dummy=1;
-		)
-		:
-		(
-			(Angle_Difference[i]>Rear_threshold)?
-			Magnitudes1[i]=Magnitudes2[i]=0;
+		//from -1 to 1, L to R.
+		pan=(Magnitudes2[i]-Magnitudes1[i])/(Magnitudes2[i]+Magnitudes1[i]);
+		center_mag_level=1-abs(pan);
 		
-		);
+		//move to center if centered
+		Magnitudes3[i]=center_mag_level*(Magnitudes1[i]+Magnitudes2[i])*0.7071;
+		Magnitudes1[i]*=1-center_mag_level;
+		Magnitudes2[i]*=1-center_mag_level;
+		
+		Angles3[i]    =Angles1[i];
+		
+		
+		//rear stuff
+		
+		// (Angle_Difference[i]>Rear_threshold-Crossover_width&&Angle_Difference[i]<Rear_threshold+Crossover_width)?
+		// (
+			// dummy=1;
+		// )
+		// :
+		// (
+			// (Angle_Difference[i]>Rear_threshold)?
+			// Magnitudes1[i]=Magnitudes2[i]=0;
+		
+		// );
 
-		Magnitudes3[i]=0;
-		Angles3[i]    =0;
+
 
  // Magnitudes3[i]
 
@@ -236,14 +249,15 @@ buf3[fftsize+pos] = w2*spl2;
 // buf3[fftsize+pos+1] = w2*spl3;
 
 //rear
+
 out4 = (buf4[pos]  );
 out5 = (buf4[pos+1]);
 
 buf4[pos] =    spl0;
 buf4[pos+1] =  spl1;
 
-spl4=out4;
-spl5=out5;
+// spl4=out4;
+// spl5=out5;
 
 spl0 = out0;
 spl1 = out1;
