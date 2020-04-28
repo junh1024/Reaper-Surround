@@ -5,9 +5,9 @@ desc: FFT Multi Tool. Read docs. in ALPHA
 //there's a lot I dont understand.
 // TODO: performance improvements like moving FFT stuff to @block
 
-slider1:0<0,7,1{Max,Min (Denoise),Align (FPA),Subtract,Phase limit (unused),Phase reflect (unused),Gap filler,Sustainizer}>Mode
+slider1:0<0,9,1{Max,Min (Denoise),Align (FPA),Subtract,Phase limit (unused),Phase reflect (unused),Gap filler,Sustainizer,Max2,Min2}>Mode
 slider2:100<0,200,1>Amount
-slider3:0.1<0,1,0.01>Response
+slider3:0.5<0,1,0.01>Response
 slider4:2<0,4,1{1024,2048,4096,8192}>FFT Size
 
 
@@ -47,8 +47,8 @@ Angles2=sixteen_k*22;
 Angles3=sixteen_k*23;
 Angles4=sixteen_k*24;
 
-Angle_Difference1=sixteen_k*31;
-Angle_Difference2=sixteen_k*32;
+Angle_Difference=sixteen_k*31;
+
 
 old_magnitude=0;
 
@@ -85,8 +85,16 @@ Amount=slider2/100;
 
 mode=slider1+1;//cuz I don't like 0-based mode/slider
 
-mode==7?Amount=min(0.8,Amount);//limit noises in gap-filler
+mode==7? //gap-filler
+(
+	// slider3=0.1;
+	Amount=min(0.8,Amount);
+);
 
+
+
+
+// mode
 Response=slider3;
 
 
@@ -176,6 +184,8 @@ pos >= fftsize ?
 			Magnitudes2[i]=min(Magnitudes2[i],Magnitudes4[i]);
 			// Angles1[i]=Angles2[i];
 			// Angles2[i]=Angles4[i];
+
+
 		);
 
 		(	//FPA mode, align only close magnitudes
@@ -193,7 +203,7 @@ pos >= fftsize ?
 			// Angles1[i]+=Angle_Difference1[i]*slider2/100;
 			// Angles2[i]+=Angle_Difference2[i]*slider2/100;
 
-fpa=1;
+			// fpa=1;
 			Angles1[i]=Angles3[i];
 			Angles2[i]=Angles4[i];
 
@@ -228,6 +238,35 @@ fpa=1;
 			Angles2[i]+=rand(360)*Amount;
 		);
 		
+		(mode==9)? //Max2
+		(
+			Magnitudes1[i]=max(Magnitudes1[i],Magnitudes3[i]);
+			Magnitudes2[i]=max(Magnitudes2[i],Magnitudes4[i]);
+
+		);
+		
+		(mode==10)? //Min2
+		(
+			// Magnitudes1[i]=min(Magnitudes1[i],Magnitudes3[i]);
+			// Magnitudes2[i]=min(Magnitudes2[i],Magnitudes4[i]);
+			// Angles1[i]=Angles2[i];
+			// Angles2[i]=Angles4[i];
+			
+			//compute pans as per my V3 upmix
+			p1=(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]);
+			p2=(Magnitudes4[i]-Magnitudes2[i])/(Magnitudes4[i]+Magnitudes2[i]);
+			
+			ad1=abs(Angles1[i]-Angles3[i]);
+			ad2=abs(Angles2[i]-Angles4[i]);
+
+			ad >180?ad= 360-ad;//fix angle difference cuz should be under 180*
+			ad2>180?ad2=360-ad2; 
+
+			coeff_L=((1-abs(p1))*(1-(ad1/180)))^2;
+			coeff_R=((1-abs(p2))*(1-(ad2/180)))^2;
+			Magnitudes1[i]*=coeff_L;
+            Magnitudes2[i]*=coeff_R;
+		);
 		// convert to cartesian
 		//x=R cos (theta)
 
