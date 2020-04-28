@@ -60,7 +60,7 @@ Rear_threshold=Crossover_width=0;
 
 gfx_r = gfx_g = gfx_b = 1;
 
-
+exceeded=0;
 
 @slider
 
@@ -142,26 +142,19 @@ pos >= fftsize ?
 		Magnitudes1[i]=sqrt(real_l^2+imag_l^2);
 		Magnitudes2[i]=sqrt(real_r^2+imag_r^2);
 
-		Angles1[i]=atan2(real_l,imag_l);//radians, normalize to 0,2pi
-		Angles2[i]=atan2(real_r,imag_r);
+		Angles1[i]=an1=(atan2(real_l,imag_l));//radians, normalize to 0,2pi
+		Angles2[i]=an2=(atan2(real_r,imag_r));
 		
-		//TODO: still an error in measuring angles
-		// Angles1[i]<0?Angles1[i]+=$pi*2;
-		// Angles2[i]<0?Angles2[i]+=$pi*2;
-		// an1=Angles1[i] ;
-		// an2=Angles2[i] ;
-
 		
 		//from -1 to 1, L to R.
 		pan=(Magnitudes2[i]-Magnitudes1[i])/(Magnitudes2[i]+Magnitudes1[i]);
-		Angle_Difference[i]=abs(Angles2[i]-Angles1[i]);
-		
-		// ang1=Angles1[i] ;
-		// ang2=Angles2[i] ;
+		Angle_Difference[i]=abs(an1-an2);
+
 		ad=Angle_Difference[i];
+		ad>$pi?ad=2*$pi-ad;//fix angle difference cuz should be under 180*
 		
 		//reduce C if the bin is wide
-		center_mag_level=(1-abs(pan))*(1-(Angle_Difference[i]/$pi));
+		center_mag_level=(1-abs(pan))*(1-(ad/$pi));
 
 		//move to center if centered
 		Magnitudes3[i]=center_mag_level*(Magnitudes1[i]+Magnitudes2[i])*0.7071;
@@ -171,10 +164,10 @@ pos >= fftsize ?
 		Angles3[i]    =Angles1[i]; //prolly wrong, but sounds bad if i add A1 & A2.
 		
 		//widen LR to compensate for wide sounds getting put in C
-		// Angles1[i]=+($pi/2)* ($pi-Angle_Difference[i]);
-		// Angles2[i]=-($pi/2)* ($pi-Angle_Difference[i]);
+		// Angles1[i]=-($pi/2)* (1-ad/$pi);
+		// Angles2[i]=($pi/2)* (1-ad/$pi);
 		
-	
+	temp1=1-ad/$pi;
 		
 		
 		//rear stuff
