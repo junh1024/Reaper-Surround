@@ -1,11 +1,11 @@
-desc: FFT Multi Tool. Max, Phase Align, Subtract. in ALPHA
+desc: FFT Multi Tool. Read docs. in ALPHA
 //tags: requested by James HE , modded by geraintluff, modded by junh1024,
 //via https://forum.cockos.com/showpost.php?p=1962348&postcount=18
 
 //there's a lot I dont understand.
 // TODO: performance improvements like moving FFT stuff to @block
 
-slider1:0<0,7,1{Max,Min,Align (FPA),Subtract,Phase limit (unused),Phase reflect (unused),Gap filler,Sustainizer}>Mode
+slider1:0<0,7,1{Max,Min (Denoise),Align (FPA),Subtract,Phase limit (unused),Phase reflect (unused),Gap filler,Sustainizer}>Mode
 slider2:100<0,200,1>Amount
 slider3:0.1<0,1,0.01>Response
 slider4:2<0,4,1{1024,2048,4096,8192}>FFT Size
@@ -168,6 +168,14 @@ pos >= fftsize ?
 			Magnitudes2[i]=Magnitudes4[i];
 			Angles1[i]=Angles2[i];
 			Angles2[i]=Angles4[i];
+		);
+		
+		(mode==2)? //Min mode
+		(
+			Magnitudes1[i]=min(Magnitudes1[i],Magnitudes3[i]);
+			Magnitudes2[i]=min(Magnitudes2[i],Magnitudes4[i]);
+			// Angles1[i]=Angles2[i];
+			// Angles2[i]=Angles4[i];
 		);
 
 		(	//FPA mode, align only close magnitudes
