@@ -5,7 +5,7 @@ desc: FFT Multi Tool. Max, Phase Align, Subtract. in ALPHA
 //there's a lot I dont understand.
 // TODO: performance improvements like moving FFT stuff to @block
 
-slider1:7<0,3,1{Max,Align (FPA),Subtract,Phase limit (unused),Phase reflect (unused),cen chan,6,Gap filler}>Mode
+slider1:0<0,7,1{Max,Min,Align (FPA),Subtract,Phase limit (unused),Phase reflect (unused),Gap filler,Sustainizer}>Mode
 slider2:100<0,200,1>Amount
 slider3:0.1<0,1,0.01>Response
 slider4:2<0,4,1{1024,2048,4096,8192}>FFT Size
@@ -54,6 +54,8 @@ old_magnitude=0;
 
 gfx_r = gfx_g = gfx_b = 1;
 
+mode=0;
+
 @slider
 
 sliderfft = (2^(slider4+10))|0;
@@ -80,9 +82,13 @@ fftsize != sliderfft ?
 
 
 Amount=slider2/100;
-slider1==7?Amount=min(0.8,Amount);
+
+mode=slider1+1;//cuz I don't like 0-based mode/slider
+
+mode==7?Amount=min(0.8,Amount);//limit noises in gap-filler
 
 Response=slider3;
+
 
 @sample
 
@@ -154,7 +160,7 @@ pos >= fftsize ?
 
 		//analyse the magnitudes, which one is biggest out of in1 & in2?
 
-		(slider1==0&&Magnitudes1[i]<Magnitudes3[i])? //Max mode
+		(mode==1&&Magnitudes1[i]<Magnitudes3[i])? //Max mode
 		(
 			//If set2 is louder than set1, copy the bin to set1
 			//Not completely correct cuz only analyzing L
@@ -165,8 +171,10 @@ pos >= fftsize ?
 		);
 
 		(	//FPA mode, align only close magnitudes
-			slider1==1 &&
-			(abs(( Magnitudes1[i]-Magnitudes3[i])/ (Magnitudes1[i]+Magnitudes3[i] ))<slider2/100 )
+			mode==3 &&
+			abs(( Magnitudes1[i]-Magnitudes3[i])/ (Magnitudes1[i]+Magnitudes3[i] ))<Amount ;
+			
+			
 		)
 		? 
 		(
@@ -177,13 +185,13 @@ pos >= fftsize ?
 			// Angles1[i]+=Angle_Difference1[i]*slider2/100;
 			// Angles2[i]+=Angle_Difference2[i]*slider2/100;
 
-
+fpa=1;
 			Angles1[i]=Angles3[i];
 			Angles2[i]=Angles4[i];
 
 		);
 
-		slider1==2? //subtract
+		mode==4? //subtract
 		(
 			// M1=Magnitudes1[400];
 			// M3=Magnitudes3[400];
@@ -196,16 +204,21 @@ pos >= fftsize ?
 			//might not be completely correct to handle all 4 cases where set1 & set2 are different polarities
 
 		);
-		(slider1==7&&Magnitudes1[i]<old_magnitude)?// Gap filler}
+		(mode==7&&Magnitudes1[i]<old_magnitude)?// Gap filler}
 		(
 			Magnitudes1[i]=old_magnitude*Amount;
 			Magnitudes2[i]=old_magnitude*Amount;
-			// Angles1[i]=rand(2*$pi);
-			// Angles2[i]=rand(2*$pi);
+
 			using=1;
 			//Not completely correct cuz only analyzing L
 		);
 		old_magnitude=Magnitudes1[i]*Response/10+old_magnitude*(1-Response/10);
+		
+		mode==8? // Sustainizer
+		(
+			Angles1[i]+=rand(360)*Amount;
+			Angles2[i]+=rand(360)*Amount;
+		);
 		
 		// convert to cartesian
 		//x=R cos (theta)
