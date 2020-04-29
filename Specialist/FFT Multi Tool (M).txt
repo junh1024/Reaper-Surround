@@ -247,25 +247,28 @@ pos >= fftsize ?
 		
 		(mode==10)? //Min2
 		(
-			// Magnitudes1[i]=min(Magnitudes1[i],Magnitudes3[i]);
-			// Magnitudes2[i]=min(Magnitudes2[i],Magnitudes4[i]);
-			// Angles1[i]=Angles2[i];
-			// Angles2[i]=Angles4[i];
 			
 			//compute pans as per my V3 upmix
 			p1=(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]);
 			p2=(Magnitudes4[i]-Magnitudes2[i])/(Magnitudes4[i]+Magnitudes2[i]);
+			//pan isn't that useful for dual stereo-different noise recordings, but useful for High Touch! (different singers on different versions)
 			
 			ad1=abs(Angles1[i]-Angles3[i]);
 			ad2=abs(Angles2[i]-Angles4[i]);
 
-			ad >180?ad= 360-ad;//fix angle difference cuz should be under 180*
+			// an1=Angles1[i];
+			// an2=Angles2[i];
+			// an3=Angles3[i];
+			// an4=Angles4[i];
+			
+			ad1>180?ad1=360-ad1;//fix angle difference cuz should be under 180*
 			ad2>180?ad2=360-ad2; 
 
-			coeff_L=((1-abs(p1))*(1-(ad1/180)))^2;
-			coeff_R=((1-abs(p2))*(1-(ad2/180)))^2;
-			Magnitudes1[i]*=coeff_L;
-            Magnitudes2[i]*=coeff_R;
+			coeff_L=(1-(min(ad1*2,180)/180))*(1-abs(p1));//double ad cuz 90* ad means it's already purely stereo noise
+			coeff_R=(1-(min(ad2*2,180)/180))*(1-abs(p2));//Reduce mags the more it's panned & phased
+			
+			Magnitudes1[i]*=coeff_L^Amount;//raised to power because doing linear multiple 1- is tricky
+            Magnitudes2[i]*=coeff_R^Amount;
 		);
 		// convert to cartesian
 		//x=R cos (theta)
