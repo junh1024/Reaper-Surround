@@ -126,7 +126,7 @@ pos >= fftsize ?
 		b2 = a2+1;
 
 
-		//like, what is this voodoo? Untangling L&R from a single FFT? Wynaut use 2 FFT for clarity?
+		//fft() works on complex numbers, but the input is real, so if you put only L in fft, it's wasteful. So they put L & R into Re & Imag to be more efficient. But you need to untangle it. Otherwise, use fft_real(). 
 
 		x = buf0[a];
 		y = buf0[b];
@@ -270,6 +270,10 @@ pos >= fftsize ?
 			Magnitudes1[i]*=coeff_L^Amount;//raised to power because doing linear multiple 1- is tricky
             Magnitudes2[i]*=coeff_R^Amount;
 		);
+		
+		//TODO: center pan, generic de distort via harmonics, excite/pitchshift, denoise, transient designer, Tonal/noise separator, select notes via MIDI input
+		
+		
 		// convert to cartesian
 		//x=R cos (theta)
 
