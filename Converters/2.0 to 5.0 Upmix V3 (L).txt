@@ -53,8 +53,8 @@ Angles3=sixteen_k*23;
 // Angles5=sixteen_k*25;
 // Angles6=sixteen_k*26;
 
-Angle_Difference=sixteen_k*31;
-Pan_Array=sixteen_k*32;
+// Angle_Difference=sixteen_k*31;
+// Pan_Array=sixteen_k*32;
 
 Rear_threshold=Crossover_width=0;
 
@@ -64,7 +64,22 @@ exceeded=0;
 
 center_phase_level=center_mag_level=0;
 
-pi=3.141592653589793238
+pi=3.141592653589793238;
+
+
+
+	mid_r  = 0;
+	mid_i  = 0;
+	side_r = 0;
+	side_i = 0;
+	
+	mid =0;
+	side=0;
+	
+	sideness=0;
+	
+	real_c = 0;
+	imag_c = 0;
 
 @slider
 
@@ -149,22 +164,27 @@ pos >= fftsize ?
 		side_r = (real_l-real_r);
 		side_i = (imag_l-imag_r);
 		
-		// mid=sqrt(mid_r^2+mid_i^2);
-		// side=sqrt(side_r^2+side_i^2);
+		mid=sqrt(mid_r^2+mid_i^2);
+		side=sqrt(side_r^2+side_i^2);
 		
-		// sideness=min(side/mid,1);
+		sideness=min(side/mid,1);
 		
-		// real_c = mid_r *(1-sideness)*0.7;
-		// imag_c = mid_i *(1-sideness)*0.7;
+		real_c = mid_r *(1-sideness)*0.7;
+		imag_c = mid_i *(1-sideness)*0.7;
 		
-		sideness=1;
+		// sideness=1;
 		
 
-		real_l = (mid_r+side_r)*sideness*0.5;
-		imag_l = (mid_i+side_i)*sideness*0.5;
-		real_r = (mid_r-side_r)*sideness*0.5;
-		imag_r = (mid_i-side_i)*sideness*0.5;		
+		// real_l = (mid_r+side_r)*sideness*0.5;
+		// imag_l = (mid_i+side_i)*sideness*0.5;
+		// real_r = (mid_r-side_r)*sideness*0.5;
+		// imag_r = (mid_i-side_i)*sideness*0.5;		
 		
+		
+		real_l = (mid_r*0.5*sideness) + (side_r*0.5);
+		imag_l = (mid_i*0.5*sideness) + (side_i*0.5);
+		real_r = (mid_r*0.5*sideness) - (side_r*0.5);
+		imag_r = (mid_i*0.5*sideness) - (side_i*0.5);		
 		
 /*
 		// difference=real_l-real_l_two;//debug variable to make sure set1&2 are synchronized if they're the same
