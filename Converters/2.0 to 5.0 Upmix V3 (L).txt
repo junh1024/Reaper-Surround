@@ -2,8 +2,7 @@ desc: Surround upscale ALPHA
 //tags: requested by James HE , modded by geraintluff, modded by junh1024,
 //via https://forum.cockos.com/showpost.php?p=1962348&postcount=18
 
-//there's a lot I dont understand.
-// TODO: performance improvements like moving FFT stuff to @block
+// TODO: performance improvements like moving FFT stuff to @block, half fft for center?
 
 slider1:0<0,100,2>Width
 slider2:50<0,180,2>Rear threshold
@@ -141,8 +140,6 @@ pos >= fftsize ?
 		b2 = a2+1;
 
 
-		//like, what is this voodoo? Untangling L&R from a single FFT? Wynaut use 2 FFT for clarity?
-
 		x = buf0[a];
 		y = buf0[b];
 		x2 = buf0[a2];
@@ -155,20 +152,23 @@ pos >= fftsize ?
 
 		
 
-		
+		//completely rewritten in Complex instead of Polar for more performance & no fiddly phase compensation
 
-		
+		//convert to M/S
 		
 		mid_r  = (real_l+real_r);
 		mid_i  = (imag_l+imag_r);
 		side_r = (real_l-real_r);
 		side_i = (imag_l-imag_r);
 		
+		//measure the magnitude of M&S, to decide how much should go in C/S
+		
 		mid=sqrt(mid_r^2+mid_i^2);
 		side=sqrt(side_r^2+side_i^2);
 		
-		sideness=min(side/mid,1);
+		sideness=min(side/mid,1); //clamp sideness to 1
 		
+		//0.7 3dB correction
 		real_c = mid_r *(1-sideness)*0.7;
 		imag_c = mid_i *(1-sideness)*0.7;
 		
@@ -180,7 +180,7 @@ pos >= fftsize ?
 		// real_r = (mid_r-side_r)*sideness*0.5;
 		// imag_r = (mid_i-side_i)*sideness*0.5;		
 		
-		
+		//M/S decode LR
 		real_l = (mid_r*0.5*sideness) + (side_r*0.5);
 		imag_l = (mid_i*0.5*sideness) + (side_i*0.5);
 		real_r = (mid_r*0.5*sideness) - (side_r*0.5);

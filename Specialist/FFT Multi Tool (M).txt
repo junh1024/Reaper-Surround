@@ -166,6 +166,8 @@ pos >= fftsize ?
 		Angles3[i]=atan2(real_l_two,imag_l_two)*180/$pi;
 		Angles4[i]=atan2(real_r_two,imag_r_two)*180/$pi;
 
+		//TODO: HP ver - high performance ver in Re/Im
+		
 		//analyse the magnitudes, which one is biggest out of in1 & in2?
 
 		(mode==1&&Magnitudes1[i]<Magnitudes3[i])? //Max mode
@@ -220,6 +222,8 @@ pos >= fftsize ?
 			
 			//somehow magnitudes can be negative???	
 			//might not be completely correct to handle all 4 cases where set1 & set2 are different polarities
+			
+			//TODO: HP ver : scale Re/Im by max(M1-M3/M1,0);
 
 		);
 		(mode==7&&Magnitudes1[i]<old_magnitude)?// Gap filler}
@@ -236,6 +240,8 @@ pos >= fftsize ?
 		(
 			Angles1[i]+=rand(360)*Amount;
 			Angles2[i]+=rand(360)*Amount;
+			
+			//TODO: HP ver phase by flipping Re Im  pseudo randomly
 		);
 		
 		(mode==9)? //Max2
