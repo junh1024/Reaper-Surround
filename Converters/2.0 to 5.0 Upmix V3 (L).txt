@@ -62,6 +62,10 @@ gfx_r = gfx_g = gfx_b = 1;
 
 exceeded=0;
 
+center_phase_level=center_mag_level=0;
+
+pi=3.141592653589793238
+
 @slider
 
 sliderfft = (2^(slider4+10))|0;
@@ -151,21 +155,40 @@ pos >= fftsize ?
 		Angle_Difference[i]=abs(an1-an2);
 
 		ad=Angle_Difference[i];
-		ad>$pi?ad=2*$pi-ad;//fix angle difference cuz should be under 180*
+		// ad>$pi?ad=2*$pi-ad;//fix angle difference cuz should be under 180*
+		// ad=slider3*$pi/180;
+		center_phase_level= 1-min(2*ad/pi,1);;//double ad & clamp to +0, to make C selection 90* wide instead of 180
+
+		//reduce C if the depending on pan & phase
+		center_mag_level=(1-abs(pan))*center_phase_level;
 		
-		//reduce C if the bin is wide
-		center_mag_level=(1-abs(pan))*(1-(ad/$pi));
+		// center_mag_level=0;
+		
+		
+		// center_mag_level=(1-abs(pan));
+		// ad>$pi/10?center_mag_level=0;//remove from C if angle >9*
 
 		//move to center if centered
 		Magnitudes3[i]=center_mag_level*(Magnitudes1[i]+Magnitudes2[i])*0.7071;
 		Magnitudes1[i]*=1-center_mag_level;
 		Magnitudes2[i]*=1-center_mag_level;
 		
-		Angles3[i]    =Angles1[i]; //prolly wrong, but sounds bad if i add A1 & A2.
+		Angles3[i]    =(Angles1[i]+Angles2[i])/2;  //averaging angle sounds bad?
+		// Angles3[i]    =Angles1[i]; //prolly wrong, but sounds bad if i add A1 & A2. But LR will be adjusted after this to partially compensate
+
 		
 		//widen LR to compensate for wide sounds getting put in C
-		// Angles1[i]=-($pi/2)* (1-ad/$pi);
-		// Angles2[i]=($pi/2)* (1-ad/$pi);
+		an1<an2?
+		(
+		Angles1[i]-=(pi/2)* center_phase_level;
+		Angles2[i]+=(pi/2)* center_phase_level;
+		):
+		(
+		Angles1[i]+=(pi/2)* center_phase_level;
+		Angles2[i]-=(pi/2)* center_phase_level;
+		);
+		// Angles1[i]-=slider3*$pi/180;
+		// Angles2[i]+=slider3*$pi/180;
 		
 	temp1=1-ad/$pi;
 		
