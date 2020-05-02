@@ -138,7 +138,35 @@ pos >= fftsize ?
 		real_r = (y + y2)*0.5;
 		imag_r = (x2 - x)*0.5;
 
+		
 
+		
+
+		
+		
+		mid_r  = (real_l+real_r);
+		mid_i  = (imag_l+imag_r);
+		side_r = (real_l-real_r);
+		side_i = (imag_l-imag_r);
+		
+		// mid=sqrt(mid_r^2+mid_i^2);
+		// side=sqrt(side_r^2+side_i^2);
+		
+		// sideness=min(side/mid,1);
+		
+		// real_c = mid_r *(1-sideness)*0.7;
+		// imag_c = mid_i *(1-sideness)*0.7;
+		
+		sideness=1;
+		
+
+		real_l = (mid_r+side_r)*sideness*0.5;
+		imag_l = (mid_i+side_i)*sideness*0.5;
+		real_r = (mid_r-side_r)*sideness*0.5;
+		imag_r = (mid_i-side_i)*sideness*0.5;		
+		
+		
+/*
 		// difference=real_l-real_l_two;//debug variable to make sure set1&2 are synchronized if they're the same
 
 		//convert to polar. This is like, pythagoras trig stuff
@@ -178,19 +206,21 @@ pos >= fftsize ?
 
 		
 		//widen LR to compensate for wide sounds getting put in C
+		widen_amt=pi/2;
+		
 		an1<an2?
 		(
-		Angles1[i]-=(pi/2)* center_phase_level;
-		Angles2[i]+=(pi/2)* center_phase_level;
+		Angles1[i]-=widen_amt* center_phase_level;
+		Angles2[i]+=widen_amt* center_phase_level;
 		):
 		(
-		Angles1[i]+=(pi/2)* center_phase_level;
-		Angles2[i]-=(pi/2)* center_phase_level;
+		Angles1[i]+=widen_amt* center_phase_level;
+		Angles2[i]-=widen_amt* center_phase_level;
 		);
 		// Angles1[i]-=slider3*$pi/180;
 		// Angles2[i]+=slider3*$pi/180;
 		
-	temp1=1-ad/$pi;
+		temp1=1-ad/$pi;
 		
 		
 		//rear stuff
@@ -221,7 +251,7 @@ pos >= fftsize ?
 		
 		real_c = Magnitudes3[i]*sin(Angles3[i]) ;
 		imag_c = Magnitudes3[i]*cos(Angles3[i]) ;
-
+*/
 
 		//more voodoo
 		x = real_l - imag_r;
