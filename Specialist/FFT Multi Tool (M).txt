@@ -56,6 +56,11 @@ gfx_r = gfx_g = gfx_b = 1;
 
 mode=0;
 
+
+L_scaling=R_scaling=0;
+pi=3.141592653589793238;
+
+
 @slider
 
 sliderfft = (2^(slider4+10))|0;
@@ -85,16 +90,8 @@ Amount=slider2/100;
 
 mode=slider1+1;//cuz I don't like 0-based mode/slider
 
-mode==7? //gap-filler
-(
-	// slider3=0.1;
-	Amount=min(2,Amount);
-);
+//V2 Re-Im modes sound different to original Ma-Ang modes
 
-
-
-
-// mode
 Response=slider3;
 
 
@@ -241,8 +238,6 @@ pos >= fftsize ?
 		
 		(mode==7&&(Magnitudes1[i]+Magnitudes2[i])/2<old_magnitude)?// Gap filler
 		(
-			// =;
-			// Magnitudes2[i]=old_magnitude*Amount;
 
 			L_scaling=(old_magnitude*Amount)/Magnitudes1[i];
 			R_scaling=(old_magnitude*Amount)/Magnitudes2[i];
@@ -255,7 +250,6 @@ pos >= fftsize ?
 			
 			
 			
-			using=1;
 			//Not completely correct cuz only analyzing L
 		);
 		
@@ -263,19 +257,43 @@ pos >= fftsize ?
 		
 		mode==8? // Sustainizer
 		(
-			Angles1[i]+=rand(360)*Amount;
-			Angles2[i]+=rand(360)*Amount;
+
+			
+			// real_l*=(-1)^(i/2);
+			// real_r*=(-1)^(i/2);
+			// imag_l*=(-1)^i;
+			// imag_r*=(-1)^i;
+			
+			rand1=ceil(rand(10));
+			rand2=ceil(rand(10));
+			
+			real_l*=(-1)^rand1;
+			real_r*=(-1)^rand1;
+			imag_l*=(-1)^rand2;
+			imag_r*=(-1)^rand2;
+			
+			
+			
+			// using=1;
+			
+
 			
 			//TODO: HP ver phase by flipping Re Im  pseudo randomly
 		);
 
 		(mode==10)? //Min2
 		(
+			Angles1[i]=atan2(real_l,imag_l);
+			Angles2[i]=atan2(real_r,imag_r);
+			Angles3[i]=atan2(real_l_two,imag_l_two);
+			Angles4[i]=atan2(real_r_two,imag_r_two);	
 			
 			//compute pans as per my V3 upmix
 			p1=(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]);
 			p2=(Magnitudes4[i]-Magnitudes2[i])/(Magnitudes4[i]+Magnitudes2[i]);
-			//pan isn't that useful for dual stereo-different noise recordings, but useful for High Touch! (different singers on different versions)
+		//pan isn't that useful for dual stereo-different noise recordings, but useful for High Touch! (different singers on different versions)
+		
+
 			
 			ad1=abs(Angles1[i]-Angles3[i]);
 			ad2=abs(Angles2[i]-Angles4[i]);
@@ -285,27 +303,33 @@ pos >= fftsize ?
 			// an3=Angles3[i];
 			// an4=Angles4[i];
 			
-			ad1>180?ad1=360-ad1;//fix angle difference cuz should be under 180*
-			ad2>180?ad2=360-ad2; 
+			ad1>pi?ad1=2*pi-ad1;//fix angle difference cuz should be under 180*
+			ad2>pi?ad2=2*pi-ad2; 
 
-			coeff_L=(1-(min(ad1*2,180)/180))*(1-abs(p1));//double ad cuz 90* ad means it's already purely stereo noise
-			coeff_R=(1-(min(ad2*2,180)/180))*(1-abs(p2));//Reduce mags the more it's panned & phased
+			L_scaling=(1-(min(ad1*2,pi)/pi))*(1-abs(p1));//double ad cuz 90* ad means it's already purely stereo noise
+			R_scaling=(1-(min(ad2*2,pi)/pi))*(1-abs(p2));//Reduce mags the more it's panned & phased
 			
-			Magnitudes1[i]*=coeff_L^Amount;//raised to power because doing linear multiple 1- is tricky
-            Magnitudes2[i]*=coeff_R^Amount;
-		);
+			// Magnitudes1[i]*=L_scaling^Amount;//raised to power because doing linear multiple 1- is tricky
+            // Magnitudes2[i]*=R_scaling^Amount;
+			
+			
+			real_l *= L_scaling^Amount;
+			imag_l *= L_scaling^Amount;
+			real_r *= R_scaling^Amount;
+			imag_r *= R_scaling^Amount;
+			
+			
+			
+			
+			
+			
+		);  
 		
 		//TODO: center pan, generic de distort via harmonics, excite/pitchshift, denoise, transient designer, Tonal/noise separator, select notes via MIDI input
 		
 		
 		// convert to cartesian
 		//x=R cos (theta)
-
-		//somehow sin for X/real & cos for Y/im is correct in JSFX
-		// real_l = Magnitudes1[i]*sin(Angles1[i]*$pi/180) ;
-		// imag_l = Magnitudes1[i]*cos(Angles1[i]*$pi/180) ;
-		// real_r = Magnitudes2[i]*sin(Angles2[i]*$pi/180) ;
-		// imag_r = Magnitudes2[i]*cos(Angles2[i]*$pi/180) ;
 
 
 		x = real_l - imag_r;
