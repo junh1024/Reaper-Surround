@@ -48,6 +48,7 @@ Angles4=sixteen_k*24;
 
 Angle_Difference=sixteen_k*31;
 
+an3=an4=0;
 
 old_magnitude=0;
 
@@ -206,21 +207,23 @@ pos >= fftsize ?
 		(	//FPA mode, align only close magnitudes
 			mode==3 &&
 			abs(( Magnitudes1[i]-Magnitudes3[i])/ (Magnitudes1[i]+Magnitudes3[i] ))<Amount ;
-			
-			
 		)
 		? 
 		(
-			//copy phase from sidechain
+			Angles3[i]=atan2(real_l_two,imag_l_two);
+			Angles4[i]=atan2(real_r_two,imag_r_two);
+
 			// Angle_Difference1[i]=Angles3[i]-Angles1[i];
 			// Angle_Difference2[i]=Angles4[i]-Angles2[i];
 
 			// Angles1[i]+=Angle_Difference1[i]*slider2/100;
 			// Angles2[i]+=Angle_Difference2[i]*slider2/100;
 
-			// fpa=1;
-			Angles1[i]=Angles3[i];
-			Angles2[i]=Angles4[i];
+			//just synthesize Re & Im with mag set1 & angles set2
+			real_l = Magnitudes1[i]*sin(Angles3[i]) ;
+			imag_l = Magnitudes1[i]*cos(Angles3[i]) ;
+			real_r = Magnitudes2[i]*sin(Angles4[i]) ;
+			imag_r = Magnitudes2[i]*cos(Angles4[i]) ;
 
 		);
 
