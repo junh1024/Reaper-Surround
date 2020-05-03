@@ -2,8 +2,7 @@ desc: FFT Multi Tool. Read docs. in ALPHA
 //tags: requested by James HE , modded by geraintluff, modded by junh1024,
 //via https://forum.cockos.com/showpost.php?p=1962348&postcount=18
 
-//there's a lot I dont understand.
-// TODO: performance improvements like moving FFT stuff to @block
+// TODO: performance improvements like moving FFT stuff to @block, frequency limiting
 
 slider1:0<0,9,1{Max,Min (Denoise),Align (FPA),Subtract,Phase limit (unused),Phase reflect (unused),Gap filler,Sustainizer,Max2,Min2}>Mode
 slider2:100<0,200,1>Amount
@@ -157,14 +156,14 @@ pos >= fftsize ?
 		Magnitudes1[i]=sqrt(real_l^2+imag_l^2);
 		Magnitudes2[i]=sqrt(real_r^2+imag_r^2);
 
-		Angles1[i]=atan2(real_l,imag_l)*180/$pi;
-		Angles2[i]=atan2(real_r,imag_r)*180/$pi;
+		// Angles1[i]=atan2(real_l,imag_l)*180/$pi;
+		// Angles2[i]=atan2(real_r,imag_r)*180/$pi;
 
 		Magnitudes3[i]=sqrt(real_l_two^2+imag_l_two^2);
 		Magnitudes4[i]=sqrt(real_r_two^2+imag_r_two^2);
 
-		Angles3[i]=atan2(real_l_two,imag_l_two)*180/$pi;
-		Angles4[i]=atan2(real_r_two,imag_r_two)*180/$pi;
+		// Angles3[i]=atan2(real_l_two,imag_l_two)*180/$pi;
+		// Angles4[i]=atan2(real_r_two,imag_r_two)*180/$pi;
 
 		//TODO: HP ver - high performance ver in Re/Im
 		
@@ -217,11 +216,16 @@ pos >= fftsize ?
 			// M3=Magnitudes3[400];
 
 			//don't subtract more than in set1, otherwise will make more sound
-			Magnitudes1[i]=max(Magnitudes1[i]-Magnitudes3[i]*Amount,0);
-			Magnitudes2[i]=max(Magnitudes2[i]-Magnitudes4[i]*Amount,0);
+			L_scaling=max(Magnitudes1[i]-Magnitudes3[i]*Amount,0)/Magnitudes1[i];
+			R_scaling=max(Magnitudes2[i]-Magnitudes4[i]*Amount,0)/Magnitudes2[i];
 			
 			//somehow magnitudes can be negative???	
 			//might not be completely correct to handle all 4 cases where set1 & set2 are different polarities
+			
+			real_l *= L_scaling;
+			imag_l *= L_scaling;
+			real_r *= R_scaling;
+			imag_r *= R_scaling;
 			
 			//TODO: HP ver : scale Re/Im by max(M1-M3/M1,0);
 
@@ -284,10 +288,10 @@ pos >= fftsize ?
 		//x=R cos (theta)
 
 		//somehow sin for X/real & cos for Y/im is correct in JSFX
-		real_l = Magnitudes1[i]*sin(Angles1[i]*$pi/180) ;
-		imag_l = Magnitudes1[i]*cos(Angles1[i]*$pi/180) ;
-		real_r = Magnitudes2[i]*sin(Angles2[i]*$pi/180) ;
-		imag_r = Magnitudes2[i]*cos(Angles2[i]*$pi/180) ;
+		// real_l = Magnitudes1[i]*sin(Angles1[i]*$pi/180) ;
+		// imag_l = Magnitudes1[i]*cos(Angles1[i]*$pi/180) ;
+		// real_r = Magnitudes2[i]*sin(Angles2[i]*$pi/180) ;
+		// imag_r = Magnitudes2[i]*cos(Angles2[i]*$pi/180) ;
 
 
 		//more voodoo
