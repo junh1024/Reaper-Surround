@@ -4,7 +4,7 @@ desc: FFT Multi Tool. Read docs. in ALPHA
 
 // TODO: performance improvements like moving FFT stuff to @block, frequency limiting
 
-slider1:0<0,9,1{Max,Min (Denoise),Align (FPA),Subtract,Phase limit (unused),Phase reflect (unused),Gap filler,Sustainizer,Max2,Min2}>Mode
+slider1:0<0,9,1{Max,Min (Denoise),Align (FPA),Subtract,Phase limit (unused),Phase reflect (unused),Gap filler 2,Sustainizer,Max2,Min2}>Mode
 slider2:100<0,200,1>Amount
 slider3:0.5<0,1,0.01>Response
 slider4:2<0,4,1{1024,2048,4096,8192}>FFT Size
@@ -88,7 +88,7 @@ mode=slider1+1;//cuz I don't like 0-based mode/slider
 mode==7? //gap-filler
 (
 	// slider3=0.1;
-	Amount=min(0.8,Amount);
+	Amount=min(2,Amount);
 );
 
 
@@ -239,15 +239,27 @@ pos >= fftsize ?
 			imag_r *= R_scaling;
 		);
 		
-		(mode==7&&Magnitudes1[i]<old_magnitude)?// Gap filler
+		(mode==7&&(Magnitudes1[i]+Magnitudes2[i])/2<old_magnitude)?// Gap filler
 		(
-			Magnitudes1[i]=old_magnitude*Amount;
-			Magnitudes2[i]=old_magnitude*Amount;
+			// =;
+			// Magnitudes2[i]=old_magnitude*Amount;
 
+			L_scaling=(old_magnitude*Amount)/Magnitudes1[i];
+			R_scaling=(old_magnitude*Amount)/Magnitudes2[i];
+			
+			real_l *= L_scaling;
+			imag_l *= L_scaling;
+			real_r *= R_scaling;
+			imag_r *= R_scaling;
+			
+			
+			
+			
 			using=1;
 			//Not completely correct cuz only analyzing L
 		);
-		old_magnitude=Magnitudes1[i]*Response/10+old_magnitude*(1-Response/10);
+		
+		old_magnitude=((Magnitudes1[i]+Magnitudes2[i])/2)*(Response/10)+old_magnitude*(1-Response/10);
 		
 		mode==8? // Sustainizer
 		(
