@@ -169,22 +169,36 @@ pos >= fftsize ?
 		
 		//analyse the magnitudes, which one is biggest out of in1 & in2?
 
-		(mode==1&&Magnitudes1[i]<Magnitudes3[i])? //Max mode
+		(mode==1)? //Max mode
 		(
-			//If set2 is louder than set1, copy the bin to set1
-			//Not completely correct cuz only analyzing L
-			Magnitudes1[i]=Magnitudes3[i];
-			Magnitudes2[i]=Magnitudes4[i];
-			Angles1[i]=Angles2[i];
-			Angles2[i]=Angles4[i];
+			//independently test mags of L&R
+			(Magnitudes1[i]<Magnitudes3[i])?
+			(
+			real_l=real_l_two;
+			imag_l=imag_l_two;
+			);
+			
+			(Magnitudes2[i]<Magnitudes4[i])?
+			(
+			real_r=real_r_two;
+			imag_r=imag_r_two;
+			);
+
 		);
 		
 		(mode==2)? //Min mode
 		(
-			Magnitudes1[i]=min(Magnitudes1[i],Magnitudes3[i]);
-			Magnitudes2[i]=min(Magnitudes2[i],Magnitudes4[i]);
-			// Angles1[i]=Angles2[i];
-			// Angles2[i]=Angles4[i];
+			(Magnitudes1[i]>Magnitudes3[i])?
+			(
+			real_l=real_l_two;
+			imag_l=imag_l_two;
+			);
+			
+			(Magnitudes2[i]>Magnitudes4[i])?
+			(
+			real_r=real_r_two;
+			imag_r=imag_r_two;
+			);
 
 
 		);
@@ -212,25 +226,17 @@ pos >= fftsize ?
 
 		mode==4? //subtract
 		(
-			// M1=Magnitudes1[400];
-			// M3=Magnitudes3[400];
-
-			//don't subtract more than in set1, otherwise will make more sound
+			//clamp mag to >0, otherwise will make more sound
 			L_scaling=max(Magnitudes1[i]-Magnitudes3[i]*Amount,0)/Magnitudes1[i];
 			R_scaling=max(Magnitudes2[i]-Magnitudes4[i]*Amount,0)/Magnitudes2[i];
-			
-			//somehow magnitudes can be negative???	
-			//might not be completely correct to handle all 4 cases where set1 & set2 are different polarities
 			
 			real_l *= L_scaling;
 			imag_l *= L_scaling;
 			real_r *= R_scaling;
 			imag_r *= R_scaling;
-			
-			//TODO: HP ver : scale Re/Im by max(M1-M3/M1,0);
-
 		);
-		(mode==7&&Magnitudes1[i]<old_magnitude)?// Gap filler}
+		
+		(mode==7&&Magnitudes1[i]<old_magnitude)?// Gap filler
 		(
 			Magnitudes1[i]=old_magnitude*Amount;
 			Magnitudes2[i]=old_magnitude*Amount;
@@ -247,14 +253,7 @@ pos >= fftsize ?
 			
 			//TODO: HP ver phase by flipping Re Im  pseudo randomly
 		);
-		
-		(mode==9)? //Max2
-		(
-			Magnitudes1[i]=max(Magnitudes1[i],Magnitudes3[i]);
-			Magnitudes2[i]=max(Magnitudes2[i],Magnitudes4[i]);
 
-		);
-		
 		(mode==10)? //Min2
 		(
 			
@@ -294,7 +293,6 @@ pos >= fftsize ?
 		// imag_r = Magnitudes2[i]*cos(Angles2[i]*$pi/180) ;
 
 
-		//more voodoo
 		x = real_l - imag_r;
 		x2 = real_l + imag_r;
 		y = imag_l + real_r;
