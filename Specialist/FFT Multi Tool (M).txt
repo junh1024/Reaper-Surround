@@ -4,7 +4,7 @@ desc: FFT Multi Tool. Read docs. in ALPHA
 
 // TODO: performance improvements like moving FFT stuff to @block, frequency limiting
 
-slider1:0<0,9,1{Max,Min (Denoise),Align (FPA),Subtract,Phase limit (unused),Phase reflect (unused),Gap filler 2,Sustainizer,Max2,Min2}>Mode
+slider1:9<0,9,1{Max,Min (Denoise),Align (FPA),Subtract,Phase limit (unused),Phase reflect (unused),Gap filler 2,Sustainizer,Max2,Min2}>Mode
 slider2:100<0,200,1>Amount
 slider3:0.5<0,1,0.01>Response
 slider4:2<0,4,1{1024,2048,4096,8192}>FFT Size
@@ -41,25 +41,24 @@ Magnitudes3_old=sixteen_k*9;
 Magnitudes4_old=sixteen_k*10;
 
 
-Angles1=sixteen_k*21;
-Angles2=sixteen_k*22;
-Angles3=sixteen_k*23;
-Angles4=sixteen_k*24;
+Angles1=sixteen_k*11;
+Angles2=sixteen_k*12;
+Angles3=sixteen_k*13;
+Angles4=sixteen_k*14;
 
 Angle_Difference=sixteen_k*31;
-
-an3=an4=0;
 
 old_magnitude=0;
 
 gfx_r = gfx_g = gfx_b = 1;
 
-mode=0;
+mode=Amount=0;
 
 
 L_scaling=R_scaling=0;
 pi=3.141592653589793238;
 
+ad1=ad2=p1=p2=0;
 
 @slider
 
@@ -123,7 +122,7 @@ pos >= fftsize ?
 		b2 = a2+1;
 
 
-		//fft() works on complex numbers, but the input is real, so if you put only L in fft, it's wasteful. So they put L & R into Re & Imag to be more efficient. But you need to untangle it. Otherwise, use fft_real(). 
+		//fft() works on complex numbers, but the input is real, so if you put only L in fft, it's wasteful. So they put L & R into Re & Imag to be more efficient. But you need to untangle it.
 
 		x = buf0[a];
 		y = buf0[b];
@@ -147,25 +146,19 @@ pos >= fftsize ?
 		real_r_two = ( y_two + y2_two)*0.5;
 		imag_r_two = (x2_two -  x_two )*0.5;
 
-		difference=real_l-real_l_two;//debug variable to make sure set1&2 are synchronized if they're the same
-
-		//convert to polar. This is like, pythagoras trig stuff
-
 		Magnitudes1[i]=sqrt(real_l^2+imag_l^2);
 		Magnitudes2[i]=sqrt(real_r^2+imag_r^2);
 
-		// Angles1[i]=atan2(real_l,imag_l)*180/$pi;
-		// Angles2[i]=atan2(real_r,imag_r)*180/$pi;
+		// Angles1[i]=atan2(real_l,imag_l);
+		// Angles2[i]=atan2(real_r,imag_r);
 
 		Magnitudes3[i]=sqrt(real_l_two^2+imag_l_two^2);
 		Magnitudes4[i]=sqrt(real_r_two^2+imag_r_two^2);
 
-		// Angles3[i]=atan2(real_l_two,imag_l_two)*180/$pi;
-		// Angles4[i]=atan2(real_r_two,imag_r_two)*180/$pi;
+		// Angles3[i]=atan2(real_l_two,imag_l_two);
+		// Angles4[i]=atan2(real_r_two,imag_r_two);
 
-		//TODO: HP ver - high performance ver in Re/Im
-		
-		//analyse the magnitudes, which one is biggest out of in1 & in2?
+		p1=abs(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]); //for FPA & min2
 
 		(mode==1)? //Max mode
 		(
@@ -197,13 +190,11 @@ pos >= fftsize ?
 			real_r=real_r_two;
 			imag_r=imag_r_two;
 			);
-
-
 		);
 
 		(	//FPA mode, align only close magnitudes
 			mode==3 &&
-			abs(( Magnitudes1[i]-Magnitudes3[i])/ (Magnitudes1[i]+Magnitudes3[i] ))<Amount ;
+			p1 <Amount ;
 		)
 		? 
 		(
@@ -236,7 +227,7 @@ pos >= fftsize ?
 			imag_r *= R_scaling;
 		);
 		
-		(mode==7&&(Magnitudes1[i]+Magnitudes2[i])/2<old_magnitude)?// Gap filler
+		(mode==7&&Magnitudes1[i]<old_magnitude)?// Gap filler
 		(
 
 			L_scaling=(old_magnitude*Amount)/Magnitudes1[i];
@@ -247,18 +238,13 @@ pos >= fftsize ?
 			real_r *= R_scaling;
 			imag_r *= R_scaling;
 			
-			
-			
-			
-			//Not completely correct cuz only analyzing L
 		);
 		
-		old_magnitude=((Magnitudes1[i]+Magnitudes2[i])/2)*(Response/10)+old_magnitude*(1-Response/10);
+		old_magnitude=Magnitudes1[i]*(Response/10)+old_magnitude*(1-Response/10);
 		
 		mode==8? // Sustainizer
 		(
 
-			
 			// real_l*=(-1)^(i/2);
 			// real_r*=(-1)^(i/2);
 			// imag_l*=(-1)^i;
@@ -271,14 +257,7 @@ pos >= fftsize ?
 			real_r*=(-1)^rand1;
 			imag_l*=(-1)^rand2;
 			imag_r*=(-1)^rand2;
-			
-			
-			
-			// using=1;
-			
 
-			
-			//TODO: HP ver phase by flipping Re Im  pseudo randomly
 		);
 
 		(mode==10)? //Min2
@@ -286,10 +265,10 @@ pos >= fftsize ?
 			Angles1[i]=atan2(real_l,imag_l);
 			Angles2[i]=atan2(real_r,imag_r);
 			Angles3[i]=atan2(real_l_two,imag_l_two);
-			Angles4[i]=atan2(real_r_two,imag_r_two);	
+			Angles4[i]=atan2(real_r_two,imag_r_two);
 			
 			//compute pans as per my V3 upmix
-			p1=(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]);
+			// p1=(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]);
 			p2=(Magnitudes4[i]-Magnitudes2[i])/(Magnitudes4[i]+Magnitudes2[i]);
 		//pan isn't that useful for dual stereo-different noise recordings, but useful for High Touch! (different singers on different versions)
 		
@@ -298,31 +277,18 @@ pos >= fftsize ?
 			ad1=abs(Angles1[i]-Angles3[i]);
 			ad2=abs(Angles2[i]-Angles4[i]);
 
-			// an1=Angles1[i];
-			// an2=Angles2[i];
-			// an3=Angles3[i];
-			// an4=Angles4[i];
 			
 			ad1>pi?ad1=2*pi-ad1;//fix angle difference cuz should be under 180*
 			ad2>pi?ad2=2*pi-ad2; 
 
-			L_scaling=(1-(min(ad1*2,pi)/pi))*(1-abs(p1));//double ad cuz 90* ad means it's already purely stereo noise
+			L_scaling=(1-(min(ad1*2,pi)/pi))*(1-   (p1));//double ad cuz 90* ad means it's already purely stereo noise
 			R_scaling=(1-(min(ad2*2,pi)/pi))*(1-abs(p2));//Reduce mags the more it's panned & phased
-			
-			// Magnitudes1[i]*=L_scaling^Amount;//raised to power because doing linear multiple 1- is tricky
-            // Magnitudes2[i]*=R_scaling^Amount;
-			
-			
-			real_l *= L_scaling^Amount;
+
+			real_l *= L_scaling^Amount; //raised to power because doing linear multiple 1- is tricky
 			imag_l *= L_scaling^Amount;
 			real_r *= R_scaling^Amount;
 			imag_r *= R_scaling^Amount;
-			
-			
-			
-			
-			
-			
+
 		);  
 		
 		//TODO: center pan, generic de distort via harmonics, excite/pitchshift, denoise, transient designer, Tonal/noise separator, select notes via MIDI input
