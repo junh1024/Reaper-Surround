@@ -2,7 +2,7 @@ desc: Surround upscale ALPHA
 //tags: requested by James HE , modded by geraintluff, modded by junh1024,
 //via https://forum.cockos.com/showpost.php?p=1962348&postcount=18
 
-// TODO: performance improvements like moving FFT stuff to @block, half fft for center?
+// TODO: performance improvements like moving FFT stuff to @block, frequency selection, half fft for center?
 
 slider1:0<0,100,2>Width
 slider2:50<0,180,2>Rear threshold
@@ -52,7 +52,7 @@ Angles3=sixteen_k*23;
 // Angles5=sixteen_k*25;
 // Angles6=sixteen_k*26;
 
-// Angle_Difference=sixteen_k*31;
+Angle_Difference=sixteen_k*31;
 // Pan_Array=sixteen_k*32;
 
 Rear_threshold=Crossover_width=0;
@@ -64,6 +64,7 @@ exceeded=0;
 center_phase_level=center_mag_level=0;
 
 pi=3.141592653589793238;
+h_sqrt_2=0.7071067811865475;
 
 
 
@@ -80,6 +81,8 @@ pi=3.141592653589793238;
 	real_c = 0;
 	imag_c = 0;
 
+	pos2=0;
+	
 @slider
 
 sliderfft = (2^(slider4+10))|0;
@@ -169,8 +172,8 @@ pos >= fftsize ?
 		sideness=min(side/mid,1); //clamp sideness to 1
 		
 		//0.7 3dB correction
-		real_c = mid_r *(1-sideness)*0.7;
-		imag_c = mid_i *(1-sideness)*0.7;
+		real_c = mid_r *(1-sideness)*h_sqrt_2;
+		imag_c = mid_i *(1-sideness)*h_sqrt_2;
 		
 		// sideness=1;
 		
@@ -184,8 +187,15 @@ pos >= fftsize ?
 		real_l = (mid_r*0.5*sideness) + (side_r*0.5);
 		imag_l = (mid_i*0.5*sideness) + (side_i*0.5);
 		real_r = (mid_r*0.5*sideness) - (side_r*0.5);
-		imag_r = (mid_i*0.5*sideness) - (side_i*0.5);		
+		imag_r = (mid_i*0.5*sideness) - (side_i*0.5);	
 		
+		Angles1[i]=an1=(atan2(real_l,imag_l));//radians, normalize to 0,2pi
+		Angles2[i]=an2=(atan2(real_r,imag_r));		
+		Angle_Difference[i]=abs(an1-an2);
+
+		ad=Angle_Difference[i];
+		ad>$pi?ad=2*$pi-ad;//fix angle difference cuz should be under 180*
+		ad=slider3*$pi/180;
 /*
 		// difference=real_l-real_l_two;//debug variable to make sure set1&2 are synchronized if they're the same
 
@@ -194,17 +204,12 @@ pos >= fftsize ?
 		Magnitudes1[i]=sqrt(real_l^2+imag_l^2);
 		Magnitudes2[i]=sqrt(real_r^2+imag_r^2);
 
-		Angles1[i]=an1=(atan2(real_l,imag_l));//radians, normalize to 0,2pi
-		Angles2[i]=an2=(atan2(real_r,imag_r));
+
 		
 		
 		//from -1 to 1, L to R.
 		pan=(Magnitudes2[i]-Magnitudes1[i])/(Magnitudes2[i]+Magnitudes1[i]);
-		Angle_Difference[i]=abs(an1-an2);
 
-		ad=Angle_Difference[i];
-		// ad>$pi?ad=2*$pi-ad;//fix angle difference cuz should be under 180*
-		// ad=slider3*$pi/180;
 		center_phase_level= 1-min(2*ad/pi,1);;//double ad & clamp to +0, to make C selection 90* wide instead of 180
 
 		//reduce C if the depending on pan & phase
@@ -332,23 +337,31 @@ buf2[pos] = w1*spl2;
 buf3[fftsize+pos] = w2*spl2;
 // buf3[fftsize+pos+1] = w2*spl3;
 
-//rear
+//buffer the original spl0
+out4 = buf4[pos2]  ;
+out5 = buf5[pos2];
 
-out4 = (buf4[pos]  );
-out5 = (buf4[pos+1]);
+buf4[pos2] =  spl0;
+buf5[pos2] =  spl1;
 
-buf4[pos] =    spl0;
-buf4[pos+1] =  spl1;
 
-// spl4=out4;
-// spl5=out5;
+
+
+spl4=out4;
+spl5=out5;
 
 spl0 = out0;
 spl1 = out1;
 
 spl2= out2;
 
+//subtract front from original spl0 to get back
+spl4=out4-out0-(h_sqrt_2*out2);
+spl5=out5-out1-(h_sqrt_2*out2);
+
+
 pos += 2;
+pos2=(pos2+1)%(fftsize*1);
 
 // @gfx 500 16
 
