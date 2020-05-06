@@ -14,7 +14,7 @@ slider7:10<0,180,2>All LP
 slider8:2<0,4,1{1024,2048,4096,8192}>FFT Size
 
 
-// import surroundlib3.txt
+import surroundlib3.txt
 
 @init 
 
@@ -116,6 +116,7 @@ fftsize != sliderfft ?
 
 Rear_threshold= slider3*$pi/180;
 Crossover_width=slider4*$pi/180;
+width_coeff=slider1/100; 
 
 
 @sample
@@ -160,12 +161,16 @@ pos >= fftsize ?
 		real_r = (y + y2)*0.5;
 		imag_r = (x2 - x)*0.5;
 
-		
+		Angles1[i]=an1=(atan2(real_l,imag_l));//radians, normalize to 0,2pi
+		Angles2[i]=an2=(atan2(real_r,imag_r));		
+		Angle_Difference[i]=abs(an1-an2);	
 
 		//completely rewritten in Complex instead of Polar for more performance & no fiddly phase compensation
 
 		//convert to M/S
 		
+		width_coeff<1?
+		(
 		mid_r  = (real_l+real_r);
 		mid_i  = (imag_l+imag_r);
 		side_r = (real_l-real_r);
@@ -183,16 +188,8 @@ pos >= fftsize ?
 		imag_c = mid_i *(1-sideness)*h_sqrt_2;
 		
 		// sideness=1;
-		
+	
 
-		// real_l = (mid_r+side_r)*sideness*0.5;
-		// imag_l = (mid_i+side_i)*sideness*0.5;
-		// real_r = (mid_r-side_r)*sideness*0.5;
-		// imag_r = (mid_i-side_i)*sideness*0.5;		
-		
-		Angles1[i]=an1=(atan2(real_l,imag_l));//radians, normalize to 0,2pi
-		Angles2[i]=an2=(atan2(real_r,imag_r));		
-		Angle_Difference[i]=abs(an1-an2);
 		
 		
 		//M/S decode LR
@@ -201,7 +198,7 @@ pos >= fftsize ?
 		real_r = (mid_r*0.5*sideness) - (side_r*0.5);
 		imag_r = (mid_i*0.5*sideness) - (side_i*0.5);	
 		
-
+);
 
 		ad=Angle_Difference[i];
 		ad>pi?ad=2*pi-ad;//fix angle difference cuz should be under 180*
@@ -212,7 +209,7 @@ pos >= fftsize ?
 		real_r*=(1-(ad/pi));
 		imag_r*=(1-(ad/pi));
 		
-		
+		//BUG: upscales to rear when 100% hard panned
 		
 		// ad=slider4*$pi/180;
 /*
@@ -325,9 +322,10 @@ pos >= fftsize ?
 	fft_ipermute(buf0, fftsize);
 	ifft(buf0, fftsize);
 	
+	// width_coeff<1?(
 	fft_ipermute(buf2, fftsize);
 	ifft(buf2, fftsize);
-
+// );
 	pos=0;
 );
 
@@ -381,6 +379,9 @@ spl5=out5-out1-(h_sqrt_2*out2);
 
 pos += 2;
 pos2=(pos2+1)%(fftsize*1);
+
+
+do_width(width_coeff);
 
 // @gfx 500 16
 
