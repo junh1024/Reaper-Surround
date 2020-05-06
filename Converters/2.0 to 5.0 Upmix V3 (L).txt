@@ -5,9 +5,13 @@ desc: Surround upscale ALPHA
 // TODO: performance improvements like moving FFT stuff to @block, frequency selection, half fft for center?
 
 slider1:0<0,100,2>Width
-slider2:50<0,180,2>Rear threshold
-slider3:10<0,180,2>Crossover width
-slider4:2<0,4,1{1024,2048,4096,8192}>FFT Size
+slider2:0<0,100,2>Depth
+slider3:50<0,180,2>Rear threshold
+slider4:10<0,180,2>Crossover width
+slider5:10<0,100,2>Rear Width
+slider6:10<0,180,2>Rear LP
+slider7:10<0,180,2>All LP
+slider8:2<0,4,1{1024,2048,4096,8192}>FFT Size
 
 
 // import surroundlib3.txt
@@ -83,9 +87,12 @@ h_sqrt_2=0.7071067811865475;
 
 	pos2=0;
 	
+	
+	an1=an2=0;
+	
 @slider
 
-sliderfft = (2^(slider4+10))|0;
+sliderfft = (2^(slider8+10))|0;
 fftsize != sliderfft ?
 (
 	pos = 0;
@@ -107,8 +114,8 @@ fftsize != sliderfft ?
 	pdc_delay = fftsize;
 );
 
-Rear_threshold= slider2*$pi/180;
-Crossover_width=slider3*$pi/180;
+Rear_threshold= slider3*$pi/180;
+Crossover_width=slider4*$pi/180;
 
 
 @sample
@@ -183,19 +190,31 @@ pos >= fftsize ?
 		// real_r = (mid_r-side_r)*sideness*0.5;
 		// imag_r = (mid_i-side_i)*sideness*0.5;		
 		
+		Angles1[i]=an1=(atan2(real_l,imag_l));//radians, normalize to 0,2pi
+		Angles2[i]=an2=(atan2(real_r,imag_r));		
+		Angle_Difference[i]=abs(an1-an2);
+		
+		
 		//M/S decode LR
 		real_l = (mid_r*0.5*sideness) + (side_r*0.5);
 		imag_l = (mid_i*0.5*sideness) + (side_i*0.5);
 		real_r = (mid_r*0.5*sideness) - (side_r*0.5);
 		imag_r = (mid_i*0.5*sideness) - (side_i*0.5);	
 		
-		Angles1[i]=an1=(atan2(real_l,imag_l));//radians, normalize to 0,2pi
-		Angles2[i]=an2=(atan2(real_r,imag_r));		
-		Angle_Difference[i]=abs(an1-an2);
+
 
 		ad=Angle_Difference[i];
-		ad>$pi?ad=2*$pi-ad;//fix angle difference cuz should be under 180*
-		ad=slider3*$pi/180;
+		ad>pi?ad=2*pi-ad;//fix angle difference cuz should be under 180*
+		
+		
+		real_l*=(1-(ad/pi));
+		imag_l*=(1-(ad/pi));
+		real_r*=(1-(ad/pi));
+		imag_r*=(1-(ad/pi));
+		
+		
+		
+		// ad=slider4*$pi/180;
 /*
 		// difference=real_l-real_l_two;//debug variable to make sure set1&2 are synchronized if they're the same
 
@@ -242,8 +261,8 @@ pos >= fftsize ?
 		Angles1[i]+=widen_amt* center_phase_level;
 		Angles2[i]-=widen_amt* center_phase_level;
 		);
-		// Angles1[i]-=slider3*$pi/180;
-		// Angles2[i]+=slider3*$pi/180;
+		// Angles1[i]-=slider4*$pi/180;
+		// Angles2[i]+=slider4*$pi/180;
 		
 		temp1=1-ad/$pi;
 		
