@@ -54,6 +54,10 @@ gfx_r = gfx_g = gfx_b = 1;
 
 mode=Amount=0;
 
+left_r = left_i = right_r= right_i= 0;
+left_r_two = left_i_two = right_r_two= right_i_two= 0;
+
+tmp=a=b=a2=b2=0;
 
 L_scaling=R_scaling=0;
 pi=3.141592653589793238;
@@ -129,10 +133,10 @@ pos >= fftsize ?
 		x2 = buf0[a2];
 		y2 = buf0[b2];
 
-		real_l = (x + x2)*0.5;
-		imag_l = (y - y2)*0.5;
-		real_r = (y + y2)*0.5;
-		imag_r = (x2 - x)*0.5;
+		 left_r = (x + x2)*0.5;
+		 left_i = (y - y2)*0.5;
+		right_r = (y + y2)*0.5;
+		right_i = (x2 - x)*0.5;
 
 		x_two = buf2[a];
 		y_two = buf2[b];
@@ -141,22 +145,22 @@ pos >= fftsize ?
 
 
 
-		real_l_two = ( x_two + x2_two)*0.5;
-		imag_l_two = ( y_two - y2_two)*0.5;
-		real_r_two = ( y_two + y2_two)*0.5;
-		imag_r_two = (x2_two -  x_two )*0.5;
+		left_r_two = ( x_two + x2_two)*0.5;
+		left_i_two = ( y_two - y2_two)*0.5;
+		right_r_two= ( y_two + y2_two)*0.5;
+		right_i_two= (x2_two -  x_two )*0.5;
 
-		Magnitudes1[i]=sqrt(real_l^2+imag_l^2);
-		Magnitudes2[i]=sqrt(real_r^2+imag_r^2);
+		Magnitudes1[i]=sqrt(left_r^2+left_i^2);
+		Magnitudes2[i]=sqrt(right_r^2+right_i^2);
 
-		// Angles1[i]=atan2(real_l,imag_l);
-		// Angles2[i]=atan2(real_r,imag_r);
+		// Angles1[i]=atan2(left_r,left_i);
+		// Angles2[i]=atan2(right_r,right_i);
 
-		Magnitudes3[i]=sqrt(real_l_two^2+imag_l_two^2);
-		Magnitudes4[i]=sqrt(real_r_two^2+imag_r_two^2);
+		Magnitudes3[i]=sqrt(left_r_two^2+left_i_two^2);
+		Magnitudes4[i]=sqrt(right_r_two^2+right_i_two^2);
 
-		// Angles3[i]=atan2(real_l_two,imag_l_two);
-		// Angles4[i]=atan2(real_r_two,imag_r_two);
+		// Angles3[i]=atan2(left_r_two,left_i_two);
+		// Angles4[i]=atan2(right_r_two,right_i_two);
 
 		p1=abs(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]); //for FPA & min2
 
@@ -165,14 +169,14 @@ pos >= fftsize ?
 			//independently test mags of L&R
 			(Magnitudes1[i]<Magnitudes3[i])?
 			(
-			real_l=real_l_two;
-			imag_l=imag_l_two;
+			left_r=left_r_two;
+			left_i=left_i_two;
 			);
 			
 			(Magnitudes2[i]<Magnitudes4[i])?
 			(
-			real_r=real_r_two;
-			imag_r=imag_r_two;
+			right_r=right_r_two;
+			right_i=right_i_two;
 			);
 
 		);
@@ -181,14 +185,14 @@ pos >= fftsize ?
 		(
 			(Magnitudes1[i]>Magnitudes3[i])?
 			(
-			real_l=real_l_two;
-			imag_l=imag_l_two;
+			left_r=left_r_two;
+			left_i=left_i_two;
 			);
 			
 			(Magnitudes2[i]>Magnitudes4[i])?
 			(
-			real_r=real_r_two;
-			imag_r=imag_r_two;
+			right_r=right_r_two;
+			right_i=right_i_two;
 			);
 		);
 
@@ -198,8 +202,8 @@ pos >= fftsize ?
 		)
 		? 
 		(
-			Angles3[i]=atan2(real_l_two,imag_l_two);
-			Angles4[i]=atan2(real_r_two,imag_r_two);
+			Angles3[i]=atan2(left_r_two,left_i_two);
+			Angles4[i]=atan2(right_r_two,right_i_two);
 
 			// Angle_Difference1[i]=Angles3[i]-Angles1[i];
 			// Angle_Difference2[i]=Angles4[i]-Angles2[i];
@@ -208,10 +212,10 @@ pos >= fftsize ?
 			// Angles2[i]+=Angle_Difference2[i]*slider2/100;
 
 			//just synthesize Re & Im with mag set1 & angles set2
-			real_l = Magnitudes1[i]*sin(Angles3[i]) ;
-			imag_l = Magnitudes1[i]*cos(Angles3[i]) ;
-			real_r = Magnitudes2[i]*sin(Angles4[i]) ;
-			imag_r = Magnitudes2[i]*cos(Angles4[i]) ;
+			left_r = Magnitudes1[i]*sin(Angles3[i]) ;
+			left_i = Magnitudes1[i]*cos(Angles3[i]) ;
+			right_r = Magnitudes2[i]*sin(Angles4[i]) ;
+			right_i = Magnitudes2[i]*cos(Angles4[i]) ;
 
 		);
 
@@ -221,10 +225,10 @@ pos >= fftsize ?
 			L_scaling=max(Magnitudes1[i]-Magnitudes3[i]*Amount,0)/Magnitudes1[i];
 			R_scaling=max(Magnitudes2[i]-Magnitudes4[i]*Amount,0)/Magnitudes2[i];
 			
-			real_l *= L_scaling;
-			imag_l *= L_scaling;
-			real_r *= R_scaling;
-			imag_r *= R_scaling;
+			left_r *= L_scaling;
+			left_i *= L_scaling;
+			right_r *= R_scaling;
+			right_i *= R_scaling;
 		);
 		
 		(mode==7&&Magnitudes1[i]<old_magnitude)?// Gap filler
@@ -233,10 +237,10 @@ pos >= fftsize ?
 			L_scaling=(old_magnitude*Amount)/Magnitudes1[i];
 			R_scaling=(old_magnitude*Amount)/Magnitudes2[i];
 			
-			real_l *= L_scaling;
-			imag_l *= L_scaling;
-			real_r *= R_scaling;
-			imag_r *= R_scaling;
+			left_r *= L_scaling;
+			left_i *= L_scaling;
+			right_r *= R_scaling;
+			right_i *= R_scaling;
 			
 		);
 		
@@ -245,27 +249,27 @@ pos >= fftsize ?
 		mode==8? // Sustainizer
 		(
 
-			// real_l*=(-1)^(i/2);
-			// real_r*=(-1)^(i/2);
-			// imag_l*=(-1)^i;
-			// imag_r*=(-1)^i;
+			// left_r*=(-1)^(i/2);
+			// right_r*=(-1)^(i/2);
+			// left_i*=(-1)^i;
+			// right_i*=(-1)^i;
 			
 			rand1=ceil(rand(10));
 			rand2=ceil(rand(10));
 			
-			real_l*=(-1)^rand1;
-			real_r*=(-1)^rand1;
-			imag_l*=(-1)^rand2;
-			imag_r*=(-1)^rand2;
+			left_r*=(-1)^rand1;
+			right_r*=(-1)^rand1;
+			left_i*=(-1)^rand2;
+			right_i*=(-1)^rand2;
 
 		);
 
 		(mode==10)? //Min2
 		(
-			Angles1[i]=atan2(real_l,imag_l);
-			Angles2[i]=atan2(real_r,imag_r);
-			Angles3[i]=atan2(real_l_two,imag_l_two);
-			Angles4[i]=atan2(real_r_two,imag_r_two);
+			Angles1[i]=atan2(left_r,left_i);
+			Angles2[i]=atan2(right_r,right_i);
+			Angles3[i]=atan2(left_r_two,left_i_two);
+			Angles4[i]=atan2(right_r_two,right_i_two);
 			
 			//compute pans as per my V3 upmix
 			// p1=(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]);
@@ -284,10 +288,10 @@ pos >= fftsize ?
 			L_scaling=(1-(min(ad1*2,pi)/pi))*(1-   (p1));//double ad cuz 90* ad means it's already purely stereo noise
 			R_scaling=(1-(min(ad2*2,pi)/pi))*(1-abs(p2));//Reduce mags the more it's panned & phased
 
-			real_l *= L_scaling^Amount; //raised to power because doing linear multiple 1- is tricky
-			imag_l *= L_scaling^Amount;
-			real_r *= R_scaling^Amount;
-			imag_r *= R_scaling^Amount;
+			left_r *= L_scaling^Amount; //raised to power because doing linear multiple 1- is tricky
+			left_i *= L_scaling^Amount;
+			right_r *= R_scaling^Amount;
+			right_i *= R_scaling^Amount;
 
 		);  
 		
@@ -298,15 +302,11 @@ pos >= fftsize ?
 		//x=R cos (theta)
 
 
-		x = real_l - imag_r;
-		x2 = real_l + imag_r;
-		y = imag_l + real_r;
-		y2 = real_r - imag_l;
 
-		buf0[a] = x;
-		buf0[b] = y;
-		buf0[a2] = x2;
-		buf0[b2] = y2;
+		buf0[a]  = left_r - right_i;
+		buf0[b]  = left_i + right_r;
+		buf0[a2] = left_r + right_i;
+		buf0[b2] = right_r - left_i;
 
 		i += 2
 	);

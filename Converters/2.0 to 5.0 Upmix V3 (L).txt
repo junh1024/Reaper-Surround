@@ -27,7 +27,6 @@ window=0;
 
 sixteen_k=16384;
 
-
 buf0 = sixteen_k*1;
 buf1 = sixteen_k*2;
 
@@ -36,9 +35,6 @@ buf3 = sixteen_k*4;
 
 buf4 = sixteen_k*5;
 buf5 = sixteen_k*6;
-
-pos=0;
-
 
 Magnitudes1=sixteen_k*11;
 Magnitudes2=sixteen_k*12;
@@ -70,25 +66,27 @@ center_phase_level=center_mag_level=0;
 pi=3.141592653589793238;
 h_sqrt_2=0.7071067811865475;
 
+pos=0;
+pos2=0;
 
-
-	mid_r  = 0;
-	mid_i  = 0;
-	side_r = 0;
-	side_i = 0;
+	mid_r  = mid_i  = 0;
+	side_r = side_i = 0;
 	
-	mid =0;
-	side=0;
+	mid = side = 0;
 	
 	sideness=0;
 	
-	real_c = 0;
-	imag_c = 0;
+	center_r = center_i = 0;
 
-	pos2=0;
 	
 	
 	an1=an2=0;
+	
+left_r = left_i = right_r= right_i= 0;
+left_r_two = left_i_two = right_r_two= right_i_two= 0;
+
+L_scaling=0;
+tmp=a=b=a2=b2=0;
 	
 @slider
 
@@ -100,15 +98,17 @@ fftsize != sliderfft ?
 	memset(buf1, 0, 2*fftsize);
 	memset(buf2, 0, 2*fftsize);
 	memset(buf3, 0, 2*fftsize);
-	memset(buf4, 0, 2*fftsize);
-	memset(buf5, 0, 2*fftsize);
+	// memset(buf4, 0, 2*fftsize);
+	// memset(buf5, 0, 2*fftsize);
 	memset(window, 0, fftsize);
 	fftsize = sliderfft;
 	w = 2.0*$pi/fftsize;
 	i = 0;
 	
 	loop(fftsize/2,
-		window[i] = 0.42-0.50*cos(i*w)+0.08*cos(2.0*i*w); //can make this a triangle?
+		window[i] = 0.42-0.50*cos(i*w)+0.08*cos(2.0*i*w); //blackman window
+		// window[i] =1- (((fftsize/4)-i)/(fftsize/4)); //triangle window
+		// window[i] = 0.5;
 		i += 1;
 	); 
 	pdc_delay = fftsize;
@@ -131,9 +131,9 @@ pos >= fftsize ?
 	buf2 = buf3;
 	buf3 = tmp;
 	
-	tmp = buf4;
-	buf5 = buf5;
-	buf4 = tmp;
+	// tmp = buf4;
+	// buf5 = buf5;
+	// buf4 = tmp;
 
 	fft(buf0, fftsize);
 	fft_permute(buf0, fftsize);
@@ -156,14 +156,12 @@ pos >= fftsize ?
 		x2 = buf0[a2];
 		y2 = buf0[b2];
 
-		real_l = (x + x2)*0.5;
-		imag_l = (y - y2)*0.5;
-		real_r = (y + y2)*0.5;
-		imag_r = (x2 - x)*0.5;
+		 left_r = left_r_two =(x + x2)*0.5;
+		 left_i = left_i_two =(y - y2)*0.5;
+		right_r = right_r_two=(y + y2)*0.5;
+		right_i = right_i_two=(x2 - x)*0.5;
 
-		Angles1[i]=an1=(atan2(real_l,imag_l));//radians, normalize to 0,2pi
-		Angles2[i]=an2=(atan2(real_r,imag_r));		
-		Angle_Difference[i]=abs(an1-an2);	
+
 
 		//completely rewritten in Complex instead of Polar for more performance & no fiddly phase compensation
 
@@ -171,10 +169,10 @@ pos >= fftsize ?
 		
 		width_coeff<1?
 		(
-		mid_r  = (real_l+real_r);
-		mid_i  = (imag_l+imag_r);
-		side_r = (real_l-real_r);
-		side_i = (imag_l-imag_r);
+		mid_r  = (left_r+right_r);
+		mid_i  = (left_i+right_i);
+		side_r = (left_r-right_r);
+		side_i = (left_i-right_i);
 		
 		//measure the magnitude of M&S, to decide how much should go in C/S
 		
@@ -183,9 +181,12 @@ pos >= fftsize ?
 		
 		sideness=min(side/mid,1); //clamp sideness to 1
 		
+		// sideness=sideness*(Response)+sideness_prev[i]*(1-Response);
+		// sideness_prev[i]=sideness;
+		
 		//0.7 3dB correction
-		real_c = mid_r *(1-sideness)*h_sqrt_2;
-		imag_c = mid_i *(1-sideness)*h_sqrt_2;
+		center_r = mid_r *(1-sideness)*h_sqrt_2;
+		center_i = mid_i *(1-sideness)*h_sqrt_2;
 		
 		// sideness=1;
 	
@@ -193,36 +194,34 @@ pos >= fftsize ?
 		
 		
 		//M/S decode LR
-		real_l = (mid_r*0.5*sideness) + (side_r*0.5);
-		imag_l = (mid_i*0.5*sideness) + (side_i*0.5);
-		real_r = (mid_r*0.5*sideness) - (side_r*0.5);
-		imag_r = (mid_i*0.5*sideness) - (side_i*0.5);	
-		
+		left_r = (mid_r*0.5*sideness) + (side_r*0.5);
+		left_i = (mid_i*0.5*sideness) + (side_i*0.5);
+		right_r = (mid_r*0.5*sideness) - (side_r*0.5);
+		right_i = (mid_i*0.5*sideness) - (side_i*0.5);	
 );
+		// (i<fftsize/3)? //rear lowpass
+		// (
+		Angles1[i]=an1=atan2(left_r_two,left_i_two); //radians, normalize to 0,2pi
+		Angles2[i]=an2=atan2(right_r_two,right_i_two);	
+		Angle_Difference[i]=abs(an1-an2);	
 
 		ad=Angle_Difference[i];
 		ad>pi?ad=2*pi-ad;//fix angle difference cuz should be under 180*
 		
 		
-		real_l*=(1-(ad/pi));
-		imag_l*=(1-(ad/pi));
-		real_r*=(1-(ad/pi));
-		imag_r*=(1-(ad/pi));
+		L_scaling=1-(ad/pi);
+		
+		 left_r*=L_scaling;
+		 left_i*=L_scaling;
+		right_r*=L_scaling;
+		right_i*=L_scaling;
+		// );
+		
 		
 		//BUG: upscales to rear when 100% hard panned
 		
 		// ad=slider4*$pi/180;
 /*
-		// difference=real_l-real_l_two;//debug variable to make sure set1&2 are synchronized if they're the same
-
-		//convert to polar. This is like, pythagoras trig stuff
-
-		Magnitudes1[i]=sqrt(real_l^2+imag_l^2);
-		Magnitudes2[i]=sqrt(real_r^2+imag_r^2);
-
-
-		
-		
 		//from -1 to 1, L to R.
 		pan=(Magnitudes2[i]-Magnitudes1[i])/(Magnitudes2[i]+Magnitudes1[i]);
 
@@ -245,25 +244,6 @@ pos >= fftsize ?
 		Angles3[i]    =(Angles1[i]+Angles2[i])/2;  //averaging angle sounds bad?
 		// Angles3[i]    =Angles1[i]; //prolly wrong, but sounds bad if i add A1 & A2. But LR will be adjusted after this to partially compensate
 
-		
-		//widen LR to compensate for wide sounds getting put in C
-		widen_amt=pi/2;
-		
-		an1<an2?
-		(
-		Angles1[i]-=widen_amt* center_phase_level;
-		Angles2[i]+=widen_amt* center_phase_level;
-		):
-		(
-		Angles1[i]+=widen_amt* center_phase_level;
-		Angles2[i]-=widen_amt* center_phase_level;
-		);
-		// Angles1[i]-=slider4*$pi/180;
-		// Angles2[i]+=slider4*$pi/180;
-		
-		temp1=1-ad/$pi;
-		
-		
 		//rear stuff
 		
 		// (Angle_Difference[i]>Rear_threshold-Crossover_width&&Angle_Difference[i]<Rear_threshold+Crossover_width)?
@@ -278,43 +258,20 @@ pos >= fftsize ?
 		// );
 
 
-
- // Magnitudes3[i]
-
-		// convert to cartesian
-		//x=R cos (theta)
-
-		//somehow sin for X/real & cos for Y/im is correct in JSFX
-		real_l = Magnitudes1[i]*sin(Angles1[i]) ;
-		imag_l = Magnitudes1[i]*cos(Angles1[i]) ;
-		real_r = Magnitudes2[i]*sin(Angles2[i]) ;
-		imag_r = Magnitudes2[i]*cos(Angles2[i]) ;
-		
-		real_c = Magnitudes3[i]*sin(Angles3[i]) ;
-		imag_c = Magnitudes3[i]*cos(Angles3[i]) ;
 */
 
 		//more voodoo
-		x = real_l - imag_r;
-		x2 = real_l + imag_r;
-		y = imag_l + real_r;
-		y2 = real_r - imag_l;
-
-		buf0[a] = x;
-		buf0[b] = y;
-		buf0[a2] = x2;
-		buf0[b2] = y2;
+		buf0[a]  = left_r - right_i;
+		buf0[b]  = left_i + right_r;
+		buf0[a2] = left_r + right_i;
+		buf0[b2] = right_r - left_i;
 
 		//prepare c
-		x = real_c - 0;
-		x2 = real_c + 0;
-		y = imag_c + 0;
-		y2 = 0 - imag_c;
 
-		buf2[a] = x;
-		buf2[b] = y;
-		buf2[a2] = x2;
-		buf2[b2] = y2;
+		buf2[a] = center_r;
+		buf2[b] = center_i;
+		buf2[a2]= center_r;
+		buf2[b2]=-center_i;
 		
 		i += 2
 	);
