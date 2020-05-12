@@ -4,7 +4,7 @@ desc: FFT Multi Tool. Read docs. in ALPHA
 
 // TODO: performance improvements like moving FFT stuff to @block, frequency limiting
 
-slider1:9<0,9,1{Max,Min (Denoise),Align (FPA),Subtract,Phase limit (unused),Phase reflect (unused),Gap filler 2,Sustainizer,Max2,Min2}>Mode
+slider1:5<0,9,1{Max,Min (Denoise),Align (FPA),Subtract,Phase limit (unused),Phase reflect,Gap filler 2,Sustainizer,Split-Combine Frequency,Min2}>Mode
 slider2:100<0,200,1>Amount
 slider3:0.5<0,1,0.01>Response
 slider4:2<0,4,1{1024,2048,4096,8192}>FFT Size
@@ -56,6 +56,8 @@ mode=Amount=0;
 
 left_r = left_i = right_r= right_i= 0;
 left_r_two = left_i_two = right_r_two= right_i_two= 0;
+	mid_r  = mid_i  = 0;
+	side_r = side_i = 0;
 
 tmp=a=b=a2=b2=0;
 
@@ -164,7 +166,7 @@ pos >= fftsize ?
 
 		p1=abs(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]); //for FPA & min2
 
-		(mode==1)? //Max mode
+		(mode==1)? //Max mode, sounds ok with no overlap, but a bit of artefact
 		(
 			//independently test mags of L&R
 			(Magnitudes1[i]<Magnitudes3[i])?
@@ -231,6 +233,42 @@ pos >= fftsize ?
 			right_i *= R_scaling;
 		);
 		
+		mode==6? //phase reflect, wider bins sound worse w/ no overlap
+		(
+
+			Angles1[i]=atan2(left_r,left_i);
+			Angles2[i]=atan2(right_r,right_i);
+			
+			ad1=abs(Angles1[i]-Angles2[i]);//different to below
+			
+			ad1>pi?ad1=2*pi-ad1;//fix angle difference cuz should be under 180*
+			
+			//reverse polarity of R if >90*, but sounds bad
+			// ad1>(pi/2)?
+			// (
+			// right_r *= -1;
+			// right_i *= -1;
+			// );
+			
+			ad1>(pi/2)? //if >90*, but sounds good
+			(
+				//NB: M/S reversed!!! Swap M&S.
+				side_r = (left_r+right_r)*0.5;
+				side_i = (left_i+right_i)*0.5;
+				mid_r  = (left_r-right_r)*0.5;
+				mid_i  = (left_i-right_i)*0.5;
+				
+				left_r  = mid_r + side_r ;
+				left_i  = mid_i + side_i ;
+				right_r = mid_r - side_r ;
+				right_i = mid_i - side_i ;	
+
+			);
+				
+			
+		);
+		
+		
 		(mode==7&&Magnitudes1[i]<old_magnitude)?// Gap filler
 		(
 
@@ -254,13 +292,16 @@ pos >= fftsize ?
 			// left_i*=(-1)^i;
 			// right_i*=(-1)^i;
 			
-			rand1=ceil(rand(10));
-			rand2=ceil(rand(10));
+			// rand1=ceil(rand(10));
+			// rand2=ceil(rand(10));
 			
 			left_r*=(-1)^rand1;
 			right_r*=(-1)^rand1;
 			left_i*=(-1)^rand2;
 			right_i*=(-1)^rand2;
+			
+			
+			
 
 		);
 
@@ -295,7 +336,7 @@ pos >= fftsize ?
 
 		);  
 		
-		//TODO: center pan, generic de distort via harmonics, excite/pitchshift, denoise, transient designer, Tonal/noise separator, select notes via MIDI input
+		//TODO: center pan, generic de distort via harmonics, excite/pitchshift, denoise, transient designer, Tonal/noise separator, select notes via MIDI input, combine low frequency from set1, high frequency from set2.
 		
 		
 		// convert to cartesian
