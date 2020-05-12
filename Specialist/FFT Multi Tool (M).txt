@@ -4,7 +4,7 @@ desc: FFT Multi Tool. Read docs. in ALPHA
 
 // TODO: performance improvements like moving FFT stuff to @block, frequency limiting
 
-slider1:5<0,9,1{Max,Min (Denoise),Align (FPA),Subtract,Phase limit (unused),Phase reflect,Gap filler 2,Sustainizer,Split-Combine Frequency,Min2}>Mode
+slider1:8<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract A,Phase limit (unused),Phase reflect,Gap filler 2 ARF,Sustainizer A,Split-Combine Frequency A,Min2 A}>Mode
 slider2:100<0,200,1>Amount
 slider3:0.5<0,1,0.01>Response
 slider4:2<0,4,1{1024,2048,4096,8192}>FFT Size
@@ -68,6 +68,8 @@ ad1=ad2=p1=p2=0;
 
 phaseadj_l = cos_adj_l =sin_adj_l = 0;
 
+inspector1=0;
+inspector2=0;
 
 @slider
 
@@ -305,6 +307,7 @@ pos >= fftsize ?
 			// left_i*=(-1)^rand2;
 			// right_i*=(-1)^rand2;
 			
+			//randomise phase, inspired by DTBlkFx
 			phaseadj_l = rand(pi)*Amount;
 			
 			cos_adj_l = cos(phaseadj_l);
@@ -322,7 +325,20 @@ pos >= fftsize ?
 			right_i = right_i_two ;
 
 		);
+		
+// inspector1=(i)/fftsize;
 
+		(mode==9&&((i)/fftsize) > Amount)? //Split-Combine Frequency, freq split (linear scale up to nyquist) depends on Amount
+		(
+		
+		
+			left_r=left_r_two;
+			left_i=left_i_two;
+			right_r=right_r_two;
+			right_i=right_i_two;
+		
+		);
+		
 		(mode==10)? //Min2
 		(
 			Angles1[i]=atan2(left_r,left_i);
