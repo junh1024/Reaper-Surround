@@ -66,6 +66,9 @@ pi=3.141592653589793238;
 
 ad1=ad2=p1=p2=0;
 
+phaseadj_l = cos_adj_l =sin_adj_l = 0;
+
+
 @slider
 
 sliderfft = (2^(slider4+10))|0;
@@ -98,6 +101,8 @@ mode=slider1+1;//cuz I don't like 0-based mode/slider
 //V2 Re-Im modes sound different to original Ma-Ang modes
 
 Response=slider3;
+
+
 
 
 @sample
@@ -284,7 +289,7 @@ pos >= fftsize ?
 		
 		old_magnitude=Magnitudes1[i]*(Response/10)+old_magnitude*(1-Response/10);
 		
-		mode==8? // Sustainizer
+		(mode==8)? // Sustainizer, does not sound good w/ no overlap
 		(
 
 			// left_r*=(-1)^(i/2);
@@ -295,13 +300,26 @@ pos >= fftsize ?
 			// rand1=ceil(rand(10));
 			// rand2=ceil(rand(10));
 			
-			left_r*=(-1)^rand1;
-			right_r*=(-1)^rand1;
-			left_i*=(-1)^rand2;
-			right_i*=(-1)^rand2;
+			// left_r*=(-1)^rand1;
+			// right_r*=(-1)^rand1;
+			// left_i*=(-1)^rand2;
+			// right_i*=(-1)^rand2;
 			
+			phaseadj_l = rand(pi)*Amount;
 			
+			cos_adj_l = cos(phaseadj_l);
+			sin_adj_l = sin(phaseadj_l);
 			
+			//need to put into temporary vars 1st cuz l_i etc get overwritten b4 they're used again= incorrect results
+			 left_r_two = left_r* cos_adj_l - left_i* sin_adj_l;
+			 left_i_two = left_r* sin_adj_l + left_i* cos_adj_l;
+			right_r_two = right_r*cos_adj_l - right_i*sin_adj_l;
+			right_i_two = right_r*sin_adj_l + right_i*cos_adj_l;
+			
+			 left_r =  left_r_two ;
+			 left_i =  left_i_two ;
+			right_r = right_r_two ;
+			right_i = right_i_two ;
 
 		);
 
