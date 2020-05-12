@@ -328,7 +328,10 @@ pos >= fftsize ?
 		
 // inspector1=(i)/fftsize;
 
-		(mode==9&&((i)/fftsize) > Amount)? //Split-Combine Frequency, freq split (linear scale up to nyquist) depends on Amount
+		// (mode==9&&((i)/fftsize) > Amount)? //Split-Combine Frequency, freq split (linear scale up to nyquist) depends on Amount
+		//Amount controls a log frequency. sqrt of 100 is 10. log can make -ve number so numbers are enlarged 4 comparing
+		//does not sound good w/ no overlap. artefacts @ border frequency
+		(mode==9&& sqrt((i*100)/fftsize) > Amount*10)?
 		(
 		
 		
