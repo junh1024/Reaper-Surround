@@ -6,7 +6,7 @@ desc: FFT Multi Tool. Read docs. in ALPHA
 
 slider1:8<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract A,Phase limit (unused),Phase reflect,Gap filler 2 ARF,Sustainizer A,Split-Combine Frequency A,Min2 A}>Mode
 slider2:100<0,200,1>Amount
-slider3:0.5<0,1,0.01>Response
+slider3:0.5<0,1,0.01>Response (also cutoff)
 slider4:2<0,4,1{1024,2048,4096,8192}>FFT Size
 
 
@@ -71,6 +71,10 @@ phaseadj_l = cos_adj_l =sin_adj_l = 0;
 inspector1=0;
 inspector2=0;
 
+Resp_bins=elements_to_skip=0;
+
+
+
 @slider
 
 sliderfft = (2^(slider4+10))|0;
@@ -104,7 +108,13 @@ mode=slider1+1;//cuz I don't like 0-based mode/slider
 
 Response=slider3;
 
+Resp_bins=Response;
 
+//limit min. cutoff to
+srate==48000?Resp_bins=max(Resp_bins,0.75);//18k @48k
+srate==44100?Resp_bins=max(Resp_bins,0.8);//17.6k @44k
+
+elements_to_skip=fftsize-floor(Resp_bins*fftsize);
 
 
 @sample
@@ -124,9 +134,17 @@ pos >= fftsize ?
 
 	fft(buf2, fftsize);
 	fft_permute(buf2, fftsize);
+	
+	//silence the frequencies we are skipping
+	memset(buf0+(fftsize-elements_to_skip), 0, 2*elements_to_skip);
+	memset(buf2+(fftsize-elements_to_skip), 0, 2*elements_to_skip);
+	
+	// memset(buf0+fftsize/2, 0, fftsize);
 
 	i = 2;
-	loop(fftsize/2 - 1, 
+
+	//increase performance by skipping some frequencies
+	loop(fftsize/2 - 1 - (elements_to_skip/2) , 
 		
 		//loop indexes
 		a = i;
@@ -373,7 +391,7 @@ pos >= fftsize ?
 
 		);  
 		
-		//TODO: center pan, generic de distort via harmonics, excite/pitchshift, denoise, transient designer, Tonal/noise separator, select notes via MIDI input, combine low frequency from set1, high frequency from set2.
+		//TODO: center pan, generic de distort via harmonics, excite/pitchshift, denoise, transient designer, Tonal/noise separator, select notes via MIDI input
 		
 		
 		// convert to cartesian
