@@ -4,9 +4,9 @@ desc: FFT Multi Tool. Read docs. in ALPHA
 
 // TODO: performance improvements like moving FFT stuff to @block, frequency limiting
 
-slider1:8<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract A,Phase limit (unused),Phase reflect,Gap filler 2 ARF,Sustainizer A,Split-Combine Frequency A,Min2 A}>Mode
+slider1:0<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract A,Phase limit (unused),Phase reflect,Gap filler 2 ARF,Sustainizer A,Split-Combine Frequency A,Min2 A}>Mode
 slider2:100<0,200,1>Amount
-slider3:0.5<0,1,0.01>Response (also cutoff)
+slider3:1<0,1,0.01>Response (also cutoff)
 slider4:2<0,4,1{1024,2048,4096,8192}>FFT Size
 
 
@@ -191,6 +191,8 @@ pos >= fftsize ?
 
 		p1=abs(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]); //for FPA & min2
 
+		//reducing the modes checking isn't (much) faster 
+		
 		(mode==1)? //Max mode, sounds ok with no overlap, but a bit of artefact
 		(
 			//independently test mags of L&R
@@ -204,6 +206,10 @@ pos >= fftsize ?
 			(
 			right_r=right_r_two;
 			right_i=right_i_two;
+
+			//using memcpy isn't faster for small regions
+			// memcpy(buf0+a,buf2+a,2);
+			// memcpy(buf0+a2,buf2+a2,2);
 			);
 
 		);
@@ -391,7 +397,7 @@ pos >= fftsize ?
 
 		);  
 		
-		//TODO: center pan, generic de distort via harmonics, excite/pitchshift, denoise, transient designer, Tonal/noise separator, select notes via MIDI input
+		//TODO: center pan, generic de distort via harmonics, excite/pitchshift, denoise, transient designer, Tonal/noise separator, select notes via MIDI input, combine-overlap standalone IIR version, 51>71 upscale V3 (square,circle)modes, 51>91h upscale, 51 imager, ambisonics 40 V3 decoder
 		
 		
 		// convert to cartesian
