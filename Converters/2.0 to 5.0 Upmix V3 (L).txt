@@ -5,15 +5,15 @@ desc: Surround upscale ALPHA
 // TODO: performance improvements like moving FFT stuff to @block, frequency selection, half fft for center?
 
 slider1:0<0,100,2>Width
-slider2:0<0,100,2>Depth
-slider3:50<0,180,2>Rear threshold
-slider4:10<0,180,2>Crossover width
-slider5:10<0,100,2>Rear Width
-slider6:10<0,180,2>Rear LP
-slider7:10<0,180,2>All LP
+slider2:0<-100,100,1>Depth
+slider3:50<0,180,2>Rear threshold (not implemented)
+slider4:10<0,180,2>Crossover width (not implemented)
+slider5:80<0,100,2>Rear Width
+slider6:50<0,100,2>Rear LP (not implemented)
+slider7:10<0,180,2>Unused
 slider8:2<0,4,1{1024,2048,4096,8192}>FFT Size
 
-
+import surroundlib2.txt
 import surroundlib3.txt
 
 @init 
@@ -93,6 +93,8 @@ tmp=a=b=a2=b2=0;
 	memset(buf2, 0, 2*fftsize);
 	memset(buf3, 0, 2*fftsize);
 	
+	R_width_coeff=0;
+	
 @slider
 
 sliderfft = (2^(slider8+10))|0;
@@ -123,6 +125,10 @@ fftsize != sliderfft ?
 Rear_threshold= slider3*$pi/180;
 Crossover_width=slider4*$pi/180;
 width_coeff=slider1/100; 
+
+depth_coeff=(slider2*$pi)/200; //depth scaled from 0-100 to 0>half pi
+calculate_depth_coeffs(depth_coeff);
+R_width_coeff=slider5/100;
 
 
 @sample
@@ -204,7 +210,9 @@ pos >= fftsize ?
 		left_i = (mid_i*0.5*sideness) + (side_i*0.5);
 		right_r = (mid_r*0.5*sideness) - (side_r*0.5);
 		right_i = (mid_i*0.5*sideness) - (side_i*0.5);	
-);
+		
+		
+		);
 		// (i<fftsize/3)? //rear lowpass
 		// (
 		Angles1[i]=an1=atan2(left_r_two,left_i_two); //radians, normalize to 0,2pi
@@ -343,6 +351,8 @@ pos2=(pos2+1)%(fftsize*1);
 
 
 do_width(width_coeff);
+do_depth(depth_coeff);
+do_cross_width(R_width_coeff);
 
 // @gfx 500 16
 
