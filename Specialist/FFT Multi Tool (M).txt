@@ -4,13 +4,13 @@ desc: FFT Multi Tool. Read docs. in ALPHA
 
 // TODO: performance improvements like moving FFT stuff to @block, frequency limiting
 
-slider1:0<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract A,Phase limit (unused),Phase reflect,Gap filler 2 ARF,Sustainizer A,Split-Combine Frequency A,Min2 A}>Mode
+slider1:10<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract A,Phase limit (unused),Phase reflect,Gap filler 2 ARF,Sustainizer A,Split-Combine Frequency A,Min2 A,Measure position}>Mode
 slider2:100<0,200,1>Amount
 slider3:1<0,1,0.01>Response (also cutoff)
 slider4:2<0,4,1{1024,2048,4096,8192}>FFT Size
 
 
-// import surroundlib3.txt
+import surroundlib3.txt
 
 @init 
 
@@ -48,9 +48,13 @@ Angles4=sixteen_k*14;
 
 Angle_Difference=sixteen_k*31;
 
+pos_X=sixteen_k*51;
+pos_Y=sixteen_k*52;
+
 old_magnitude=0;
 
 gfx_r = gfx_g = gfx_b = 1;
+gfx_mode=1;
 
 mode=Amount=0;
 
@@ -73,7 +77,19 @@ inspector2=0;
 
 Resp_bins=elements_to_skip=0;
 
+// very_small_number=0.001;
+very_small_number=0.0;
 
+//make a RGB rainbow from 0 to 1
+function set_color(c)
+(
+	gfx_r=-c+1;
+	gfx_g=1-(abs(0.5-c)*2);
+	gfx_b=c;
+	// gfx_b=-c+1;
+	// gfx_g=1-(abs(0.5-c)*2);
+	// gfx_r=c;
+);
 
 @slider
 
@@ -180,12 +196,16 @@ pos >= fftsize ?
 		Magnitudes1[i]=sqrt(left_r^2+left_i^2);
 		Magnitudes2[i]=sqrt(right_r^2+right_i^2);
 
-		// Angles1[i]=atan2(left_r,left_i);
-		// Angles2[i]=atan2(right_r,right_i);
-
 		Magnitudes3[i]=sqrt(left_r_two^2+left_i_two^2);
 		Magnitudes4[i]=sqrt(right_r_two^2+right_i_two^2);
 
+		// Magnitudes1[i]=sqrt(left_r^2+left_i^2)+very_small_number;
+		// Magnitudes2[i]=sqrt(right_r^2+right_i^2)+(very_small_number*0.2);
+		// Magnitudes3[i]=sqrt(left_r_two^2+left_i_two^2)+(very_small_number*0.3);
+		// Magnitudes4[i]=sqrt(right_r_two^2+right_i_two^2)+(very_small_number*0.4);
+
+		// Angles1[i]=atan2(left_r,left_i);
+		// Angles2[i]=atan2(right_r,right_i);
 		// Angles3[i]=atan2(left_r_two,left_i_two);
 		// Angles4[i]=atan2(right_r_two,right_i_two);
 
@@ -396,7 +416,21 @@ pos >= fftsize ?
 			right_i *= R_scaling^Amount;
 
 		);  
+		(mode==11)?
+		(
+		// pos_X=pos_Y=0;		
+
+		pos_X[i]=0-Magnitudes1[i]+Magnitudes2[i]-Magnitudes3[i]+Magnitudes4[i];
+		pos_Y[i]=0-Magnitudes1[i]-Magnitudes2[i]+Magnitudes3[i]+Magnitudes4[i];
 		
+		// distance=sqrt(pos_X^2+pos_Y^2);
+		centerness=distance/(Magnitudes1[i]+Magnitudes2[i]+Magnitudes3[i]+Magnitudes4[i]);
+		// inspector1=Magnitudes1[i]+Magnitudes2[i]+Magnitudes3[i]+Magnitudes4[i];
+		
+		inspector1=pos_Y[i];
+		
+		
+		);
 		//TODO: center pan, generic de distort via harmonics, excite/pitchshift, denoise, transient designer, Tonal/noise separator, select notes via MIDI input, combine-overlap standalone IIR version, 51>71 upscale V3 (square,circle)modes, 51>91h upscale, 51 imager, ambisonics 40 V3 decoder
 		
 		
@@ -450,9 +484,20 @@ spl2=spl3=0;//silence set2
 
 pos += 2;
 
-// @gfx 500 16
+@gfx 500 16
 
-// box_width=8;
+box_width=16;
 
-// gfx_a = 0.8; 
-// drawbox(floor((pos/fftsize)*gfx_w),8);
+gfx_a = 0.2; 
+
+// gfx_mode=1.0;
+
+g=0;
+
+loop(fftsize/8 - 1 - (elements_to_skip/2) , 
+	set_color(g/fftsize);
+	drawbox((pos_X[g]*1)+gfx_w/2,(pos_Y[g]*1)+gfx_h/2);
+	g+=8;
+
+);
+
