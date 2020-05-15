@@ -2,8 +2,12 @@ desc: What width is reduced from the rear gets added to the front.
 
 slider1:100<0,100,5>Rear Width
 
+import surroundlib3.txt
+
+
 @init
 // this is stuff that happens once (or if the samplerate changes, etc)
+R_width_coeff=0;
 
 @slider
 // gain = 2^(slider1/6); // convert from dB to a multiplier
@@ -19,15 +23,16 @@ R_width_coeff=slider1/100;
 
 @sample
 
-
+do_cross_width(R_width_coeff);
 
 
 //Rear width
 // R_M=(spl4+spl5)*0.5;
-R_S=(spl4-spl5)*0.5;
 
-spl4-=R_S*(1-R_width_coeff);
-spl5+=R_S*(1-R_width_coeff);
+// R_S=(spl4-spl5)*0.5;
 
-spl0+=R_S*(1-R_width_coeff);
-spl1-=R_S*(1-R_width_coeff);
+// spl4-=R_S*(1-R_width_coeff);
+// spl5+=R_S*(1-R_width_coeff);
+
+// spl0+=R_S*(1-R_width_coeff);
+// spl1-=R_S*(1-R_width_coeff);
