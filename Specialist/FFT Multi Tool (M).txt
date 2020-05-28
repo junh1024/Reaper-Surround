@@ -300,10 +300,10 @@ pos >= fftsize ?
 			// right_r *= -1;
 			// right_i *= -1;
 			// );
-		mid_r  = (left_r+right_r)*0.5;
-		mid_i  = (left_i+right_i)*0.5;
-		side_r = (left_r-right_r)*0.5;
-		side_i = (left_i-right_i)*0.5;
+			mid_r  = (left_r+right_r)*0.5;
+			mid_i  = (left_i+right_i)*0.5;
+			side_r = (left_r-right_r)*0.5;
+			side_i = (left_i-right_i)*0.5;
 				
 			mid=sqr(mid_r)+sqr(mid_i);
 			side= sqr(side_r)+sqr(side_i);
@@ -433,7 +433,16 @@ pos >= fftsize ?
 		pos_X[i]=(0-Magnitudes1[i]+Magnitudes2[i]-Magnitudes3[i]+Magnitudes4[i])/sum_all_mags;
 		pos_Y[i]=(0-Magnitudes1[i]-Magnitudes2[i]+Magnitudes3[i]+Magnitudes4[i])/sum_all_mags;
 		
-		// distance=sqrt(pos_X^2+pos_Y^2);
+		// distance=min(sqrt(pos_X[i]^2+pos_Y[i]^2),1);
+		// distance=min(abs(pos_X[i])+abs(pos_Y[i]),1); //faster
+		
+		// L_scaling=distance;
+		
+		// left_r  *= L_scaling^Amount; //raised to power because doing linear multiple 1- is tricky
+		// left_i  *= L_scaling^Amount;
+		// right_r *= L_scaling^Amount;
+		// right_i *= L_scaling^Amount;
+		
 		// centerness=distance/(sum_all_mags);
 		
 		// inspector1=Magnitudes1[i]+Magnitudes2[i]+Magnitudes3[i]+Magnitudes4[i];
