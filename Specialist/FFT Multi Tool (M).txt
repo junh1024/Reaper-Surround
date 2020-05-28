@@ -4,7 +4,7 @@ desc: FFT Multi Tool. Read docs. in ALPHA
 
 // TODO: performance improvements like moving FFT stuff to @block, frequency limiting
 
-slider1:10<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract A,Phase limit (unused),Phase reflect,Gap filler 2 ARF,Sustainizer A,Split-Combine Frequency A,Min2 A,Measure position}>Mode
+slider1:10<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract A,Phase limit (unused),Phase reflect,Noise Control/GF3 ARF,Sustainizer A,Split-Combine Frequency A,Min2 A,Measure position}>Mode
 slider2:100<0,200,1>Amount
 slider3:1<0,1,0.01>Response (also cutoff)
 slider4:2<0,4,1{1024,2048,4096,8192}>FFT Size
@@ -60,6 +60,7 @@ mode=Amount=0;
 
 left_r = left_i = right_r= right_i= 0;
 left_r_two = left_i_two = right_r_two= right_i_two= 0;
+	mid = side = 0;
 	mid_r  = mid_i  = 0;
 	side_r = side_i = 0;
 
@@ -83,13 +84,17 @@ very_small_number=0.0;
 //make a RGB rainbow from 0 to 1
 function set_color(c)
 (
-	gfx_r=-c+1;
-	gfx_g=1-(abs(0.5-c)*2);
-	gfx_b=c;
-	// gfx_b=-c+1;
+	// gfx_r=-c+1;
 	// gfx_g=1-(abs(0.5-c)*2);
-	// gfx_r=c;
+	// gfx_b=c;
+	
+	gfx_b=-c+1;
+	gfx_g=1-(abs(0.5-c)*2);
+	gfx_r=c;
 );
+
+doing=0;
+sum_all_mags=0;
 
 @slider
 
@@ -192,17 +197,12 @@ pos >= fftsize ?
 		left_i_two = ( y_two - y2_two)*0.5;
 		right_r_two= ( y_two + y2_two)*0.5;
 		right_i_two= (x2_two -  x_two )*0.5;
+         
 
-		Magnitudes1[i]=sqrt(left_r^2+left_i^2);
+		Magnitudes1[i]=sqrt(left_r^2+left_i^2); //+very_small_number*0.1
 		Magnitudes2[i]=sqrt(right_r^2+right_i^2);
-
 		Magnitudes3[i]=sqrt(left_r_two^2+left_i_two^2);
 		Magnitudes4[i]=sqrt(right_r_two^2+right_i_two^2);
-
-		// Magnitudes1[i]=sqrt(left_r^2+left_i^2)+very_small_number;
-		// Magnitudes2[i]=sqrt(right_r^2+right_i^2)+(very_small_number*0.2);
-		// Magnitudes3[i]=sqrt(left_r_two^2+left_i_two^2)+(very_small_number*0.3);
-		// Magnitudes4[i]=sqrt(right_r_two^2+right_i_two^2)+(very_small_number*0.4);
 
 		// Angles1[i]=atan2(left_r,left_i);
 		// Angles2[i]=atan2(right_r,right_i);
@@ -287,12 +287,12 @@ pos >= fftsize ?
 		mode==6? //phase reflect, wider bins sound worse w/ no overlap
 		(
 
-			Angles1[i]=atan2(left_r,left_i);
-			Angles2[i]=atan2(right_r,right_i);
+			// Angles1[i]=atan2(left_r,left_i);
+			// Angles2[i]=atan2(right_r,right_i);
 			
-			ad1=abs(Angles1[i]-Angles2[i]);//different to below
+			// ad1=abs(Angles1[i]-Angles2[i]);//different to below
 			
-			ad1>pi?ad1=2*pi-ad1;//fix angle difference cuz should be under 180*
+			// ad1>pi?ad1=2*pi-ad1;//fix angle difference cuz should be under 180*
 			
 			//reverse polarity of R if >90*, but sounds bad
 			// ad1>(pi/2)?
@@ -300,19 +300,28 @@ pos >= fftsize ?
 			// right_r *= -1;
 			// right_i *= -1;
 			// );
+		mid_r  = (left_r+right_r)*0.5;
+		mid_i  = (left_i+right_i)*0.5;
+		side_r = (left_r-right_r)*0.5;
+		side_i = (left_i-right_i)*0.5;
+				
+			mid=sqr(mid_r)+sqr(mid_i);
+			side= sqr(side_r)+sqr(side_i);
+
+
 			
-			ad1>(pi/2)? //if >90*, but sounds good
+			// ad1>(pi/2)? //if >90*, but sounds good
+			side>mid? //if >90*, but sounds good
 			(
 				//NB: M/S reversed!!! Swap M&S.
-				side_r = (left_r+right_r)*0.5;
-				side_i = (left_i+right_i)*0.5;
-				mid_r  = (left_r-right_r)*0.5;
-				mid_i  = (left_i-right_i)*0.5;
+
 				
-				left_r  = mid_r + side_r ;
-				left_i  = mid_i + side_i ;
-				right_r = mid_r - side_r ;
-				right_i = mid_i - side_i ;	
+				left_r  =side_r +mid_r  ;
+				left_i  =side_i +mid_i  ;
+				right_r =side_r -mid_r  ;
+				right_i =side_i -mid_i  ;	
+				
+				// doing=2;
 
 			);
 				
@@ -320,11 +329,11 @@ pos >= fftsize ?
 		);
 		
 		
-		(mode==7&&Magnitudes1[i]<old_magnitude)?// Gap filler
+		(mode==7&&Magnitudes1[i]<old_magnitude)?//Noise control/Gap filler
 		(
 
-			L_scaling=(old_magnitude*Amount)/Magnitudes1[i];
-			R_scaling=(old_magnitude*Amount)/Magnitudes2[i];
+			L_scaling=Amount;
+			R_scaling=Amount;
 			
 			left_r *= L_scaling;
 			left_i *= L_scaling;
@@ -419,15 +428,17 @@ pos >= fftsize ?
 		(mode==11)?
 		(
 		// pos_X=pos_Y=0;		
-
-		pos_X[i]=0-Magnitudes1[i]+Magnitudes2[i]-Magnitudes3[i]+Magnitudes4[i];
-		pos_Y[i]=0-Magnitudes1[i]-Magnitudes2[i]+Magnitudes3[i]+Magnitudes4[i];
+		sum_all_mags=Magnitudes1[i]+Magnitudes2[i]+Magnitudes3[i]+Magnitudes4[i];
+		
+		pos_X[i]=(0-Magnitudes1[i]+Magnitudes2[i]-Magnitudes3[i]+Magnitudes4[i])/sum_all_mags;
+		pos_Y[i]=(0-Magnitudes1[i]-Magnitudes2[i]+Magnitudes3[i]+Magnitudes4[i])/sum_all_mags;
 		
 		// distance=sqrt(pos_X^2+pos_Y^2);
-		centerness=distance/(Magnitudes1[i]+Magnitudes2[i]+Magnitudes3[i]+Magnitudes4[i]);
+		// centerness=distance/(sum_all_mags);
+		
 		// inspector1=Magnitudes1[i]+Magnitudes2[i]+Magnitudes3[i]+Magnitudes4[i];
 		
-		inspector1=pos_Y[i];
+		// inspector1=pos_Y[i];
 		
 		
 		);
@@ -484,7 +495,7 @@ spl2=spl3=0;//silence set2
 
 pos += 2;
 
-@gfx 500 16
+@gfx 500 50
 
 box_width=16;
 
@@ -492,12 +503,15 @@ gfx_a = 0.2;
 
 // gfx_mode=1.0;
 
-g=0;
+g=2;//counter for gfx
 
-loop(fftsize/8 - 1 - (elements_to_skip/2) , 
-	set_color(g/fftsize);
-	drawbox((pos_X[g]*1)+gfx_w/2,(pos_Y[g]*1)+gfx_h/2);
+while
+( 
+	set_color(g/(fftsize/2.5)); //update color according to frequency
+	drawbox((pos_X[g]*gfx_w/2)+gfx_w/2,(pos_Y[g]*gfx_h/2)+gfx_h/2); //draw position for each bin
+	// g=ceil(g^1.2);
 	g+=8;
+	g<fftsize/2 - 1 - (elements_to_skip/2);
 
 );
 
