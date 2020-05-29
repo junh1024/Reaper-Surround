@@ -4,7 +4,7 @@ desc: FFT Multi Tool. Read docs. in ALPHA
 
 // TODO: performance improvements like moving FFT stuff to @block, frequency limiting
 
-slider1:10<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract A,Phase limit (unused),Phase reflect,Noise Control/GF3 ARF,Sustainizer A,Split-Combine Frequency A,Min2 A,Measure position}>Mode
+slider1:11<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract A,Phase limit (unused),Phase reflect,Noise Control/GF3 ARF,Sustainizer A,Split-Combine Frequency A,Min2 A,Measure position,transient designer R,pan select}>Mode
 slider2:100<0,200,1>Amount
 slider3:1<0,1,0.01>Response (also cutoff)
 slider4:2<0,4,1{1024,2048,4096,8192}>FFT Size
@@ -37,9 +37,13 @@ Magnitudes1=sixteen_k*5;
 Magnitudes2=sixteen_k*6;
 Magnitudes3=sixteen_k*7;
 Magnitudes4=sixteen_k*8;
-Magnitudes3_old=sixteen_k*9;
-Magnitudes4_old=sixteen_k*10;
 
+Magnitudes1_old=sixteen_k*21;
+Magnitudes2_old=sixteen_k*22;
+Magnitudes3_old=sixteen_k*23;
+Magnitudes4_old=sixteen_k*24;
+
+memset(Magnitudes1_old, 0, sixteen_k);
 
 Angles1=sixteen_k*11;
 Angles2=sixteen_k*12;
@@ -95,6 +99,7 @@ function set_color(c)
 
 doing=0;
 sum_all_mags=0;
+tmp=0;
 
 @slider
 
@@ -425,6 +430,7 @@ pos >= fftsize ?
 			right_i *= R_scaling^Amount;
 
 		);  
+		
 		(mode==11)?
 		(
 		// pos_X=pos_Y=0;		
@@ -451,7 +457,41 @@ pos >= fftsize ?
 		
 		
 		);
-		//TODO: center pan, generic de distort via harmonics, excite/pitchshift, denoise, transient designer, Tonal/noise separator, select notes via MIDI input, combine-overlap standalone IIR version, 51>71 upscale V3 (square,circle)modes, 51>91h upscale, 51 imager, ambisonics 40 V3 decoder
+		
+
+		
+		(mode==12&&Magnitudes1[i]>Magnitudes1_old[i])? //transient designer
+		(
+
+			// tmp=Magnitudes1[i];
+			// Magnitudes1[i]=;
+			// Magnitudes1_old[i]=Magnitudes1[i];
+			// scaling*old=new
+			// scaling=new/old
+			
+			//more noticeable w/ lower response so it's squared
+			L_scaling=(Magnitudes1[i]*(Response^2)+Magnitudes1_old[i]*(1-(Response^2)))/Magnitudes1[i];
+			// L_scaling=1/L_scaling;
+			left_r  *= L_scaling;
+			left_i  *= L_scaling;
+			right_r *= L_scaling;
+			right_i *= L_scaling;
+			// inspector1=Magnitudes1[i];
+			// inspector2=Magnitudes1_old[i];
+			
+			doing=1;
+		);
+		
+		// Magnitudes1_old[i]=Magnitudes1[i]*Response+Magnitudes1_old[i]*(1-Response); //sounds bad
+		Magnitudes1_old[i]=Magnitudes1[i];
+		
+		// (mode==13)? //pan select
+		// (
+		
+		
+		// );
+		
+		//TODO: center pan, generic de distort via harmonics, excite/pitchshift, transient designer, Tonal/noise separator, select notes via MIDI input, combine-overlap standalone IIR version, 51>71 upscale V3 modes(square,circle-default), 51>91h upscale modes(ambience,discrete SFX,custom=slice of 51=previously 51 imager), , ambisonics 40 V3 decoder
 		
 		
 		// convert to cartesian
