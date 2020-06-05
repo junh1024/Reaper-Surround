@@ -7,7 +7,7 @@ A collection of mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). These
 
 Donations
 ---
-Please PM me on reddit/Twitter/DC for donation info.
+Please PM me on cockos forums/reddit/Twitter/DC for donation info.
 
 Disclaimer
 ---
@@ -111,8 +111,18 @@ Upmixers are considered experimental & are based on matrixes. It's advisable to 
 - 2.0 to 3.0 Upmix (C).txt
 - 2.0 to 4.0 Upmix (M).txt: [Note 2](#note-2)
 - 2.0 to 5.0 Upmix V2 (L).txt: 80% feature-complete DPL1-like surround upmixer, with more controls. [Note 1](#note-1), [Note 2](#note-2)
+- 2.0 to 5.0 Upmix V3 (L).txt: (ALPHA) New upmix based on FFT for maximum separation. It's Competitive with commercial upmixers. Features:
+	- Basic image controls
+	- Useful threshold controls which control the core algorithm, not 20 useless controls that you can get with other FX afterwards
+	- Doesn't lie about PDC
+	- Doesn't have an incorrect/downmix-incompatible bass level (bass is not moved/copied to LFE. It's blank.)
+	- CPU optimized (CPU use depends on channel output)
+	- 3 adjustable filters to increase rear separation, make it sound nicer, less distracting
+	- mandatory 100% phase accuracy. No "faux phase accurate" mode which isn't even close
 - 5.1 to 7.1 Upmix (U).txt:
 - 5.1 to 7.1 Upmix V2 (M).txt: These 2 5>7 upmixers are so rudimentary that they will probably have limited use. Side/Back balance uses the same mid/side detection as the 2>5 upmix. A balance control is provided for convenience, but may be 'bouncy' near the ends. [Note 1](#note-1)
+- 5.1 to 7.1 Upmix V3 (M).txt: (planned)
+- 5.1 to xxx Upmix V3 (M).txt: (planned)
 - 6.1 to 7.1 Upmix (M).txt
 - 15.1 to 22.2 Upmix (U).txt
 
@@ -165,6 +175,7 @@ Specialist & Utility
 - Simple Crossfade.txt: Fade between 2 sets of inputs, like a DJ mixer.
 - Surcode Fixer: Fixes delay &/ PDC, width adjustments of Surcode DPL.
 - Surround Fixer.txt
+- FFT Tool suite: (ALPHA) 4in 2out. Max,Min (Denoise),Align (FPA) A,Subtract A,Phase reflect: reflects >90* to <90* ie prevents antiphase,Noise Control/GF3 ARF,Sustainizer A: randomises phase-similar to DtBlkFx's smear mode,Split-Combine Frequency A,Transient. Modes may be suffixed by ARF which means Amount Response FFTsize controls are particularly relevant to the mode.
 
 Scripts
 ---
@@ -182,11 +193,12 @@ Scripts
 
 Reascript Python Setup for Windows
 ---
-To install Python for Windows, go to https://www.python.org/downloads/windows/  and download a 3.x version of Python. I suggest using a version of Python that is around the time that your version of REAPER was released. I'm using py 3.1 with REAPER 4.52 but it's probably possible to use newer ones.
+To install Python for Windows, go to https://www.python.org/downloads/windows/  and download a 3.x version of Python. I suggest using a [version of Python](https://en.wikipedia.org/wiki/History_of_Python#Table_of_versions) that is around the time that your version of REAPER was released. REAPER 4.52 has been tested with python 3.1 & 3.5. If you're using REAPER 64bit you'll probably want a 64bit version of Python & vice versa. Afterwards, open the Reascript panel in REAPER preferences, and set the path & use to:
 
-If you're using REAPER 64bit you'll probably want a 64bit version of Python & vice versa. Afterwards, open the Reascript panel in REAPER preferences, and set the path to C:\Windows\SysWOW64\ (32bit) or C:\Windows\System32 (64bit) and the python DLL should be detected. Then you're ready to go.
+- python 3.1 x86 on Windows x64: C:\Windows\SysWOW64\ , python31.dll
+- python 3.5 x86 on Windows x64: C:\Program Files (x86)\Python35 (or wherever you installed it), python35.dll
 
-Run a Reascript by going Actions > Show > Load, Run.
+Then you're ready to go. Run a Reascript by going Actions > Show > Load, Run.
 
 FAQ
 ---

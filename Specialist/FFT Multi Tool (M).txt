@@ -4,7 +4,7 @@ desc: FFT Multi Tool. Read docs. in ALPHA
 
 // TODO: performance improvements like moving FFT stuff to @block, frequency limiting
 
-slider1:11<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract A,Phase limit (unused),Phase reflect,Noise Control/GF3 ARF,Sustainizer A,Split-Combine Frequency A,Min2 A,Measure position,transient designer R,pan select}>Mode
+slider1:3<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract AR,Phase limit (unused),Phase reflect,Noise Control/GF3 ARF,Sustainizer A,Split-Combine Frequency A,Min2 A,Measure position,transient designer R,pan select}>Mode
 slider2:100<0,200,1>Amount
 slider3:1<0,1,0.01>Response (also cutoff)
 slider4:2<0,4,1{1024,2048,4096,8192}>FFT Size
@@ -100,6 +100,7 @@ function set_color(c)
 doing=0;
 sum_all_mags=0;
 tmp=0;
+progress=0;
 
 @slider
 
@@ -279,14 +280,21 @@ pos >= fftsize ?
 
 		mode==4? //subtract
 		(
+			progress=i/(fftsize/2);
+			
 			//clamp mag to >0, otherwise will make more sound
-			L_scaling=max(Magnitudes1[i]-Magnitudes3[i]*Amount,0)/Magnitudes1[i];
-			R_scaling=max(Magnitudes2[i]-Magnitudes4[i]*Amount,0)/Magnitudes2[i];
+			//subtract up to 2x amount, as the frequency increases
+			L_scaling=max(Magnitudes1[i]-Magnitudes3[i]*(Amount+((1-response))*progress),0)/Magnitudes1[i];
+			R_scaling=max(Magnitudes2[i]-Magnitudes4[i]*(Amount+((1-response))*progress),0)/Magnitudes2[i];
 			
 			left_r *= L_scaling;
 			left_i *= L_scaling;
 			right_r *= R_scaling;
 			right_i *= R_scaling;
+
+			// inspector1=(1-response);
+			// inspector2=(1-response)*progress;
+			
 		);
 		
 		mode==6? //phase reflect, wider bins sound worse w/ no overlap
