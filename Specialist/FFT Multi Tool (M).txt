@@ -6,8 +6,10 @@ desc: FFT Multi Tool. Read docs. in ALPHA
 
 slider1:3<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract AR,Phase limit (unused),Phase reflect,Noise Control/GF3 ARF,Sustainizer A,Split-Combine Frequency A,Min2 A,Measure position,transient designer R,pan select}>Mode
 slider2:100<0,200,1>Amount
-slider3:1<0,1,0.01>Response (also cutoff)
-slider4:2<0,4,1{1024,2048,4096,8192}>FFT Size
+slider3:1<0,1,0.01>Response 
+slider4:100<0,100,1>(also cutoff) (%)
+slider5:2<0,4,1{1024,2048,4096,8192}>FFT Size
+slider6:2<0,1,1{No,noooo!}>output
 
 
 import surroundlib3.txt
@@ -104,7 +106,7 @@ progress=0;
 
 @slider
 
-sliderfft = (2^(slider4+10))|0;
+sliderfft = (2^(slider5+10))|0;
 fftsize != sliderfft ?
 (
 	pos = 0;
@@ -135,7 +137,7 @@ mode=slider1+1;//cuz I don't like 0-based mode/slider
 
 Response=slider3;
 
-Resp_bins=Response;
+Resp_bins=slider4/100;
 
 //limit min. cutoff to
 srate==48000?Resp_bins=max(Resp_bins,0.75);//18k @48k
