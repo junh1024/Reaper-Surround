@@ -4,12 +4,12 @@ desc: FFT Multi Tool. Read docs. in ALPHA
 
 // TODO: performance improvements like moving FFT stuff to @block, frequency limiting
 
-slider1:3<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract AR,Phase limit (unused),Phase reflect,Noise Control/GF3 ARF,Sustainizer A,Split-Combine Frequency A,Min2 A,Measure position,transient designer R,pan select}>Mode
-slider2:100<0,200,1>Amount
+slider1:13<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract AR,Phase limit (unused),Phase reflect,Noise Control/GF3 ARF,Sustainizer A,Split-Combine Frequency A,Min2 A,Measure position,transient designer R,pan select,bass boost}>Mode
+slider2:100<0,200,1>Amount (%)
 slider3:1<0,1,0.01>Response 
-slider4:100<0,100,1>(also cutoff) (%)
+slider4:75<0,100,1>Cutoff (%)
 slider5:2<0,4,1{1024,2048,4096,8192}>FFT Size
-slider6:2<0,1,1{No,noooo!}>output
+slider6:2<0,1,1{No,noooo!}>Difference Output
 
 
 import surroundlib3.txt
@@ -140,8 +140,8 @@ Response=slider3;
 Resp_bins=slider4/100;
 
 //limit min. cutoff to
-srate==48000?Resp_bins=max(Resp_bins,0.75);//18k @48k
-srate==44100?Resp_bins=max(Resp_bins,0.8);//17.6k @44k
+// srate==48000?Resp_bins=max(Resp_bins,0.75);//18k @48k
+// srate==44100?Resp_bins=max(Resp_bins,0.8);//17.6k @44k
 
 elements_to_skip=fftsize-floor(Resp_bins*fftsize);
 
@@ -441,8 +441,8 @@ pos >= fftsize ?
 
 		);  
 		
-		(mode==11)?
-		(
+		(mode==11)? //measure pos
+		( 
 		// pos_X=pos_Y=0;		
 		sum_all_mags=Magnitudes1[i]+Magnitudes2[i]+Magnitudes3[i]+Magnitudes4[i];
 		
@@ -493,13 +493,25 @@ pos >= fftsize ?
 		);
 		
 		// Magnitudes1_old[i]=Magnitudes1[i]*Response+Magnitudes1_old[i]*(1-Response); //sounds bad
+		// Magnitudes1_old[i]=Magnitudes1[i];
+		
+		(mode==13)? //pan select
+		(
+			abs();
+		
+		);
+		
+		(mode==14 && i<fftsize/50)? //bass boost select, from mode 12
+		(
+			L_scaling=(Magnitudes1[i]*(Amount^2)+Magnitudes1_old[i]*(1-(Amount^2)))/Magnitudes1[i];
+			// L_scaling=1/L_scaling;
+			left_r  *= L_scaling;
+			left_i  *= L_scaling;
+			right_r *= L_scaling;
+			right_i *= L_scaling;
+		
+		);
 		Magnitudes1_old[i]=Magnitudes1[i];
-		
-		// (mode==13)? //pan select
-		// (
-		
-		
-		// );
 		
 		//TODO: center pan, generic de distort via harmonics, excite/pitchshift, transient designer, Tonal/noise separator, select notes via MIDI input, combine-overlap standalone IIR version, 51>71 upscale V3 modes(square,circle-default), 51>91h upscale modes(ambience,discrete SFX,custom=slice of 51=previously 51 imager), , ambisonics 40 V3 decoder
 		

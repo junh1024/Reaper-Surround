@@ -9,7 +9,7 @@ slider2:0<-100,100,1>Depth
 slider3:50<0,180,2>Rear threshold (not implemented)
 slider4:10<0,180,2>Crossover width (not implemented)
 slider5:80<0,100,2>Rear Width
-slider6:50<0,100,2>Rear LP (not implemented)
+slider6:50<0,100,1>Rear LP (not implemented)
 slider7:10<0,180,2>Unused
 slider8:2<0,4,1{1024,2048,4096,8192}>FFT Size
 
@@ -97,6 +97,10 @@ tmp=a=b=a2=b2=0;
 	depth2=0;
 	doing=0;
 	
+	
+	cutoff=0;
+	cutoff_bins=0;
+	
 @slider
 
 sliderfft = (2^(slider8+10))|0;
@@ -132,6 +136,9 @@ depth_coeff=(slider2*$pi)/200; //depth scaled from 0-100 to 0>half pi
 calculate_depth_coeffs(depth_coeff);
 R_width_coeff=slider5/100;
 depth2=abs(slider2);
+
+cutoff=slider6/100;
+cutoff_bins=floor(cutoff*(fftsize));
 
 @sample
 
@@ -193,6 +200,8 @@ pos >= fftsize ?
 		mid=sqrt(mid_r^2+mid_i^2);
 		side=sqrt(side_r^2+side_i^2);
 		
+		// sd=s/m+s or m-s/m+s
+		
 		sideness=min(side/mid,1); //clamp sideness to 1
 		
 		// sideness=sideness*(Response)+sideness_prev[i]*(1-Response);
@@ -218,8 +227,8 @@ pos >= fftsize ?
 
 		
 
-		// (i<fftsize/2 && abs(slider2)<100)? //rear lowpass		
-		(depth2<=99)? //activate only as needed
+		(i<cutoff_bins && abs(slider2)<100)? //rear lowpass		
+		// (depth2<=99)? //activate only as needed
 		(
 		Angles1[i]=an1=atan2(left_r_two,left_i_two); //radians, normalize to 0,2pi
 		Angles2[i]=an2=atan2(right_r_two,right_i_two);	
