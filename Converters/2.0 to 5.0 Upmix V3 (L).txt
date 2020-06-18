@@ -9,7 +9,7 @@ slider2:0<-100,100,1>Depth
 slider3:50<0,180,2>Rear threshold (not implemented)
 slider4:10<0,180,2>Crossover width (not implemented)
 slider5:80<0,100,2>Rear Width
-slider6:50<0,100,1>Rear LP (not implemented)
+slider6:50<0,100,1>Rear LP
 slider7:10<0,180,2>Unused
 slider8:2<0,4,1{1024,2048,4096,8192}>FFT Size
 
@@ -100,6 +100,9 @@ tmp=a=b=a2=b2=0;
 	
 	cutoff=0;
 	cutoff_bins=0;
+inspector1=0;
+inspector2=0;
+
 	
 @slider
 
@@ -186,9 +189,13 @@ pos >= fftsize ?
 
 		//completely rewritten in Complex instead of Polar for more performance & no fiddly phase compensation
 
-		//convert to M/S
+		//convert to M/S, center content
+		
+		
+		// inspector1=fftsize-ceil((fftsize-cutoff_bins)/2);
 		
 		width_coeff<1?
+		// width_coeff<1&&i<fftsize-ceil((fftsize-cutoff_bins)/1.5)?
 		(
 		mid_r  = (left_r+right_r);
 		mid_i  = (left_i+right_i);
@@ -224,6 +231,7 @@ pos >= fftsize ?
 		
 		
 		);
+		// :(center_r=center_i=0;);
 
 		
 
@@ -349,8 +357,8 @@ buf5[pos2] =  spl1;
 
 
 
-spl4=out4;
-spl5=out5;
+// spl4=out4;
+// spl5=out5;
 
 spl0 = out0;
 spl1 = out1;
