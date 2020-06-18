@@ -4,7 +4,7 @@ desc: FFT Multi Tool. Read docs. in ALPHA
 
 // TODO: performance improvements like moving FFT stuff to @block, frequency limiting
 
-slider1:13<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract AR,Phase limit (unused),Phase reflect,Noise Control/GF3 ARF,Sustainizer A,Split-Combine Frequency A,Min2 A,Measure position,transient control A,pan select,bass boost}>Mode
+slider1:12<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract AR,Phase limit (unused),Phase reflect,Noise Control/GF3 ARF,Sustainizer A,Split-Combine Frequency A,Min2 A,Measure position,transient control A,pan select,bass boost}>Mode
 slider2:100<0,200,1>Amount (%)
 slider3:1<0,1,0.01>Response 
 slider4:75<0,100,1>Cutoff (%)
@@ -490,6 +490,17 @@ pos >= fftsize ?
 		(mode==13)? //pan select
 		(
 			abs();
+			panselector=Amount-1;
+			pann=min(max((Magnitudes2[i]-Magnitudes1[i])/(Magnitudes2[i]+Magnitudes1[i]),-1),1);
+			
+			// ;
+			
+			L_scaling=(pann-panselector) ;
+			
+			left_r  *= L_scaling;
+			left_i  *= L_scaling;
+			right_r *= L_scaling;
+			right_i *= L_scaling;
 		
 		);
 		
