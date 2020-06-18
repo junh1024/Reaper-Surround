@@ -10,7 +10,7 @@ slider3:50<0,180,2>Rear threshold (not implemented)
 slider4:10<0,180,2>Crossover width (not implemented)
 slider5:80<0,100,2>Rear Width
 slider6:50<0,100,1>Rear LP
-slider7:10<0,180,2>Unused
+slider7:50<0,100,2>Rear transients
 slider8:2<0,4,1{1024,2048,4096,8192}>FFT Size
 
 import surroundlib2.txt
@@ -43,7 +43,9 @@ Magnitudes3=sixteen_k*13;
 // Magnitudes5=sixteen_k*15;
 // Magnitudes6=sixteen_k*16;
 
-
+Magnitudes1_old=sixteen_k*41;
+Magnitudes2_old=sixteen_k*42;
+memset(Magnitudes1_old, 0, sixteen_k);
 
 Angles1=sixteen_k*21;
 Angles2=sixteen_k*22;
@@ -85,7 +87,8 @@ pos2=0;
 left_r = left_i = right_r= right_i= 0;
 left_r_two = left_i_two = right_r_two= right_i_two= 0;
 
-L_scaling=0;
+//phase, transient scaling
+P_scaling=T_scaling=0;
 tmp=a=b=a2=b2=0;
 
 	memset(buf0, 0, 2*fftsize);
@@ -142,6 +145,7 @@ depth2=abs(slider2);
 
 cutoff=slider6/100;
 cutoff_bins=floor(cutoff*(fftsize));
+transient_amount=slider7/100;
 
 @sample
 
@@ -246,13 +250,27 @@ pos >= fftsize ?
 		ad>pi?ad=2*pi-ad;//fix angle difference cuz should be under 180*
 		
 		
-		L_scaling=1-(ad/pi);
+		T_scaling=1;
 		
-		 left_r*=L_scaling;
-		 left_i*=L_scaling;
-		right_r*=L_scaling;
-		right_i*=L_scaling;
+		Magnitudes1[i]=sqrt(left_r^2+left_i^2);// only analysing L for transient, yeah it's cheaper
+		//remove transients from top half of rear, copied from FFT Multi Tool
+		((i>cutoff_bins/2) && (Magnitudes1[i]>Magnitudes1_old[i]))?
+		(
+			T_scaling=((Magnitudes1[i]*(transient_amount^2)+Magnitudes1_old[i]*(1-(transient_amount^2)))/Magnitudes1[i]);
+		);
+		
+		
+		
+		P_scaling=1-((ad/pi)*T_scaling); //remove from front if wide, but scale it according to how transient it is,
+		//so transients get rmv from rear when subtraction happens later.
+		
+		 left_r*=P_scaling;
+		 left_i*=P_scaling;
+		right_r*=P_scaling;
+		right_i*=P_scaling;
 		// doing=1;
+		Magnitudes1_old[i]=Magnitudes1[i];
+		
 		);
 		
 		
