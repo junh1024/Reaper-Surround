@@ -87,17 +87,7 @@ Resp_bins=elements_to_skip=0;
 // very_small_number=0.001;
 very_small_number=0.0;
 
-//make a RGB rainbow from 0 to 1
-function set_color(c)
-(
-	// gfx_r=-c+1;
-	// gfx_g=1-(abs(0.5-c)*2);
-	// gfx_b=c;
-	
-	gfx_b=-c+1;
-	gfx_g=1-(abs(0.5-c)*2);
-	gfx_r=c;
-);
+
 
 doing=0;
 sum_all_mags=0;

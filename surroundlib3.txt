@@ -60,9 +60,23 @@ function Top_Side_Depth_71_to_51(Top_Side_Depth)
 
 box_width=0;
 
+//gfx functions
+
 function drawbox(x,y)
 (
 	gfx_x=x-box_width/2;
 	gfx_y=y-box_width/2;
 	gfx_rectto(x+box_width/2,y+box_width/2)
+);
+
+//make a RGB rainbow from 0 to 1
+function set_color(c)
+(
+	// gfx_r=-c+1;
+	// gfx_g=1-(abs(0.5-c)*2);
+	// gfx_b=c;
+	
+	gfx_b=-c+1;
+	gfx_g=1-(abs(0.5-c)*2);
+	gfx_r=c;
 );

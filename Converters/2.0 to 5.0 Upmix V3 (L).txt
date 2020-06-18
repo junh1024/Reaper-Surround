@@ -246,8 +246,8 @@ pos >= fftsize ?
 		Angles2[i]=an2=atan2(right_r_two,right_i_two);	
 		Angle_Difference[i]=abs(an1-an2);	
 
-		ad=Angle_Difference[i];
-		ad>pi?ad=2*pi-ad;//fix angle difference cuz should be under 180*
+		// ad=Angle_Difference[i];
+		Angle_Difference[i]>pi?Angle_Difference[i]=2*pi-Angle_Difference[i];//fix angle difference cuz should be under 180*
 		
 		
 		T_scaling=1;
@@ -261,7 +261,7 @@ pos >= fftsize ?
 		
 		
 		
-		P_scaling=1-((ad/pi)*T_scaling); //remove from front if wide, but scale it according to how transient it is,
+		P_scaling=1-((Angle_Difference[i]/pi)*T_scaling); //remove from front if wide, but scale it according to how transient it is,
 		//so transients get rmv from rear when subtraction happens later.
 		
 		 left_r*=P_scaling;
@@ -402,3 +402,26 @@ do_cross_width(R_width_coeff);
 
 // gfx_a = 0.8; 
 // drawbox(floor((pos/fftsize)*gfx_w),8);
+
+
+@gfx 500 50
+
+// box_width=8;
+box_width=floor(0.7*sqrt((gfx_w+gfx_h)/2));
+
+gfx_a = 0.2; 
+
+// gfx_mode=1.0;
+
+g=2;//counter for gfx
+
+while
+( 
+	set_color(g/(fftsize/2.5)); //update color according to frequency
+	
+	drawbox(Angle_Difference[g]*gfx_w/pi,gfx_h-g*gfx_h/(fftsize/2) ); //draw position for each bin
+	// g=ceil(g^1.2);
+	g+=8;
+	g<fftsize/2 - 1;
+
+);
