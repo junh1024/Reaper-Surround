@@ -252,7 +252,7 @@ pos >= fftsize ?
 		
 		T_scaling=1;
 		
-		Magnitudes1[i]=sqrt(left_r^2+left_i^2);// only analysing L for transient, yeah it's cheaper
+		Magnitudes1[i]=(left_r^2+left_i^2);// only analysing L for transient & no sqrt cuz it's faster
 		//remove transients from top half of rear, copied from FFT Multi Tool
 		((i>cutoff_bins/2) && (Magnitudes1[i]>Magnitudes1_old[i]))?
 		(
@@ -418,7 +418,7 @@ g=2;//counter for gfx
 while
 ( 
 	set_color(g/(fftsize/2.5)); //update color according to frequency
-	
+	gfx_a = min(sqrt(Magnitudes1[g]),1); 
 	drawbox(Angle_Difference[g]*gfx_w/pi,gfx_h-g*gfx_h/(fftsize/2) ); //draw position for each bin
 	// g=ceil(g^1.2);
 	g+=8;
