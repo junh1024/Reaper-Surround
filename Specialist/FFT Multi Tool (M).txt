@@ -9,7 +9,7 @@ slider2:100<0,200,1>Amount (%)
 slider3:1<0,1,0.01>Response 
 slider4:75<0,100,1>Cutoff (%)
 slider5:2<0,4,1{1024,2048,4096,8192}>FFT Size
-slider6:0<0,1,1{No,noooo!}>Difference Output
+slider6:0<0,1,1{No,yes}>Difference Output
 
 
 import surroundlib3.txt
@@ -18,7 +18,7 @@ import surroundlib3.txt
 
 fftsize = -1;
 pdc_bot_ch = 0;
-pdc_top_ch = 4;
+pdc_top_ch = 6;
 
 // array pointers
 window=0;
@@ -32,13 +32,13 @@ buf1 = sixteen_k*2;
 buf2 = sixteen_k*3;
 buf3 = sixteen_k*4;
 
-pos=0;
+buf4 = sixteen_k*5;
+buf5 = sixteen_k*6;
 
-//my arrays for analysis
-Magnitudes1=sixteen_k*5;
-Magnitudes2=sixteen_k*6;
-Magnitudes3=sixteen_k*7;
-Magnitudes4=sixteen_k*8;
+Magnitudes1=sixteen_k*11;
+Magnitudes2=sixteen_k*12;
+Magnitudes3=sixteen_k*13;
+Magnitudes4=sixteen_k*14;
 
 Magnitudes1_old=sixteen_k*21;
 Magnitudes2_old=sixteen_k*22;
@@ -103,6 +103,8 @@ doing=0;
 sum_all_mags=0;
 tmp=0;
 progress=0;
+pos=0;
+pos2=0;
 
 @slider
 
@@ -559,12 +561,29 @@ buf2[pos+1] = w1*spl3;
 buf3[fftsize+pos] = w2*spl2;
 buf3[fftsize+pos+1] = w2*spl3;
 
+//buffer the original spl0
+out4 = buf4[pos2]  ;
+out5 = buf5[pos2];
+
+buf4[pos2] =  spl0;
+buf5[pos2] =  spl1;
+
+
+
 spl0 = out0;
 spl1 = out1;
 
 spl2=spl3=0;//silence set2
 
+
+//subtract front from original spl0 to get back
+spl4=(out4-out0)*slider6;
+spl5=(out5-out1)*slider6;
+
+
+
 pos += 2;
+pos2=(pos2+1)%(fftsize*1);
 
 @gfx 500 50
 
