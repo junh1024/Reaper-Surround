@@ -54,7 +54,11 @@ Angles3=sixteen_k*23;
 // Angles5=sixteen_k*25;
 // Angles6=sixteen_k*26;
 
-Angle_Difference=sixteen_k*31;
+Sideness=sixteen_k*31;
+Sideness_old=sixteen_k*32;
+
+Angle_Difference=sixteen_k*41;
+Angle_Difference_old=sixteen_k*42;
 // Pan_Array=sixteen_k*32;
 
 Rear_threshold=0;
@@ -78,7 +82,7 @@ pos2=0;
 	
 	mid = side = 0;
 	
-	sideness=0;
+	// Sideness[i]=0;
 	
 	center_r = center_i = 0;
 
@@ -97,6 +101,10 @@ tmp=a=b=a2=b2=0;
 	memset(buf1, 0, 2*fftsize);
 	memset(buf2, 0, 2*fftsize);
 	memset(buf3, 0, 2*fftsize);
+	memset(Angle_Difference, 0, 2*fftsize);
+	memset(Angle_Difference_old, 0, 2*fftsize);
+	memset(Sideness, 0, 2*fftsize);
+	memset(Sideness_old, 0, 2*fftsize);
 	
 	R_width_coeff=0;
 	depth2=0;
@@ -107,6 +115,8 @@ tmp=a=b=a2=b2=0;
 	cutoff_bins=0;
 inspector1=0;
 inspector2=0;
+
+Fixed_Response=0.5;
 
 @slider
 
@@ -215,25 +225,25 @@ pos >= fftsize ?
 		
 		// sd=s/m+s or m-s/m+s
 		
-		sideness=min(side/mid,1); //clamp sideness to 1
+		Sideness[i]=min(side/mid,1); //clamp Sideness[i] to 1
 		
-		// sideness=sideness*(Response)+sideness_prev[i]*(1-Response);
-		// sideness_prev[i]=sideness;
+		Sideness[i]=Sideness[i]*(Fixed_Response)+Sideness_old[i]*(1-Fixed_Response);
+		Sideness_old[i]=Sideness[i];
 		
 		//0.7 3dB correction
-		center_r = mid_r *(1-sideness)*h_sqrt_2;
-		center_i = mid_i *(1-sideness)*h_sqrt_2;
+		center_r = mid_r *(1-Sideness[i])*h_sqrt_2;
+		center_i = mid_i *(1-Sideness[i])*h_sqrt_2;
 		
-		// sideness=1;
+		// Sideness[i]=1;
 	
 
 		
 		
 		//M/S decode LR
-		left_r = (mid_r*0.5*sideness) + (side_r*0.5);
-		left_i = (mid_i*0.5*sideness) + (side_i*0.5);
-		right_r = (mid_r*0.5*sideness) - (side_r*0.5);
-		right_i = (mid_i*0.5*sideness) - (side_i*0.5);	
+		left_r =  (mid_r*0.5*Sideness[i]) + (side_r*0.5);
+		left_i =  (mid_i*0.5*Sideness[i]) + (side_i*0.5);
+		right_r = (mid_r*0.5*Sideness[i]) - (side_r*0.5);
+		right_i = (mid_i*0.5*Sideness[i]) - (side_i*0.5);	
 		
 		
 		);
@@ -251,6 +261,8 @@ pos >= fftsize ?
 		// ad=Angle_Difference[i];
 		Angle_Difference[i]>pi?Angle_Difference[i]=2*pi-Angle_Difference[i];//fix angle difference cuz should be under 180*
 		
+		Angle_Difference[i]=Angle_Difference[i]*(Fixed_Response)+Angle_Difference_old[i]*(1-Fixed_Response);
+		Angle_Difference_old[i]=Angle_Difference[i];
 		
 		T_scaling=1;
 		
