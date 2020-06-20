@@ -288,7 +288,7 @@ pos >= fftsize ?
 
 		mode==4? //subtract
 		(
-			progress=i/(fftsize);
+			progress=i/(fftsize/2);
 			
 			//clamp mag to >0, otherwise will make more sound
 			//subtract more, as the frequency increases
@@ -297,18 +297,30 @@ pos >= fftsize ?
 			
 			//temporal averaging for <12khz to sound better, none for >12khz to remove transients. inspired by my newvisp4
 			//but too much tends to reduce volume
-			i>(fftsize/2)?Fixed_Response=1; 
 			
-			// L_scaling_array[i]=L_scaling_array[i]*(Fixed_Response)+L_scaling_old_array[i]*(1-Fixed_Response);
-			// L_scaling_old_array[i]=L_scaling_array[i];
-			// R_scaling_array[i]=R_scaling_array[i]*(Fixed_Response)+R_scaling_old_array[i]*(1-Fixed_Response);
-			// R_scaling_old_array[i]=R_scaling_array[i];
+			//if it;s <x khz & not a transient, apply averaging to redude artefacts
+			i<(fftsize/3) && L_scaling_array[i] < L_scaling_old_array[i]? 
+			(
+				L_scaling=L_scaling_array[i]*(0.5)+L_scaling_old_array[i]*(1-0.5);
+				R_scaling=R_scaling_array[i]*(0.5)+R_scaling_old_array[i]*(1-0.5);
+				
+				// L_scaling =L_scaling_array[i];
+				// R_scaling =R_scaling_array[i];
+			)
+			:
+			(	//equivalent to response of 1
+				L_scaling =L_scaling_array[i];
+				R_scaling =R_scaling_array[i];
+			);
 			
+			L_scaling_old_array[i]=L_scaling_array[i]*(0.5)+L_scaling_old_array[i]*(1-0.5);
+			R_scaling_old_array[i]=R_scaling_array[i]*(0.5)+R_scaling_old_array[i]*(1-0.5);
+
 			
-			left_r  *= L_scaling_array[i];
-			left_i  *= L_scaling_array[i];
-			right_r *= R_scaling_array[i];
-			right_i *= R_scaling_array[i];
+			left_r  *= L_scaling;
+			left_i  *= L_scaling;
+			right_r *= R_scaling;
+			right_i *= R_scaling;
 
 			// inspector1=(1-response);
 			// inspector2=(1-response)*progress;
@@ -469,6 +481,7 @@ pos >= fftsize ?
 		// distance=min(abs(pos_X[i])+abs(pos_Y[i]),1); //faster
 		
 		// L_scaling=distance;
+		//TODO: add temporal averaging
 		
 		// left_r  *= L_scaling^Amount; //raised to power because doing linear multiple 1- is tricky
 		// left_i  *= L_scaling^Amount;
@@ -542,7 +555,17 @@ pos >= fftsize ?
 		);
 		Magnitudes1_old[i]=Magnitudes1[i];
 		
-		//TODO: center pan, generic de distort via harmonics, excite/pitchshift, transient designer, Tonal/noise separator, select notes via MIDI input, combine-overlap standalone IIR version, 51>71 upscale V3 modes(square,circle-default), 51>91h upscale modes(ambience,discrete SFX,custom=slice of 51=previously 51 imager), , ambisonics 40 V3 decoder
+// TODO: center pan
+// generic de distort via harmonics
+// FFT frequency tool (via memcpy): excite via copy frequency, combine-overlap
+// scale shifter
+// combine-overlap standalone IIR version
+// improved transient designer
+// improved Tonal/noise separator, cepstral?
+// select notes via MIDI input
+// 51>71 upscale V3 modes(square M/S, circle-M/S, circle pan) w/ temporal response
+// 51>91h upscale modes(ambience,discrete SFX,pan slice)
+// ambisonics 40 V2,3 decoder
 		
 		
 		// convert to cartesian
