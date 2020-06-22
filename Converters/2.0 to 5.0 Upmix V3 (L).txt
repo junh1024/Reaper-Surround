@@ -1,4 +1,4 @@
-desc: Surround upscale ALPHA
+desc: Surround upscale BETA
 //tags: requested by James HE , modded by geraintluff, modded by junh1024,
 //via https://forum.cockos.com/showpost.php?p=1962348&postcount=18
 
@@ -7,8 +7,8 @@ desc: Surround upscale ALPHA
 slider1:0<0,100,2>Width
 slider2:0<-100,100,1>Depth
 slider3:90<0,180,2>Rear threshold
-slider4:90<0,180,2>Crossover width
-slider5:80<0,100,2>Rear Width
+slider4:120<0,180,2>Crossover width
+slider5:50<0,100,2>Rear Width
 slider6:50<0,100,1>Rear LP
 slider7:50<0,100,2>Rear transients
 slider8:2<0,4,1{1024 (high artefacts) ,2048,4096 (medium artefacts),8192 (low artefacts)}>FFT Size
