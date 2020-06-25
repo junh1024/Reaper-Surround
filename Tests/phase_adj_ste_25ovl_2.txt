@@ -21,21 +21,42 @@ hann		= sixteen_k*2;
 in_buf		= sixteen_k*3;
 fft_buf		= sixteen_k*4;
 out_buf		= sixteen_k*5;
-
+pi=3.141592653589793238;
+Angle_Difference=sixteen_k*41;
+Angle_Difference_old=sixteen_k*42;
+Fixed_Response=0.5;
 
 i = 0;
 loop(fftsize,
   trapezium[i] = min(2 - abs(4*i / fftsize - 2), 1); // Trapezium window
-  hann[i] = 0.5 * (1 - cos(2*$pi * i / fftsize)); // Hann window
+  hann[i] = 0.5 * (1 - cos(2*pi * i / fftsize)); // Hann window
   i += 1;
 );
 
 pos=0;
 
+
+/*
+w1 = window[pos/2];
+w2 = window[(fftsize*1.5-pos)/2-1];
+sw = (w1+w2)*fftsize;
+
+out0 = (buf0[pos]+  buf1[fftsize*1.5+pos])/sw;
+out1 = (buf0[pos+1]+buf1[fftsize*1.5+pos+1])/sw;
+
+spl4=buf0[pos]/fftsize;
+spl5=buf1[fftsize*1.5+pos]/fftsize;
+
+buf0[pos] = w1*spl0;
+buf0[pos+1] = w1*spl1;
+buf1[fftsize*1.5+pos] = w2*spl0;
+buf1[fftsize*1.5+pos+1] = w2*spl1;
+*/
+
 @slider
 
 gain = 10^(slider1 / 20);
-offset = 2*$pi / 360 * slider2;
+offset = 2*pi / 360 * slider2;
 
 window = slider3 < 0.5 ? trapezium : hann;
 overlap = floor(fftsize * (window == trapezium ? 0.25 : 0.5));
@@ -82,10 +103,39 @@ in_buf[2*overlap + pos+1] = spl1 * scale;
 		x2 = fft_buf[a2];
 		y2 = fft_buf[b2];
 
-		 left_r = (x + x2)*0.5;
-		 left_i = (y - y2)*0.5;
-		right_r = (y + y2)*0.5;
-		right_i = (x2 - x)*0.5;
+		 left_r = (x + x2)*0.5*gain;
+		 left_i = (y - y2)*0.5*gain;
+		right_r = (y + y2)*0.5*gain;
+		right_i = (x2 - x)*0.5*gain;
+		
+		//use CPU to simulate a bigger FX
+		test=atan2(sin(rand(1)),cos(rand(1)));
+		test=atan2(sin(rand(1)),cos(rand(1)));
+		test=atan2(sin(rand(1)),cos(rand(1)));
+		
+		
+		an1=atan2(left_r,left_i); //radians, normalize to 0,2pi
+		an2=atan2(right_r,right_i);	
+		Angle_Difference[i]=abs(an1-an2);	
+
+		// ad=Angle_Difference[i];
+		Angle_Difference[i]>pi?Angle_Difference[i]=2*pi-Angle_Difference[i];//fix angle difference cuz should be under 180*
+		
+		Angle_Difference[i]=Angle_Difference[i]*(Fixed_Response)+Angle_Difference_old[i]*(1-Fixed_Response);
+		Angle_Difference_old[i]=Angle_Difference[i];
+
+		
+		P_scaling=1;
+		Angle_Difference[i]<pi*0.5?P_scaling=0;
+		
+		// P_scaling=Angle_Difference/pi;
+		
+		 left_r*=P_scaling;
+		 left_i*=P_scaling;
+		right_r*=P_scaling;
+		right_i*=P_scaling;
+		
+		
 		
 
 		fft_buf[a]  = left_r - right_i;
