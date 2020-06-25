@@ -14,7 +14,7 @@ pdc_bot_ch = 0;
 pdc_top_ch = 1;
 pdc_delay = fftsize - 1;
 
-sixteen_k=16384;
+sixteen_k=32768;
 
 trapezium = sixteen_k*1;
 hann		= sixteen_k*2;
@@ -43,20 +43,20 @@ overlap = floor(fftsize * (window == trapezium ? 0.25 : 0.5));
 @sample
 
 // Buffer input
-in_buf[overlap + pos] = spl0 * scale;
-(pos += 1) >= fftsize - overlap ? (
+in_buf[2*overlap + pos] = spl0 * scale;
+(pos += 2) >= (fftsize - overlap )*2? (
   pos = 0;
 
   // Apply window
   i = 0;
   loop(fftsize,
-    fft_buf[i] = in_buf[i/2] * window[i/2];
+    fft_buf[i] = in_buf[i] * window[i/2];
     fft_buf[i + 1] = 0;
     i += 2;
   );
 
   // Overlap input
-  memcpy(in_buf, in_buf + fftsize - overlap, overlap);
+  memcpy(in_buf, in_buf + fftsize*2 - overlap*2, overlap*2);
 
   // FFT
   fft(fft_buf, fftsize);
@@ -93,11 +93,11 @@ in_buf[overlap + pos] = spl0 * scale;
   ifft(fft_buf, fftsize);
 
   // Overlap-add output
-  memcpy(out_buf, out_buf + fftsize - overlap, overlap);
-  memset(out_buf + overlap, 0, fftsize - overlap);
+  memcpy(out_buf, out_buf + 2*fftsize - 2*overlap, 2*overlap);
+  memset(out_buf + 2*overlap, 0, 2*fftsize - 2*overlap);
   i = 0;
   loop(fftsize,
-    out_buf[i/2] += fft_buf[i];
+    out_buf[i] += fft_buf[i];
     i += 2;
   );
 );
