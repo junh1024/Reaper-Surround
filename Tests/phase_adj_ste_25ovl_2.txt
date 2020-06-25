@@ -1,4 +1,5 @@
 //from https://forum.cockos.com/showthread.php?t=190168#30 by Tale
+
 desc:FFT example
 slider1:0.0<-72.0,24.0,0.1>Gain (dB)
 slider2:0<-180,180,1>Offset (deg)
@@ -13,12 +14,14 @@ pdc_bot_ch = 0;
 pdc_top_ch = 1;
 pdc_delay = size - 1;
 
-trapezium = 0;
-hann = trapezium + size;
+sixteen_k=16384;
 
-in_buf = hann + 2 * size;
-fft_buf = in_buf + size;
-out_buf = fft_buf + size * 2;
+trapezium = sixteen_k*1;
+hann		= sixteen_k*2;
+in_buf		= sixteen_k*3;
+fft_buf		= sixteen_k*4;
+out_buf		= sixteen_k*5;
+
 
 i = 0;
 loop(size,
@@ -38,16 +41,16 @@ overlap = floor(size * (window == trapezium ? 0.25 : 0.5));
 @sample
 
 // Buffer input
-in_buf[overlap + i] = spl0 * scale;
-(i += 1) >= size - overlap ? (
-  i = 0;
+in_buf[overlap + pos] = spl0 * scale;
+(pos += 1) >= size - overlap ? (
+  pos = 0;
 
   // Apply window
-  j = 0;
+  i = 0;
   loop(size,
-    fft_buf[j*2] = in_buf[j] * window[j];
-    fft_buf[j*2 + 1] = 0;
-    j += 1;
+    fft_buf[i*2] = in_buf[i] * window[i];
+    fft_buf[i*2 + 1] = 0;
+    i += 1;
   );
 
   // Overlap input
@@ -58,10 +61,10 @@ in_buf[overlap + i] = spl0 * scale;
   fft_permute(fft_buf, size);
 
   // Adjust gain/phase
-  j = 0;
+  i = 0;
   loop(size / 2 + 1,
-    re = fft_buf[j*2];
-    im = fft_buf[j*2 + 1];
+    re = fft_buf[i*2];
+    im = fft_buf[i*2 + 1];
 
     mag = sqrt(sqr(re) + sqr(im));
     phase = atan2(im, re);
@@ -72,15 +75,15 @@ in_buf[overlap + i] = spl0 * scale;
     re = mag * cos(phase);
     im = mag * sin(phase);
 
-    fft_buf[j*2] = re;
-    fft_buf[j*2 + 1] = im;
+    fft_buf[i*2] = re;
+    fft_buf[i*2 + 1] = im;
 
-    j > 0 ? (
-      fft_buf[(size - j)*2] = re;
-      fft_buf[(size - j)*2 + 1] = -im;
+    i > 0 ? (
+      fft_buf[(size - i)*2] = re;
+      fft_buf[(size - i)*2 + 1] = -im;
     );
 
-    j += 1;
+    i += 1;
   );
 
   // Inverse FFT
@@ -90,11 +93,11 @@ in_buf[overlap + i] = spl0 * scale;
   // Overlap-add output
   memcpy(out_buf, out_buf + size - overlap, overlap);
   memset(out_buf + overlap, 0, size - overlap);
-  j = 0;
+  i = 0;
   loop(size,
-    out_buf[j] += fft_buf[j*2];
-    j += 1;
+    out_buf[i] += fft_buf[i*2];
+    i += 1;
   );
 );
 
-spl0 = out_buf[i];
+spl0 = out_buf[pos];
