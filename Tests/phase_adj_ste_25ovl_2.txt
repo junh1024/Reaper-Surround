@@ -11,7 +11,7 @@ fftsize = 4096;
 scale = 1/fftsize;
 
 pdc_bot_ch = 0;
-pdc_top_ch = 1;
+pdc_top_ch = 2;
 pdc_delay = fftsize - 1;
 
 sixteen_k=32768;
@@ -68,25 +68,31 @@ in_buf[2*overlap + pos+1] = spl1 * scale;
   // Adjust gain/phase
   i = 0;
   loop(fftsize / 2 + 1,
-    re = fft_buf[i];
-    im = fft_buf[i + 1];
+  
+  
+  // abs();
+  		a = i;
+		b = a+1;
+		a2 = 2*fftsize-i;
+		b2 = a2+1;
+ 
 
-    mag = sqrt(sqr(re) + sqr(im));
-    phase = atan2(im, re);
+		x =  fft_buf[a];
+		y =  fft_buf[b];
+		x2 = fft_buf[a2];
+		y2 = fft_buf[b2];
 
-    mag *= gain;
-    phase += offset;
+		 left_r = (x + x2)*0.5;
+		 left_i = (y - y2)*0.5;
+		right_r = (y + y2)*0.5;
+		right_i = (x2 - x)*0.5;
+		
 
-    re = mag * cos(phase);
-    im = mag * sin(phase);
+		fft_buf[a]  = left_r - right_i;
+		fft_buf[b]  = left_i + right_r;
+		fft_buf[a2] = left_r + right_i;
+		fft_buf[b2] = right_r - left_i;
 
-    fft_buf[i] = re;
-    fft_buf[i + 1] = im;
-
-    i > 0 ? (
-      fft_buf[(fftsize*2 - i)] = re;
-      fft_buf[(fftsize*2 - i) + 1] = im;
-    );
 
     i += 2;
   );
