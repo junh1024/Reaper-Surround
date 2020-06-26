@@ -1,9 +1,9 @@
-//from https://forum.cockos.com/showthread.php?t=190168#30 by Tale
+// from https://forum.cockos.com/showthread.php?t=190168#30 by Tale
 
-desc:FFT example
-slider1:-3<-72.0,24.0,0.1>Gain (dB)
+desc:FFT example with 12.5% ovl
+slider1:100<0,200,1>Amt
 slider2:0<-180,180,1>Offset (deg)
-slider3:0<0,1,1{25%,50%}>Overlap
+slider3:40<0,50,5>Overlap
 
 @init
 
@@ -21,17 +21,33 @@ hann		= sixteen_k*2;
 in_buf		= sixteen_k*3;
 fft_buf		= sixteen_k*4;
 out_buf		= sixteen_k*5;
+overlap_sel		= sixteen_k*9;
 pi=3.141592653589793238;
 Angle_Difference=sixteen_k*41;
 Angle_Difference_old=sixteen_k*42;
 Fixed_Response=0.5;
+Magnitudes1=sixteen_k*11;
+Magnitudes2=sixteen_k*12;
+Magnitudes3=sixteen_k*13;
+Magnitudes4=sixteen_k*14;
 
-i = 0;
-loop(fftsize,
-	trapezium[i] = min(2 - abs(4*i / fftsize - 2), 1); // Trapezium window
-	hann[i] = 0.5 * (1 - cos(2*pi * i / fftsize)); // Hann window
-	i += 1;
-);
+Magnitudes1_old=sixteen_k*21;
+Magnitudes2_old=sixteen_k*22;
+Magnitudes3_old=sixteen_k*23;
+Magnitudes4_old=sixteen_k*24;
+
+L_scaling_array=sixteen_k*31;
+L_scaling_old_array=sixteen_k*32;
+
+
+overlap_sel[0]=0.0625;		// 1/16
+overlap_sel[1]=0.125;		// 1/8
+overlap_sel[2]=0.25;		// 1/4
+overlap_sel[3]=0.3125;		// 5/16 or 1/3.2
+overlap_sel[4]=0.390625;	// 25/64 or 1/2.56
+overlap_sel[5]=0.5;			// 1/2
+overlap_w=overlap=0;
+
 
 pos=0;
 
@@ -54,12 +70,26 @@ buf1[fftsize*1.5+pos+1] = w2*spl1;
 */
 
 @slider
+inspector1=floor(slider3/10);
+overlap_w=overlap_sel[floor(slider3/10)];
+// overlap_w=slider3/100;
+overlap=floor(overlap_w*fftsize);
+i = 0;
+loop(fftsize,
+	window[i] = min( (0.5 /overlap_w) - abs( (1/overlap_w) *i / fftsize -(0.5/overlap_w)), 1); // 39% ovl Trapezium window
+// window[i] = min(1 - abs(2*i / fftsize -1), 1);
+	i += 1;
+);
 
-gain = 10^(slider1 / 20);
+// gain = 10^(slider1 / 20);
 offset = 2*pi / 360 * slider2;
 
-window = slider3 < 0.5 ? trapezium : hann;
-overlap = floor(fftsize * (window == trapezium ? 0.25 : 0.5));
+Amount=slider1/100;
+
+// window = slider3 < 0.5 ? trapezium : hann;
+// window =  trapezium ;
+// overlap = floor(fftsize * (window == trapezium ? 0.25 : 0.5));
+
 
 @sample
 
@@ -103,21 +133,23 @@ in_buf[2*overlap + pos+1] = spl1 * scale;
 		x2 = fft_buf[a2];
 		y2 = fft_buf[b2];
 
-		 left_r = (x + x2)*0.5*gain;
-		 left_i = (y - y2)*0.5*gain;
-		right_r = (y + y2)*0.5*gain;
-		right_i = (x2 - x)*0.5*gain;
+		 left_r = (x + x2)*0.5;
+		 left_i = (y - y2)*0.5;
+		right_r = (y + y2)*0.5;
+		right_i = (x2 - x)*0.5;
+		Magnitudes1[i]=sqrt(left_r^2+left_i^2); //+very_small_number*0.1
+		Magnitudes2[i]=sqrt(right_r^2+right_i^2);
 		
 		//use CPU to simulate a bigger FX
 		test=atan2(sin(rand(1)),cos(rand(1)));
-		test=atan2(sin(rand(1)),cos(rand(1)));
-		test=atan2(sin(rand(1)),cos(rand(1)));
+		// test=atan2(sin(rand(1)),cos(rand(1)));
+		// test=atan2(sin(rand(1)),cos(rand(1)));
 		
 		
 		an1=atan2(left_r,left_i); //radians, normalize to 0,2pi
 		an2=atan2(right_r,right_i);	
 		Angle_Difference[i]=abs(an1-an2);	
-
+		
 		// ad=Angle_Difference[i];
 		Angle_Difference[i]>pi?Angle_Difference[i]=2*pi-Angle_Difference[i];//fix angle difference cuz should be under 180*
 		
@@ -125,10 +157,37 @@ in_buf[2*overlap + pos+1] = spl1 * scale;
 		Angle_Difference_old[i]=Angle_Difference[i];
 
 		
-		P_scaling=1;
-		Angle_Difference[i]<pi*0.5?P_scaling=0;
+		// P_scaling=1;
+		// Angle_Difference[i]<pi*0.5?P_scaling=0;
 		
 		// P_scaling=Angle_Difference/pi;
+		
+		
+		Rear_threshold=pi/2;
+		Crossover_width=pi/2.5;
+		
+		P_scaling= 1-min(max( ( 1-(Angle_Difference[i]-Rear_threshold+(Crossover_width/2))*1*(1/Crossover_width) )   ,0)     ,1)  ;
+		
+		
+		/*
+			L_scaling_array[i]=max(Magnitudes1[i]-Magnitudes2[i]*Amount,0)/Magnitudes1[i];
+			
+			i<(fftsize/3) && L_scaling_array[i] < L_scaling_old_array[i]? 
+			(
+				L_scaling=L_scaling_array[i]*(0.5)+L_scaling_old_array[i]*(1-0.5);
+			)
+			:
+			(	//equivalent to response of 1
+				L_scaling =L_scaling_array[i];
+			);
+			
+			L_scaling_old_array[i]=L_scaling_array[i]*(0.5)+L_scaling_old_array[i]*(1-0.5);
+	// P_scaling=L_scaling;
+	
+	*/
+		
+		
+	
 		
 		 left_r*=P_scaling;
 		 left_i*=P_scaling;
