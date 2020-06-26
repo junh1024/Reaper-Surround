@@ -11,7 +11,7 @@ fftsize = 4096;
 scale = 1/fftsize;
 
 pdc_bot_ch = 0;
-pdc_top_ch = 2;
+pdc_top_ch = 6;
 pdc_delay = fftsize - 1;
 
 sixteen_k=32768;
@@ -21,6 +21,11 @@ hann		= sixteen_k*2;
 in_buf		= sixteen_k*3;
 fft_buf		= sixteen_k*4;
 out_buf		= sixteen_k*5;
+
+
+buf4 = sixteen_k*7;
+buf5 = sixteen_k*8;
+
 overlap_sel		= sixteen_k*9;
 pi=3.141592653589793238;
 Angle_Difference=sixteen_k*41;
@@ -49,7 +54,7 @@ overlap_sel[5]=0.5;			// 1/2
 overlap_w=overlap=0;
 
 
-pos=0;
+pos=pos2=0;
 
 
 /*
@@ -92,8 +97,20 @@ Amount=slider1/100;
 
 
 @sample
+//buffer the original spl0
+out4 = buf4[pos2]  ;
+out5 = buf5[pos2];
+
+buf4[pos2] =  spl0;
+buf5[pos2] =  spl1;
+
+// spl4=out4;
+// spl5=out5;
+
+pos2=(pos2+1)%(pdc_delay);
 
 // Buffer input
+
 in_buf[2*overlap + pos] = spl0 * scale;
 in_buf[2*overlap + pos+1] = spl1 * scale;
 (pos += 2) >= (fftsize - overlap )*2? (
@@ -141,7 +158,7 @@ in_buf[2*overlap + pos+1] = spl1 * scale;
 		Magnitudes2[i]=sqrt(right_r^2+right_i^2);
 		
 		//use CPU to simulate a bigger FX
-		test=atan2(sin(rand(1)),cos(rand(1)));
+		// test=atan2(sin(rand(1)),cos(rand(1)));
 		// test=atan2(sin(rand(1)),cos(rand(1)));
 		// test=atan2(sin(rand(1)),cos(rand(1)));
 		
@@ -186,16 +203,13 @@ in_buf[2*overlap + pos+1] = spl1 * scale;
 	
 	*/
 		
-		
-	
+
 		
 		 left_r*=P_scaling;
 		 left_i*=P_scaling;
 		right_r*=P_scaling;
 		right_i*=P_scaling;
-		
-		
-		
+
 
 		fft_buf[a]	= left_r - right_i;
 		fft_buf[b]	= left_i + right_r;
@@ -223,3 +237,11 @@ in_buf[2*overlap + pos+1] = spl1 * scale;
 
 spl0 = out_buf[pos];
 spl1 = out_buf[pos+1];
+
+
+
+//subtract front from original spl0 to get back
+spl4=out4-spl0;
+spl5=out5-spl1;
+// spl4=out4-out0-(h_sqrt_2*out2);
+// spl5=out5-out1-(h_sqrt_2*out2);
