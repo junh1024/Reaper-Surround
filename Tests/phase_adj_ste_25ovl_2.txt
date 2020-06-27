@@ -23,9 +23,14 @@ buf1_fft		= sixteen_k*2;
 buf1_out		= sixteen_k*3;
 buf1_org		= sixteen_k*4;
 
+buf2_in			= sixteen_k*5;
+buf2_fft		= sixteen_k*6;
+buf2_out		= sixteen_k*7;
+buf2_org		= sixteen_k*8;
 
-buf4 = sixteen_k*7;
-buf5 = sixteen_k*8;
+
+// buf4 = sixteen_k*7;
+// buf5 = sixteen_k*8;
 overlap_sel		= sixteen_k*9;
 window = sixteen_k*10;
 
@@ -59,22 +64,6 @@ overlap_w=overlap=0;
 pos=pos2=0;
 
 
-/*
-w1 = window[pos/2];
-w2 = window[(fftsize*1.5-pos)/2-1];
-sw = (w1+w2)*fftsize;
-
-out0 = (buf0[pos]+	buf1[fftsize*1.5+pos])/sw;
-out1 = (buf0[pos+1]+buf1[fftsize*1.5+pos+1])/sw;
-
-spl4=buf0[pos]/fftsize;
-spl5=buf1[fftsize*1.5+pos]/fftsize;
-
-buf0[pos] = w1*spl0;
-buf0[pos+1] = w1*spl1;
-buf1[fftsize*1.5+pos] = w2*spl0;
-buf1[fftsize*1.5+pos+1] = w2*spl1;
-*/
 
 @slider
 fftsize=2^slider4;
@@ -99,17 +88,7 @@ Amount=slider1/100;
 
 
 @sample
-//buffer the original spl0
-out4 = buf4[pos2]  ;
-out5 = buf5[pos2];
 
-buf4[pos2] =  spl0;
-buf5[pos2] =  spl1;
-
-// spl4=out4;
-// spl5=out5;
-
-pos2=(pos2+1)%(pdc_delay);
 
 // Buffer input
 
@@ -237,6 +216,19 @@ buf1_in[2*overlap + pos+1] = spl1 * scale;
 		i += 2;
 	);
 );
+
+//buffer the original spl0
+out4 = buf1_org[pos2]  ;
+out5 = buf1_org[pos2+1];
+
+buf1_org[pos2] =  spl0;
+buf1_org[pos2+1] =  spl1;
+
+// spl4=out4;
+// spl5=out5;
+
+pos2=(pos2+2)%(pdc_delay*2);
+
 
 spl0 = buf1_out[pos];
 spl1 = buf1_out[pos+1];
