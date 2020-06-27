@@ -16,17 +16,19 @@ pdc_top_ch = 6;
 
 sixteen_k=32768;
 
-trapezium = sixteen_k*1;
-hann		= sixteen_k*2;
-in_buf		= sixteen_k*3;
-fft_buf		= sixteen_k*4;
-out_buf		= sixteen_k*5;
+
+
+buf1_in			= sixteen_k*1;
+buf1_fft		= sixteen_k*2;
+buf1_out		= sixteen_k*3;
+buf1_org		= sixteen_k*4;
 
 
 buf4 = sixteen_k*7;
 buf5 = sixteen_k*8;
-
 overlap_sel		= sixteen_k*9;
+window = sixteen_k*10;
+
 pi=3.141592653589793238;
 Angle_Difference=sixteen_k*41;
 Angle_Difference_old=sixteen_k*42;
@@ -86,7 +88,6 @@ overlap=floor(overlap_w*fftsize);
 i = 0;
 loop(fftsize,
 	window[i] = min( (0.5 /overlap_w) - abs( (1/overlap_w) *i / fftsize -(0.5/overlap_w)), 1); // adjustable Trapezium window
-// window[i] = min(1 - abs(2*i / fftsize -1), 1);
 	i += 1;
 );
 
@@ -95,9 +96,6 @@ offset = 2*pi / 360 * slider2;
 
 Amount=slider1/100;
 
-// window = slider3 < 0.5 ? trapezium : hann;
-// window =  trapezium ;
-// overlap = floor(fftsize * (window == trapezium ? 0.25 : 0.5));
 
 
 @sample
@@ -115,27 +113,27 @@ pos2=(pos2+1)%(pdc_delay);
 
 // Buffer input
 
-in_buf[2*overlap + pos] = spl0 * scale;
-in_buf[2*overlap + pos+1] = spl1 * scale;
+buf1_in[2*overlap + pos] = spl0 * scale;
+buf1_in[2*overlap + pos+1] = spl1 * scale;
 (pos += 2) >= (fftsize - overlap )*2? (
 	pos = 0;
 
 	// Apply window
 	i = 0;
 	loop(fftsize,
-		fft_buf[i] = in_buf[i] * window[i/2];
-		fft_buf[i + 1] = in_buf[i+1] * window[i/2];
-	// fft_buf[i + 1] = 0;
+		buf1_fft[i] = buf1_in[i] * window[i/2];
+		buf1_fft[i + 1] = buf1_in[i+1] * window[i/2];
+	// buf1_fft[i + 1] = 0;
 
 		i += 2;
 	);
 
 	// Overlap input
-	memcpy(in_buf, in_buf + fftsize*2 - overlap*2, overlap*2);
+	memcpy(buf1_in, buf1_in + fftsize*2 - overlap*2, overlap*2);
 
 	// FFT
-	fft(fft_buf, fftsize);
-	fft_permute(fft_buf, fftsize);
+	fft(buf1_fft, fftsize);
+	fft_permute(buf1_fft, fftsize);
 
 	i = 0;
 	loop(fftsize / 2 + 1,
@@ -148,10 +146,10 @@ in_buf[2*overlap + pos+1] = spl1 * scale;
 		b2 = a2+1;
  
 
-		x =	fft_buf[a];
-		y =	fft_buf[b];
-		x2 = fft_buf[a2];
-		y2 = fft_buf[b2];
+		x =	buf1_fft[a];
+		y =	buf1_fft[b];
+		x2 = buf1_fft[a2];
+		y2 = buf1_fft[b2];
 
 		 left_r = (x + x2)*0.5;
 		 left_i = (y - y2)*0.5;
@@ -216,32 +214,32 @@ in_buf[2*overlap + pos+1] = spl1 * scale;
 		right_i*=P_scaling;
 
 
-		fft_buf[a]	= left_r - right_i;
-		fft_buf[b]	= left_i + right_r;
-		fft_buf[a2] = left_r + right_i;
-		fft_buf[b2] = right_r - left_i;
+		buf1_fft[a]	= left_r - right_i;
+		buf1_fft[b]	= left_i + right_r;
+		buf1_fft[a2] = left_r + right_i;
+		buf1_fft[b2] = right_r - left_i;
 
 
 		i += 2;
 	);
 
 	// Inverse FFT
-	fft_ipermute(fft_buf, fftsize);
-	ifft(fft_buf, fftsize);
+	fft_ipermute(buf1_fft, fftsize);
+	ifft(buf1_fft, fftsize);
 
 	// Overlap-add output
-	memcpy(out_buf, out_buf + 2*fftsize - 2*overlap, 2*overlap);
-	memset(out_buf + 2*overlap, 0, 2*fftsize - 2*overlap);
+	memcpy(buf1_out, buf1_out + 2*fftsize - 2*overlap, 2*overlap);
+	memset(buf1_out + 2*overlap, 0, 2*fftsize - 2*overlap);
 	i = 0;
 	loop(fftsize,
-		out_buf[i] += fft_buf[i];
-		out_buf[i+1] += fft_buf[i+1];
+		buf1_out[i] += buf1_fft[i];
+		buf1_out[i+1] += buf1_fft[i+1];
 		i += 2;
 	);
 );
 
-spl0 = out_buf[pos];
-spl1 = out_buf[pos+1];
+spl0 = buf1_out[pos];
+spl1 = buf1_out[pos+1];
 
 
 
