@@ -1,18 +1,18 @@
 // from https://forum.cockos.com/showthread.php?t=190168#30 by Tale
 
-desc:FFT example with 12.5% ovl
-slider1:100<0,200,1>Amt
-slider2:0<-180,180,1>Offset (deg)
-slider3:40<0,50,5>Overlap
+desc:FFT 6ch example with settings
+slider1:100<0,200,1>Unused
+slider2:0<-180,180,1>Unused
+slider3:40<0,50,5>Overlap (%)
+slider4:12<10,14,1>FFT size (pow2)
 
 @init
 
-fftsize = 4096;
-scale = 1/fftsize;
+
 
 pdc_bot_ch = 0;
 pdc_top_ch = 6;
-pdc_delay = fftsize - 1;
+
 
 sixteen_k=32768;
 
@@ -75,13 +75,17 @@ buf1[fftsize*1.5+pos+1] = w2*spl1;
 */
 
 @slider
+fftsize=2^slider4;
+pdc_delay = fftsize - 1;
+scale = 1/fftsize;
+
 inspector1=floor(slider3/10);
 overlap_w=overlap_sel[floor(slider3/10)];
 // overlap_w=slider3/100;
 overlap=floor(overlap_w*fftsize);
 i = 0;
 loop(fftsize,
-	window[i] = min( (0.5 /overlap_w) - abs( (1/overlap_w) *i / fftsize -(0.5/overlap_w)), 1); // 39% ovl Trapezium window
+	window[i] = min( (0.5 /overlap_w) - abs( (1/overlap_w) *i / fftsize -(0.5/overlap_w)), 1); // adjustable Trapezium window
 // window[i] = min(1 - abs(2*i / fftsize -1), 1);
 	i += 1;
 );
@@ -133,7 +137,6 @@ in_buf[2*overlap + pos+1] = spl1 * scale;
 	fft(fft_buf, fftsize);
 	fft_permute(fft_buf, fftsize);
 
-	// Adjust gain/phase
 	i = 0;
 	loop(fftsize / 2 + 1,
 	
@@ -154,6 +157,7 @@ in_buf[2*overlap + pos+1] = spl1 * scale;
 		 left_i = (y - y2)*0.5;
 		right_r = (y + y2)*0.5;
 		right_i = (x2 - x)*0.5;
+		
 		Magnitudes1[i]=sqrt(left_r^2+left_i^2); //+very_small_number*0.1
 		Magnitudes2[i]=sqrt(right_r^2+right_i^2);
 		
@@ -162,6 +166,7 @@ in_buf[2*overlap + pos+1] = spl1 * scale;
 		// test=atan2(sin(rand(1)),cos(rand(1)));
 		// test=atan2(sin(rand(1)),cos(rand(1)));
 		
+		//algorithm to select side content, based on "2.0 to 5.0 Upmix V3 (L).txt"
 		
 		an1=atan2(left_r,left_i); //radians, normalize to 0,2pi
 		an2=atan2(right_r,right_i);	
