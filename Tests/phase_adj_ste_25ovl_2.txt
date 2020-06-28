@@ -29,8 +29,6 @@ buf2_out		= sixteen_k*7;
 buf2_org		= sixteen_k*8;
 
 
-// buf4 = sixteen_k*7;
-// buf5 = sixteen_k*8;
 overlap_sel		= sixteen_k*9;
 window = sixteen_k*10;
 
@@ -92,27 +90,39 @@ Amount=slider1/100;
 
 // Buffer input
 
-buf1_in[2*overlap + pos] = spl0 * scale;
-buf1_in[2*overlap + pos+1] = spl1 * scale;
+buf1_in[2*overlap + pos]	= spl0 * scale;
+buf1_in[2*overlap + pos+1]	= spl1 * scale;
+
+// buf2_in[2*overlap + pos]	= spl0 * scale;
+// buf2_in[2*overlap + pos+1]	= spl1 * scale;
+
 (pos += 2) >= (fftsize - overlap )*2? (
 	pos = 0;
 
 	// Apply window
 	i = 0;
 	loop(fftsize,
-		buf1_fft[i] = buf1_in[i] * window[i/2];
-		buf1_fft[i + 1] = buf1_in[i+1] * window[i/2];
-	// buf1_fft[i + 1] = 0;
+		buf1_fft[i]		= buf1_in[i] * window[i/2];
+		buf1_fft[i + 1]	= buf1_in[i+1] * window[i/2];
+		
+		// buf2_fft[i]		= buf2_in[i] * window[i/2];
+		// buf2_fft[i + 1]	= buf2_in[i+1] * window[i/2];
+
+
 
 		i += 2;
 	);
 
 	// Overlap input
 	memcpy(buf1_in, buf1_in + fftsize*2 - overlap*2, overlap*2);
+	// memcpy(buf2_in, buf2_in + fftsize*2 - overlap*2, overlap*2);
 
 	// FFT
 	fft(buf1_fft, fftsize);
 	fft_permute(buf1_fft, fftsize);
+	
+	// fft(buf2_fft, fftsize);
+	// fft_permute(buf2_fft, fftsize);
 
 	i = 0;
 	loop(fftsize / 2 + 1,
@@ -127,9 +137,17 @@ buf1_in[2*overlap + pos+1] = spl1 * scale;
 
 		x =	buf1_fft[a];
 		y =	buf1_fft[b];
-		x2 = buf1_fft[a2];
-		y2 = buf1_fft[b2];
+		x2=	buf1_fft[a2];
+		y2=	buf1_fft[b2];
 
+		// for fft tool
+		// x_two =	buf2_fft[a];
+		// y_two =	buf2_fft[b];
+		// x2_two=	buf2_fft[a2];
+		// y2_two=	buf2_fft[b2];
+
+		
+		
 		 left_r = (x + x2)*0.5;
 		 left_i = (y - y2)*0.5;
 		right_r = (y + y2)*0.5;
@@ -137,10 +155,10 @@ buf1_in[2*overlap + pos+1] = spl1 * scale;
 		
 		Magnitudes1[i]=sqrt(left_r^2+left_i^2); //+very_small_number*0.1
 		Magnitudes2[i]=sqrt(right_r^2+right_i^2);
+		// Magnitudes3[i]=sqrt(left_r_two^2+left_i_two^2);
+		// Magnitudes4[i]=sqrt(right_r_two^2+right_i_two^2);
 		
 		//use CPU to simulate a bigger FX
-		// test=atan2(sin(rand(1)),cos(rand(1)));
-		// test=atan2(sin(rand(1)),cos(rand(1)));
 		// test=atan2(sin(rand(1)),cos(rand(1)));
 		
 		//algorithm to select side content, based on "2.0 to 5.0 Upmix V3 (L).txt"
@@ -195,8 +213,15 @@ buf1_in[2*overlap + pos+1] = spl1 * scale;
 
 		buf1_fft[a]	= left_r - right_i;
 		buf1_fft[b]	= left_i + right_r;
-		buf1_fft[a2] = left_r + right_i;
-		buf1_fft[b2] = right_r - left_i;
+		buf1_fft[a2]= left_r + right_i;
+		buf1_fft[b2]= right_r - left_i;
+		
+		
+		//prepare c
+		buf2_fft[a] = center_r;
+		buf2_fft[b] = center_i;
+		buf2_fft[a2]= center_r;
+		buf2_fft[b2]=-center_i;
 
 
 		i += 2;
@@ -205,14 +230,26 @@ buf1_in[2*overlap + pos+1] = spl1 * scale;
 	// Inverse FFT
 	fft_ipermute(buf1_fft, fftsize);
 	ifft(buf1_fft, fftsize);
+	
+	fft_ipermute(buf2_fft, fftsize);
+	ifft(buf2_fft, fftsize);
 
 	// Overlap-add output
 	memcpy(buf1_out, buf1_out + 2*fftsize - 2*overlap, 2*overlap);
 	memset(buf1_out + 2*overlap, 0, 2*fftsize - 2*overlap);
+	
+	memcpy(buf2_out, buf2_out + 2*fftsize - 2*overlap, 2*overlap);
+	memset(buf2_out + 2*overlap, 0, 2*fftsize - 2*overlap);
+	
 	i = 0;
 	loop(fftsize,
 		buf1_out[i] += buf1_fft[i];
 		buf1_out[i+1] += buf1_fft[i+1];
+		
+		buf2_out[i] += buf2_fft[i];
+		// buf2_out[i+1] += buf2_fft[i+1];
+		
+		
 		i += 2;
 	);
 );
