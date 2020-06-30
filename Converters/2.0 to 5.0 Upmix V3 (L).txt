@@ -1,8 +1,6 @@
-desc: Surround upscale BETA
-//tags: requested by James HE , modded by geraintluff, modded by junh1024,
-//via https://forum.cockos.com/showpost.php?p=1962348&postcount=18
+// from https://forum.cockos.com/showthread.php?t=190168#30 by Tale, geraintluff, junh1024
 
-// TODO: performance improvements like moving FFT stuff to @block, frequency selection, half fft for center?
+desc: Surround upscale BETA
 
 slider1:0<0,100,2>Width
 slider2:0<-100,100,1>Depth
@@ -11,55 +9,62 @@ slider4:120<0,180,2>Crossover width
 slider5:50<0,100,2>Rear Width
 slider6:50<0,100,1>Rear LP
 slider7:50<0,100,2>Rear transients
-slider8:2<0,4,1{1024 (high artefacts) ,2048,4096 (medium artefacts),8192 (low artefacts)}>FFT Size
+slider8:12<10,14,1>FFT size (pow2)
 
 import surroundlib2.txt
 import surroundlib3.txt
 
-@init 
+@init
 
-fftsize = -1;
+
+
 pdc_bot_ch = 0;
 pdc_top_ch = 6;
 
-// array pointers
-window=0;
 
-sixteen_k=16384;
+sixteen_k=32768;
 
-buf0 = sixteen_k*1;
-buf1 = sixteen_k*2;
+memset(0,0,sixteen_k*50);
 
-buf2 = sixteen_k*3;
-buf3 = sixteen_k*4;
+buf1_in			= sixteen_k*1;
+buf1_fft		= sixteen_k*2;
+buf1_out		= sixteen_k*3;
+buf1_org		= sixteen_k*4;
 
-buf4 = sixteen_k*5;
-buf5 = sixteen_k*6;
+buf2_in			= sixteen_k*5;
+buf2_fft		= sixteen_k*6;
+buf2_out		= sixteen_k*7;
+buf2_org		= sixteen_k*8;
 
+
+overlap_sel		= sixteen_k*9;
+window = sixteen_k*10;
+
+pi=3.141592653589793238;
+Angle_Difference=sixteen_k*41;
+Angle_Difference_old=sixteen_k*42;
+Fixed_Response=0.5;
 Magnitudes1=sixteen_k*11;
 Magnitudes2=sixteen_k*12;
 Magnitudes3=sixteen_k*13;
-// Magnitudes4=sixteen_k*14;
-// Magnitudes5=sixteen_k*15;
-// Magnitudes6=sixteen_k*16;
+Magnitudes4=sixteen_k*14;
 
-Magnitudes1_old=sixteen_k*41;
-Magnitudes2_old=sixteen_k*42;
-memset(Magnitudes1_old, 0, sixteen_k);
+Magnitudes1_old=sixteen_k*21;
+Magnitudes2_old=sixteen_k*22;
+Magnitudes3_old=sixteen_k*23;
+Magnitudes4_old=sixteen_k*24;
 
-Angles1=sixteen_k*21;
-Angles2=sixteen_k*22;
-Angles3=sixteen_k*23;
-// Angles4=sixteen_k*24;
-// Angles5=sixteen_k*25;
-// Angles6=sixteen_k*26;
+L_scaling_array=sixteen_k*31;
+L_scaling_old_array=sixteen_k*32;
 
-Sideness=sixteen_k*31;
-Sideness_old=sixteen_k*32;
 
-Angle_Difference=sixteen_k*41;
-Angle_Difference_old=sixteen_k*42;
-// Pan_Array=sixteen_k*32;
+overlap_sel[0]=0.0625;		// 1/16
+overlap_sel[1]=0.125;		// 1/8
+overlap_sel[2]=0.25;		// 1/4
+overlap_sel[3]=0.3125;		// 5/16 or 1/3.2
+overlap_sel[4]=0.390625;	// 25/64 or 1/2.56
+overlap_sel[5]=0.5;			// 1/2
+overlap_w=overlap=0;
 
 Rear_threshold=0;
 Crossover_width=0;
@@ -74,8 +79,7 @@ pi=3.141592653589793238;
 h_pi=pi/2;
 h_sqrt_2=0.7071067811865475;
 
-pos=0;
-pos2=0;
+
 
 	mid_r  = mid_i  = 0;
 	side_r = side_i = 0;
@@ -97,12 +101,6 @@ left_r_two = left_i_two = right_r_two= right_i_two= 0;
 P_scaling=T_scaling=0;
 tmp=a=b=a2=b2=0;
 
-	memset(buf0, 0, 2*fftsize);
-	memset(buf1, 0, 2*fftsize);
-	memset(buf2, 0, 2*fftsize);
-	memset(buf3, 0, 2*fftsize);
-	memset(Angle_Difference, 0, 2*fftsize);
-	memset(Angle_Difference_old, 0, 2*fftsize);
 	memset(Sideness, 0, 2*fftsize);
 	memset(Sideness_old, 0, 2*fftsize);
 	
@@ -118,32 +116,29 @@ inspector2=0;
 
 Fixed_Response=0.5;
 
-@slider
 
-sliderfft = (2^(slider8+10))|0;
-fftsize != sliderfft ?
-(
-	pos = 0;
-	memset(buf0, 0, 2*fftsize);
-	memset(buf1, 0, 2*fftsize);
-	memset(buf2, 0, 2*fftsize);
-	memset(buf3, 0, 2*fftsize);
-	// memset(buf4, 0, 2*fftsize);
-	// memset(buf5, 0, 2*fftsize);
-	memset(window, 0, fftsize);
-	fftsize = sliderfft;
-	w = 2.0*$pi/fftsize;
-	i = 0;
-	
-	loop(fftsize/2,
-		window[i] = 0.42-0.50*cos(i*w)+0.08*cos(2.0*i*w); //blackman window
-		// window[i] =1- (1-abs(i/fftsize)); //triangle window
-		// window[i] =min(2- (2-abs(i/fftsize)),1); //trapezium window
-		// window[i] = 0.5;
-		i += 1;
-	); 
-	pdc_delay = fftsize;
+pos=pos2=0;
+
+fftsize=0;
+
+@slider
+fftsize=2^slider8;
+pdc_delay = fftsize - 1;
+scale = 1/fftsize;
+
+// inspector1=floor(slider3/10);
+overlap_w=overlap_sel[4]; //40 % overlap
+// overlap_w=slider3/100;
+overlap=floor(overlap_w*fftsize);
+i = 0;
+loop(fftsize,
+	window[i] = min( (0.5 /overlap_w) - abs( (1/overlap_w) *i / fftsize -(0.5/overlap_w)), 1); // adjustable Trapezium window
+	i += 1;
 );
+
+// gain = 10^(slider1 / 20);
+offset = 2*pi / 360 * slider2;
+
 
 Rear_threshold= slider3*pi/180;
 Crossover_width=max(slider4*pi/180,0.1);//min of 0.1 since don't want an infinite slope/div 0
@@ -159,50 +154,74 @@ cutoff_bins=floor(cutoff*(fftsize));
 transient_amount=slider7/100;
 
 
+
 @sample
 
-pos >= fftsize ?
-(
-	tmp = buf0;
-	buf0 = buf1;
-	buf1 = tmp;
 
-	tmp = buf2;
-	buf2 = buf3;
-	buf3 = tmp;
-	
-	// tmp = buf4;
-	// buf5 = buf5;
-	// buf4 = tmp;
+// Buffer input
 
-	fft(buf0, fftsize);
-	fft_permute(buf0, fftsize);
+buf1_in[2*overlap + pos]	= spl0 * scale;
+buf1_in[2*overlap + pos+1]	= spl1 * scale;
 
-	// fft(buf2, fftsize);
-	// fft_permute(buf2, fftsize);
+// buf2_in[2*overlap + pos]	= spl0 * scale;
+// buf2_in[2*overlap + pos+1]	= spl1 * scale;
 
-	i = 2;
-	loop(fftsize/2 - 1, 
+(pos += 2) >= (fftsize - overlap )*2? (
+	pos = 0;
+
+	// Apply window
+	i = 0;
+	loop(fftsize,
+		buf1_fft[i]		= buf1_in[i] * window[i/2];
+		buf1_fft[i + 1]	= buf1_in[i+1] * window[i/2];
 		
-		//loop indexes
+		// buf2_fft[i]		= buf2_in[i] * window[i/2];
+		// buf2_fft[i + 1]	= buf2_in[i+1] * window[i/2];
+
+
+
+		i += 2;
+	);
+
+	// Overlap input
+	memcpy(buf1_in, buf1_in + fftsize*2 - overlap*2, overlap*2);
+	// memcpy(buf2_in, buf2_in + fftsize*2 - overlap*2, overlap*2);
+
+	// FFT
+	fft(buf1_fft, fftsize);
+	fft_permute(buf1_fft, fftsize);
+	
+	// fft(buf2_fft, fftsize);
+	// fft_permute(buf2_fft, fftsize);
+
+	i = 0;
+	loop(fftsize / 2 + 1,
+	
+	
+	// abs();
 		a = i;
 		b = a+1;
 		a2 = 2*fftsize-i;
 		b2 = a2+1;
+ 
 
+		x =	buf1_fft[a];
+		y =	buf1_fft[b];
+		x2=	buf1_fft[a2];
+		y2=	buf1_fft[b2];
 
-		x = buf0[a];
-		y = buf0[b];
-		x2 = buf0[a2];
-		y2 = buf0[b2];
+		// for fft tool
+		// x_two =	buf2_fft[a];
+		// y_two =	buf2_fft[b];
+		// x2_two=	buf2_fft[a2];
+		// y2_two=	buf2_fft[b2];
 
+		
+		//we have 2 sets cuz  L&R are modified for LRC, but we want to measure the phase of the original LR
 		 left_r = left_r_two =(x + x2)*0.5;
 		 left_i = left_i_two =(y - y2)*0.5;
 		right_r = right_r_two=(y + y2)*0.5;
 		right_i = right_i_two=(x2 - x)*0.5;
-
-
-
 		//completely rewritten in Complex instead of Polar for more performance & no fiddly phase compensation
 
 		//convert to M/S, center content
@@ -342,93 +361,86 @@ pos >= fftsize ?
 
 
 */
+		buf1_fft[a]	= left_r - right_i;
+		buf1_fft[b]	= left_i + right_r;
+		buf2_fft[a] = center_r;
+		buf2_fft[b] = center_i;	
+		
+		
+		//may reduce glitching when stopped?
+		i>0?
+		(
 
-		//more voodoo
-		buf0[a]  = left_r - right_i;
-		buf0[b]  = left_i + right_r;
-		buf0[a2] = left_r + right_i;
-		buf0[b2] = right_r - left_i;
-
+		buf1_fft[a2]= left_r + right_i;
+		buf1_fft[b2]= right_r - left_i;
+		
+		
 		//prepare c
 
-		buf2[a] = center_r;
-		buf2[b] = center_i;
-		buf2[a2]= center_r;
-		buf2[b2]=-center_i;
-		
-		i += 2
+		buf2_fft[a2]= center_r;
+		buf2_fft[b2]=-center_i;
+		);
+
+		i += 2;
 	);
 
-	fft_ipermute(buf0, fftsize);
-	ifft(buf0, fftsize);
+	// Inverse FFT
+	fft_ipermute(buf1_fft, fftsize);
+	ifft(buf1_fft, fftsize);
 	
-	// width_coeff<1?(
-	fft_ipermute(buf2, fftsize);
-	ifft(buf2, fftsize);
-// );
-	pos=0;
+	fft_ipermute(buf2_fft, fftsize);
+	ifft(buf2_fft, fftsize);
+
+	// Overlap-add output
+	memcpy(buf1_out, buf1_out + 2*fftsize - 2*overlap, 2*overlap);
+	memset(buf1_out + 2*overlap, 0, 2*fftsize - 2*overlap);
+	
+	memcpy(buf2_out, buf2_out + 2*fftsize - 2*overlap, 2*overlap);
+	memset(buf2_out + 2*overlap, 0, 2*fftsize - 2*overlap);
+	
+	i = 0;
+	loop(fftsize,
+		buf1_out[i] += buf1_fft[i];
+		buf1_out[i+1] += buf1_fft[i+1];
+		
+		buf2_out[i] += buf2_fft[i];
+		// buf2_out[i+1] += buf2_fft[i+1];
+		
+		
+		i += 2;
+	);
 );
 
-//windowing?
-w1 = window[pos/2];
-w2 = window[(fftsize-pos)/2-1];
-sw = (w1+w2)*fftsize;
-
-out0 = (buf0[pos]+buf1[fftsize+pos])/sw;
-out1 = (buf0[pos+1]+buf1[fftsize+pos+1])/sw;
-out2 = (buf2[pos]+buf3[fftsize+pos])/sw;
-// out3 = (buf2[pos+1]+buf1[fftsize+pos+1])/sw;
-
-
-
-buf0[pos] = w1*spl0;
-buf0[pos+1] = w1*spl1;
-buf1[fftsize+pos] = w2*spl0;
-buf1[fftsize+pos+1] = w2*spl1;
-
-//more stuff for 2nd input
-buf2[pos] = w1*spl2;
-// buf2[pos+1] = w1*spl3;
-buf3[fftsize+pos] = w2*spl2;
-// buf3[fftsize+pos+1] = w2*spl3;
-
 //buffer the original spl0
-out4 = buf4[pos2]  ;
-out5 = buf5[pos2];
+out4 = buf1_org[pos2]  ;
+out5 = buf1_org[pos2+1];
 
-buf4[pos2] =  spl0;
-buf5[pos2] =  spl1;
-
-
-
+buf1_org[pos2] =  spl0;
+buf1_org[pos2+1] =  spl1;
 
 // spl4=out4;
 // spl5=out5;
 
-spl0 = out0;
-spl1 = out1;
+pos2=(pos2+2)%(pdc_delay*2);
 
-spl2= out2;
+
+spl0 = buf1_out[pos];
+spl1 = buf1_out[pos+1];
+
+
 
 //subtract front from original spl0 to get back
-spl4=out4-out0-(h_sqrt_2*out2);
-spl5=out5-out1-(h_sqrt_2*out2);
 
 
-pos += 2;
-pos2=(pos2+1)%(fftsize*1);
+spl2= buf2_out[pos];
+
+spl4=out4-spl0-(h_sqrt_2*spl2);
+spl5=out5-spl1-(h_sqrt_2*spl2);
 
 
 do_width(width_coeff);
 do_depth(depth_coeff);
 do_cross_width(R_width_coeff);
-
-// @gfx 500 16
-
-// box_width=8;
-
-// gfx_a = 0.8; 
-// drawbox(floor((pos/fftsize)*gfx_w),8);
 
 
 @gfx 500 50
@@ -445,7 +457,7 @@ g=2;//counter for gfx
 while
 ( 
 	set_color(g/(fftsize/2.5)); //update color according to frequency
-	gfx_a = min(sqrt(Magnitudes1[g]),1); //set alpha to magnitude , a >1 looks weird
+	gfx_a = min(sqrt(Magnitudes1[g])*fftsize/2,1); //set alpha to magnitude , a >1 looks weird
 	drawbox(Angle_Difference[g]*gfx_w/pi,gfx_h-g*gfx_h/(fftsize/2) ); //draw position for each bin
 	// g=ceil(g^1.2);
 	g+=8;
