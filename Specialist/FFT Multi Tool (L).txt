@@ -356,6 +356,39 @@ loop(fftsize/2-(overlap/4),
 			
 		);
 		
+		
+				mode==5? //phase limit
+		(
+
+			mid_r  = (left_r+right_r)*0.5;
+			mid_i  = (left_i+right_i)*0.5;
+			side_r = (left_r-right_r)*0.5;
+			side_i = (left_i-right_i)*0.5;
+				
+			mid=sqrt(mid_r^2+mid_i^2);
+			side=sqrt(side_r^2+side_i^2);
+
+
+			side>mid?
+			(
+
+			// inspector1=mid/side;
+			
+			side_r*=(mid/side); 
+			side_i*=(mid/side); 
+
+			//M/S decode LR
+			left_r =  (mid_r) + (side_r);
+			left_i =  (mid_i) + (side_i);
+			right_r = (mid_r) - (side_r);
+			right_i = (mid_i) - (side_i);	
+			
+			doing=1;
+
+			);
+				
+			
+		);
 	
 		
 		mode==6? //phase reflect, wider bins sound worse w/ no overlap
