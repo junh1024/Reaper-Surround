@@ -22,7 +22,7 @@ pdc_bot_ch = 0;
 pdc_top_ch = 6;
 
 
-sixteen_k=32768;
+sixteen_k=32768; //distance between arrays
 
 memset(0,0,sixteen_k*50);
 
@@ -69,7 +69,7 @@ overlap_w=overlap=0;
 Rear_threshold=0;
 Crossover_width=0;
 
-gfx_r = gfx_g = gfx_b = 1;
+
 
 exceeded=0;
 
@@ -80,37 +80,29 @@ h_pi=pi/2;
 h_sqrt_2=0.7071067811865475;
 
 
+an1=an2=0;
 
-	mid_r  = mid_i  = 0;
-	side_r = side_i = 0;
-	
-	mid = side = 0;
-	
-	// Sideness[i]=0;
-	
-	center_r = center_i = 0;
-
-	
-	
-	an1=an2=0;
-	
 left_r = left_i = right_r= right_i= 0;
 left_r_two = left_i_two = right_r_two= right_i_two= 0;
+
+center_r = center_i = 0;
+mid_r  = mid_i  = side_r = side_i = 0;
+
+mid = side = 0;
+// Sideness[i]=0;
 
 //phase, transient scaling
 P_scaling=T_scaling=0;
 tmp=a=b=a2=b2=0;
 
-	memset(Sideness, 0, 2*fftsize);
-	memset(Sideness_old, 0, 2*fftsize);
 	
-	R_width_coeff=0;
-	depth2=0;
-	doing=0;
+R_width_coeff=0;
+depth2=0;
+doing=0;
 	
 	
-	cutoff=0;
-	cutoff_bins=0;
+cutoff=0;
+cutoff_bins=0;
 inspector1=0;
 inspector2=0;
 
@@ -197,8 +189,7 @@ buf1_in[2*overlap + pos+1]	= spl1 * scale;
 	i = 0;
 	loop(fftsize / 2 + 1,
 	
-	
-	// abs();
+
 		a = i;
 		b = a+1;
 		a2 = 2*fftsize-i;
@@ -299,7 +290,8 @@ buf1_in[2*overlap + pos+1]	= spl1 * scale;
 		// P_scaling=1-((Angle_Difference[i]/pi));
 		// P_scaling=min(max(1-((((Angle_Difference[i])+Rear_threshold)/pi)*T_scaling),0),1); 
 		// P_scaling=min(max(1-(   (  ((+-h_pi)/(Crossover_width/pi))+h_pi  )    *T_scaling ) ,0)     ,1) ; 
-// front_coefficient_temp= 1 - ((phadeg- low_thresh )* (1.0/crossover_width))
+		
+
 
 
 
@@ -319,48 +311,14 @@ buf1_in[2*overlap + pos+1]	= spl1 * scale;
 		
 		);
 		
-		
 		//BUG: upscales to rear when 100% hard panned
-		
-		// ad=slider4*$pi/180;
-/*
-		//from -1 to 1, L to R.
-		pan=(Magnitudes2[i]-Magnitudes1[i])/(Magnitudes2[i]+Magnitudes1[i]);
 
-		center_phase_level= 1-min(2*ad/pi,1);;//double ad & clamp to +0, to make C selection 90* wide instead of 180
-
-		//reduce C if the depending on pan & phase
-		center_mag_level=(1-abs(pan))*center_phase_level;
-		
-		// center_mag_level=0;
-		
-		
-		// center_mag_level=(1-abs(pan));
-		// ad>$pi/10?center_mag_level=0;//remove from C if angle >9*
-
-		//move to center if centered
-		Magnitudes3[i]=center_mag_level*(Magnitudes1[i]+Magnitudes2[i])*0.7071;
-		Magnitudes1[i]*=1-center_mag_level;
-		Magnitudes2[i]*=1-center_mag_level;
-		
-		Angles3[i]    =(Angles1[i]+Angles2[i])/2;  //averaging angle sounds bad?
-		// Angles3[i]    =Angles1[i]; //prolly wrong, but sounds bad if i add A1 & A2. But LR will be adjusted after this to partially compensate
 
 		//rear stuff
 		
 		// (Angle_Difference[i]>Rear_threshold-Crossover_width&&Angle_Difference[i]<Rear_threshold+Crossover_width)?
-		// (
-			// dummy=1;
-		// )
-		// :
-		// (
-			// (Angle_Difference[i]>Rear_threshold)?
-			// Magnitudes1[i]=Magnitudes2[i]=0;
-		
-		// );
+		// (Angle_Difference[i]>Rear_threshold)?
 
-
-*/
 		buf1_fft[a]	= left_r - right_i;
 		buf1_fft[b]	= left_i + right_r;
 		buf2_fft[a] = center_r;
@@ -370,15 +328,12 @@ buf1_in[2*overlap + pos+1]	= spl1 * scale;
 		//may reduce glitching when stopped?
 		i>0?
 		(
-
-		buf1_fft[a2]= left_r + right_i;
-		buf1_fft[b2]= right_r - left_i;
-		
-		
-		//prepare c
-
-		buf2_fft[a2]= center_r;
-		buf2_fft[b2]=-center_i;
+			buf1_fft[a2]= left_r + right_i;
+			buf1_fft[b2]= right_r - left_i;
+			
+			//prepare c
+			buf2_fft[a2]= center_r;
+			buf2_fft[b2]=-center_i;
 		);
 
 		i += 2;
@@ -444,7 +399,7 @@ do_cross_width(R_width_coeff);
 
 
 @gfx 500 50
-
+gfx_r = gfx_g = gfx_b = 1;
 // box_width=8;
 box_width=floor(0.7*sqrt((gfx_w+gfx_h)/2));
 

@@ -1,0 +1,58 @@
+From V3 upmix
+===
+
+sliders
+---
+sliderchange(65535)!=old_sliders?
+(
+	slider_changes+=1;
+);
+
+
+old_sliders=sliderchange(65535);
+
+optimized apply window but doesn't use less CPU
+---
+memcpy(buf1_fft+(fftsize/2),buf1_in+(fftsize/2),fftsize);//copy the middle half cuz window =1;
+
+
+// Apply window
+i = 0;
+loop(fftsize/2-(overlap/4),
+	buf1_fft[i]	=buf1_in[i]	*window[i/2];
+	buf1_fft[i+1]=buf1_in[i+1]*window[i/2];
+// i += 2;
+// );		
+// i = 0;	
+// loop(fftsize/2-(overlap/4),	
+
+	buf1_fft[fftsize*2-i]	=buf1_in[fftsize*2-i]	*window[fftsize-i/2];
+	buf1_fft[fftsize*2-i+1]	=buf1_in[fftsize*2-i+1]	*window[fftsize-i/2];
+	i += 2;
+);
+
+
+old upscale code
+---
+// front_coefficient_temp= 1 - ((phadeg- low_thresh )* (1.0/crossover_width))
+//from -1 to 1, L to R.
+		pan=(Magnitudes2[i]-Magnitudes1[i])/(Magnitudes2[i]+Magnitudes1[i]);
+
+		center_phase_level= 1-min(2*ad/pi,1);;//double ad & clamp to +0, to make C selection 90* wide instead of 180
+
+		//reduce C if the depending on pan & phase
+		center_mag_level=(1-abs(pan))*center_phase_level;
+		
+		// center_mag_level=0;
+		
+		
+		// center_mag_level=(1-abs(pan));
+		// ad>$pi/10?center_mag_level=0;//remove from C if angle >9*
+
+		//move to center if centered
+		Magnitudes3[i]=center_mag_level*(Magnitudes1[i]+Magnitudes2[i])*0.7071;
+		Magnitudes1[i]*=1-center_mag_level;
+		Magnitudes2[i]*=1-center_mag_level;
+		
+		Angles3[i]    =(Angles1[i]+Angles2[i])/2;  //averaging angle sounds bad?
+		// Angles3[i]    =Angles1[i]; //prolly wrong, but sounds bad if i add A1 & A2. But LR will be adjusted after this to partially compensate
