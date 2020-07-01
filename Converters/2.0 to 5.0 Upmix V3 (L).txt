@@ -1,6 +1,6 @@
 // from https://forum.cockos.com/showthread.php?t=190168#30 by Tale, geraintluff, junh1024
 
-desc: Surround upscale BETA
+desc: 2.0 to 5.0 Surround upscale BETA
 
 slider1:0<0,100,2>Width
 slider2:0<-100,100,1>Depth
@@ -400,10 +400,14 @@ do_cross_width(R_width_coeff);
 
 @gfx 500 50
 gfx_r = gfx_g = gfx_b = 1;
+gfx_a = 0.5; 
 // box_width=8;
 box_width=floor(0.7*sqrt((gfx_w+gfx_h)/2));
 
-gfx_a = 0.2; 
+// draw guides
+drawbox(Rear_threshold*gfx_w/pi,gfx_h/2);
+drawbox((Rear_threshold+Crossover_width/2)*gfx_w/pi,gfx_h*1/4);
+drawbox((Rear_threshold-Crossover_width/2)*gfx_w/pi,gfx_h*3/4);
 
 // gfx_mode=1.0;
 
@@ -412,7 +416,7 @@ g=2;//counter for gfx
 while
 ( 
 	set_color(g/(fftsize/2.5)); //update color according to frequency
-	gfx_a = min(sqrt(Magnitudes1[g])*fftsize/2,1); //set alpha to magnitude , a >1 looks weird
+	gfx_a = min(sqrt(Magnitudes1[g])*fftsize/4,1); //set alpha to magnitude , a >1 looks weird
 	drawbox(Angle_Difference[g]*gfx_w/pi,gfx_h-g*gfx_h/(fftsize/2) ); //draw position for each bin
 	// g=ceil(g^1.2);
 	g+=8;
