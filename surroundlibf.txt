@@ -130,3 +130,68 @@ function lr_complex_apply_2_scaling(scaling_l, scaling_r)
 	right_r*=scaling_r;
 	right_i*=scaling_r;
 );
+
+function fft_4ch_window_overlap_fft()
+(
+	memcpy(buf1_fft+(fftsize/2),buf1_in+(fftsize/2),fftsize);//copy the middle half cuz window =1;
+	memcpy(buf2_fft+(fftsize/2),buf2_in+(fftsize/2),fftsize);
+
+	// Apply window to top & tail together, so less iterations are needed
+	i = 0;
+	loop(fftsize/2-(overlap/4),
+		buf1_fft[i]	=buf1_in[i]	*window[i/2];
+		buf1_fft[i+1]=buf1_in[i+1]*window[i/2];
+		buf1_fft[fftsize*2-i]	=buf1_in[fftsize*2-i]	*window[fftsize-i/2];
+		buf1_fft[fftsize*2-i+1]	=buf1_in[fftsize*2-i+1]	*window[fftsize-i/2];
+		
+		buf2_fft[i]	=buf2_in[i]	*window[i/2];
+		buf2_fft[i+1]=buf2_in[i+1]*window[i/2];
+		buf2_fft[fftsize*2-i]	=buf2_in[fftsize*2-i]	*window[fftsize-i/2];
+		buf2_fft[fftsize*2-i+1]	=buf2_in[fftsize*2-i+1]	*window[fftsize-i/2];
+		i += 2;
+	);
+
+
+	// Overlap input
+	memcpy(buf1_in, buf1_in + fftsize*2 - overlap*2, overlap*2);
+	memcpy(buf2_in, buf2_in + fftsize*2 - overlap*2, overlap*2);
+
+	// FFT
+	fft(buf1_fft, fftsize);
+	fft_permute(buf1_fft, fftsize);
+	
+	fft(buf2_fft, fftsize);
+	fft_permute(buf2_fft, fftsize);
+);
+
+function fft_4ch_untangle_mags()
+(
+		x =	buf1_fft[a];
+		y =	buf1_fft[b];
+		x2=	buf1_fft[a2];
+		y2=	buf1_fft[b2];
+
+		// for fft tool
+		x_two =	buf2_fft[a];
+		y_two =	buf2_fft[b];
+		x2_two=	buf2_fft[a2];
+		y2_two=	buf2_fft[b2];
+		
+		 left_r = (x + x2)*0.5;
+		 left_i = (y - y2)*0.5;
+		right_r = (y + y2)*0.5;
+		right_i = (x2 - x)*0.5;
+		
+		left_r_two = ( x_two + x2_two)*0.5;
+		left_i_two = ( y_two - y2_two)*0.5;
+		right_r_two= ( y_two + y2_two)*0.5;
+		right_i_two= (x2_two -  x_two )*0.5;
+		
+
+
+		Magnitudes1[i]=sqrt(left_r^2+left_i^2); //+very_small_number*0.1
+		Magnitudes2[i]=sqrt(right_r^2+right_i^2);
+		Magnitudes3[i]=sqrt(left_r_two^2+left_i_two^2);
+		Magnitudes4[i]=sqrt(right_r_two^2+right_i_two^2);
+
+);
