@@ -73,7 +73,7 @@ Crossover_width=0;
 
 exceeded=0;
 
-center_phase_level=center_mag_level=0;
+
 
 pi=3.141592653589793238;
 h_pi=pi/2;
@@ -101,8 +101,8 @@ depth2=0;
 doing=0;
 	
 	
-cutoff=0;
-cutoff_bins=0;
+cutoff=cutoff_bins=0;
+
 inspector1=0;
 inspector2=0;
 
@@ -394,8 +394,8 @@ spl5=out5-spl1-(h_sqrt_2*spl2);
 
 
 do_width(width_coeff);
-do_depth(depth_coeff);
 do_cross_width(R_width_coeff);
+do_depth(depth_coeff);
 
 
 @gfx 500 50
