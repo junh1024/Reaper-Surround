@@ -17,7 +17,7 @@ import surroundlibf.txt
 
 @init
 
-
+//see surroundlibf.txt
 
 pdc_bot_ch = 0;
 pdc_top_ch = 6;
@@ -55,7 +55,6 @@ cutoff_bins=floor(cutoff*(fftsize));
 transient_amount=slider7/100;
 
 
-
 @sample
 
 
@@ -78,8 +77,6 @@ buf1_in[2*overlap + pos+1]	= spl1 * scale;
 		
 		// buf2_fft[i]		= buf2_in[i] * window[i/2];
 		// buf2_fft[i + 1]	= buf2_in[i+1] * window[i/2];
-
-
 
 		i += 2;
 	);
@@ -110,12 +107,6 @@ buf1_in[2*overlap + pos+1]	= spl1 * scale;
 		x2=	buf1_fft[a2];
 		y2=	buf1_fft[b2];
 
-		// for fft tool
-		// x_two =	buf2_fft[a];
-		// y_two =	buf2_fft[b];
-		// x2_two=	buf2_fft[a2];
-		// y2_two=	buf2_fft[b2];
-
 		
 		//we have 2 sets cuz  L&R are modified for LRC, but we want to measure the phase of the original LR
 		 left_r = left_r_two =(x + x2)*0.5;
@@ -132,10 +123,12 @@ buf1_in[2*overlap + pos+1]	= spl1 * scale;
 		width_coeff<1?
 		// width_coeff<1&&i<fftsize-ceil((fftsize-cutoff_bins)/1.5)?
 		(
-		mid_r  = (left_r+right_r);
-		mid_i  = (left_i+right_i);
-		side_r = (left_r-right_r);
-		side_i = (left_i-right_i);
+		ms_encode_complex();
+		
+		// mid_r  = (left_r+right_r);
+		// mid_i  = (left_i+right_i);
+		// side_r = (left_r-right_r);
+		// side_i = (left_i-right_i);
 		
 		//measure the magnitude of M&S, to decide how much should go in C/S
 		
@@ -150,8 +143,8 @@ buf1_in[2*overlap + pos+1]	= spl1 * scale;
 		Sideness_old[i]=Sideness[i];
 		
 		//0.7 3dB correction
-		center_r = mid_r *(1-Sideness[i])*h_sqrt_2;
-		center_i = mid_i *(1-Sideness[i])*h_sqrt_2;
+		center_r = mid_r *2*(1-Sideness[i])*h_sqrt_2;
+		center_i = mid_i *2*(1-Sideness[i])*h_sqrt_2;
 		
 		// Sideness[i]=1;
 	
@@ -159,10 +152,10 @@ buf1_in[2*overlap + pos+1]	= spl1 * scale;
 		
 		
 		//M/S decode LR
-		left_r =  (mid_r*0.5*Sideness[i]) + (side_r*0.5);
-		left_i =  (mid_i*0.5*Sideness[i]) + (side_i*0.5);
-		right_r = (mid_r*0.5*Sideness[i]) - (side_r*0.5);
-		right_i = (mid_i*0.5*Sideness[i]) - (side_i*0.5);	
+		left_r =  (mid_r*Sideness[i]) + (side_r);
+		left_i =  (mid_i*Sideness[i]) + (side_i);
+		right_r = (mid_r*Sideness[i]) - (side_r);
+		right_i = (mid_i*Sideness[i]) - (side_i);	
 		
 		
 		);
@@ -200,8 +193,6 @@ buf1_in[2*overlap + pos+1]	= spl1 * scale;
 		// P_scaling=min(max(1-((((Angle_Difference[i])+Rear_threshold)/pi)*T_scaling),0),1); 
 		// P_scaling=min(max(1-(   (  ((+-h_pi)/(Crossover_width/pi))+h_pi  )    *T_scaling ) ,0)     ,1) ; 
 		
-
-
 
 
 		P_scaling= min(max( ( 1-(Angle_Difference[i]-Rear_threshold+(Crossover_width/2))*T_scaling*(1/Crossover_width) )   ,0)     ,1)  ;
@@ -290,7 +281,6 @@ pos2=(pos2+2)%(pdc_delay*2);
 
 spl0 = buf1_out[pos];
 spl1 = buf1_out[pos+1];
-
 
 
 //subtract front from original spl0 to get back

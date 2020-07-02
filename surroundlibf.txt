@@ -105,3 +105,12 @@ progress=0;
 pos=pos2=0;
 
 fftsize=0;
+
+//functions
+function ms_encode_complex()
+(
+	mid_r  = (left_r+right_r)*0.5;
+	mid_i  = (left_i+right_i)*0.5;
+	side_r = (left_r-right_r)*0.5;
+	side_i = (left_i-right_i)*0.5;
+);
