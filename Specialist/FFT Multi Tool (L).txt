@@ -197,42 +197,44 @@ buf2_in[2*overlap + pos+1]	= spl3 * scale;
 		);
 		
 		
-		mode==5? //phase limit
+		(mode==5||mode==6)? //phase limit
 		(
 
-			mid_r  = (left_r+right_r)*0.5;
-			mid_i  = (left_i+right_i)*0.5;
-			side_r = (left_r-right_r)*0.5;
-			side_i = (left_i-right_i)*0.5;
+			ms_encode_complex();
 				
-			mid=sqrt(mid_r^2+mid_i^2);
-			side=sqrt(side_r^2+side_i^2);
+			// mid=sqrt(mid_r^2+mid_i^2);
+			// side=sqrt(side_r^2+side_i^2);
+			
+			//quicker
+			mid=sqr(mid_r)+sqr(mid_i);
+			side= sqr(side_r)+sqr(side_i);
 
 
 			side>mid?
-			(
+			(	//phase limit
+				mode==5?
+				(
+					side_r*=(mid/side); 
+					side_i*=(mid/side); 
 
-			// inspector1=mid/side;
-			
-			side_r*=(mid/side); 
-			side_i*=(mid/side); 
+					//M/S decode LR
+					left_r =  (mid_r) + (side_r);
+					left_i =  (mid_i) + (side_i);
+					right_r = (mid_r) - (side_r);
+					right_i = (mid_i) - (side_i);	
+				):
+				(
+					//phase reflect, reverse polarity of R is the same thing as swapping M&S
+					//sounds better than reverse polarity of R if >90*
+					right_r *=-1  ;
+					right_i *=-1  ;	
 
-			//M/S decode LR
-			left_r =  (mid_r) + (side_r);
-			left_i =  (mid_i) + (side_i);
-			right_r = (mid_r) - (side_r);
-			right_i = (mid_i) - (side_i);	
-			
-			doing=1;
-
+				);
 			);
 				
-			
-		);
-	
-		
-		mode==6? //phase reflect, wider bins sound worse w/ no overlap
-		(
+		/*	
+
+		 //phase reflect, wider bins sound worse w/ no overlap
 
 			// Angles1[i]=atan2(left_r,left_i);
 			// Angles2[i]=atan2(right_r,right_i);
@@ -247,27 +249,11 @@ buf2_in[2*overlap + pos+1]	= spl3 * scale;
 			// right_r *= -1;
 			// right_i *= -1;
 			// );
-
-				ms_encode_complex();
 				
-			mid=sqr(mid_r)+sqr(mid_i);
-			side= sqr(side_r)+sqr(side_i);
-
-
-			
-			// ad1>(pi/2)? //if >90*, but sounds good
-			side>mid? //if >90*, but sounds good
-			(
-				//NB: reverse polarity of R is the same thing as swapping M&S
-
-				right_r *=-1  ;
-				right_i *=-1  ;	
-				
-			);
-				
-			
-		);
+		*/	
 		
+		
+		);
 		
 		(mode==7&&Magnitudes1[i]<old_magnitude)?//Noise control/Gap filler
 		(
