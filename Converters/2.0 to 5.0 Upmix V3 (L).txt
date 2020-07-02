@@ -125,11 +125,6 @@ buf1_in[2*overlap + pos+1]	= spl1 * scale;
 		(
 		ms_encode_complex();
 		
-		// mid_r  = (left_r+right_r);
-		// mid_i  = (left_i+right_i);
-		// side_r = (left_r-right_r);
-		// side_i = (left_i-right_i);
-		
 		//measure the magnitude of M&S, to decide how much should go in C/S
 		
 		mid=sqrt(mid_r^2+mid_i^2);
@@ -202,11 +197,9 @@ buf1_in[2*overlap + pos+1]	= spl1 * scale;
 		// P_scaling=1;
 		// Angle_Difference[i]>Rear_threshold?(P_scaling=0);
 		
-		 left_r*=P_scaling;
-		 left_i*=P_scaling;
-		right_r*=P_scaling;
-		right_i*=P_scaling;
-		// doing=1;
+		lr_complex_apply_1_scaling(P_scaling);
+		
+
 		Magnitudes1_old[i]=Magnitudes1[i];
 		
 		);
