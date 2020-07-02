@@ -122,3 +122,11 @@ function lr_complex_apply_1_scaling(the_scaling)
 	right_r*=the_scaling;
 	right_i*=the_scaling;
 );
+
+function lr_complex_apply_2_scaling(scaling_l, scaling_r)
+(
+	 left_r*=scaling_l;
+	 left_i*=scaling_l;
+	right_r*=scaling_r;
+	right_i*=scaling_r;
+);
