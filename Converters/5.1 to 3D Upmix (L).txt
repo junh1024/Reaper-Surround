@@ -2,7 +2,7 @@
 
 desc: 5.1 to 9.1 (padded 15.1) upmix. in ALPHA
 
-slider1:1<0,3,1{Ambience,Ambience Plus,Discrete SFX,Pan Slice (not implemented)}>Mode
+slider1:1<0,3,1{Ambience,Ambience +,Discrete SFX,Pan Slice (not implemented)}>Mode
 slider2:100<0,200,1>Amount (%)
 slider3:1<0,1,0.01>Frequency Response/not implemented
 slider4:75<0,100,1>Cutoff (%)
@@ -45,17 +45,21 @@ offset = 2*pi / 360 * slider2;
 
 Amount=slider2/100;
 
+
 mode=slider1+1;//cuz I don't like 0-based mode/slider
 
-//V2 Re-Im modes sound different to original Ma-Ang modes
+
+mode<3? //  >100% amount will make it louder in ambience modes.
+(
+	Amount=min(Amount,1); //clamp to 100%
+);
+
+
 
 Response=slider3;
 
 Resp_bins=slider4/100;
 
-//limit min. cutoff to
-// srate==48000?Resp_bins=max(Resp_bins,0.75);//18k @48k
-// srate==44100?Resp_bins=max(Resp_bins,0.8);//17.6k @44k
 
 elements_to_skip=fftsize-floor(Resp_bins*fftsize);
 
@@ -92,13 +96,7 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
  
 		fft_4ch_untangle_mags();
 
-		// Angles1[i]=atan2(left_r,left_i);
-		// Angles2[i]=atan2(right_r,right_i);
-		// Angles3[i]=atan2(left_r_two,left_i_two);
-		// Angles4[i]=atan2(right_r_two,right_i_two);
-
 		// p1=abs(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]); //for FPA & min2
-
 
 
 		mode==6? //subtract
@@ -144,20 +142,11 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 		
 		(mode==10)? //Min2
 		(
-			Angles1[i]=atan2(left_r,left_i);
-			Angles2[i]=atan2(right_r,right_i);
-			Angles3[i]=atan2(left_r_two,left_i_two);
-			Angles4[i]=atan2(right_r_two,right_i_two);
 			
 			//compute pans as per my V3 upmix
 			// p1=(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]);
 			p2=(Magnitudes4[i]-Magnitudes2[i])/(Magnitudes4[i]+Magnitudes2[i]);
 		//pan isn't that useful for dual stereo-different noise recordings, but useful for High Touch! (different singers on different versions)
-		
-
-			
-			ad1=abs(Angles1[i]-Angles3[i]);
-			ad2=abs(Angles2[i]-Angles4[i]);
 
 			
 			ad1>pi?ad1=2*pi-ad1;//fix angle difference cuz should be under 180*
@@ -173,7 +162,7 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 
 		);  
 		
-		(mode<3)? 
+		(mode<3)? // ambience modes
 		(
 			Angles1[i]=atan2(left_r,left_i);
 			Angles2[i]=atan2(right_r,right_i);
@@ -195,8 +184,8 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 				L_scaling=1-(ad1*Amount/(pi/2));
 				R_scaling=1-(ad2*Amount/(pi/2));
 				
-				lr_complex_apply_1_scaling(L_scaling);
-				l2r2_complex_apply_1_scaling(R_scaling);
+				// lr_complex_apply_1_scaling(L_scaling);
+				// l2r2_complex_apply_1_scaling(R_scaling);
 			
 			):
 			(	//180* at top
@@ -204,16 +193,14 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 				L_scaling=1-(ad1*Amount/(pi));
 				R_scaling=1-(ad2*Amount/(pi));
 				
-				lr_complex_apply_1_scaling(L_scaling);
-				l2r2_complex_apply_1_scaling(R_scaling);
+
 			
 			);
 			
-		
+				lr_complex_apply_1_scaling(L_scaling);
+				l2r2_complex_apply_1_scaling(R_scaling);
 		
 		);
-		
-		
 		
 		
 		
@@ -237,11 +224,7 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 		
 		lr_complex_apply_1_scaling(L_scaling^Amount);
 		l2r2_complex_apply_1_scaling(L_scaling^Amount);
-		
-		// left_r_two *=L_scaling^Amount;
-		// left_i_two *=L_scaling^Amount;
-		// right_r_two*=L_scaling^Amount;
-		// right_i_two*=L_scaling^Amount;
+
 		
 		// centerness=distance/(sum_all_mags);
 		
@@ -316,13 +299,9 @@ buf2_org[pos2] =  spl4;
 buf2_org[pos2+1] =  spl5;
 
 
-
-
-
-
 pos2=(pos2+2)%(pdc_delay*2);
 
-
+//do output
 spl0 = buf1_out[pos];
 spl1 = buf1_out[pos+1];
 
@@ -330,7 +309,6 @@ spl4 = buf2_out[pos];
 spl5 = buf2_out[pos+1];
 
 //subtract processed from original to get height
-
 
 
 spl8=(out0-spl0);
