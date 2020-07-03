@@ -1,0 +1,320 @@
+// from https://forum.cockos.com/showthread.php?t=190168#30 by Tale, geraintluff, junh1024
+
+desc: 5.1 to 9.1 (padded 15.1) upmix. in ALPHA
+
+slider1:2<0,3,1{Ambience,Ambience Plus,Discrete SFX,Pan Slice (not implemented)}>Mode
+slider2:100<0,200,1>Amount (%)
+slider3:1<0,1,0.01>Frequency Response/not implemented
+slider4:75<0,100,1>Cutoff (%)
+slider5:1<0,1,0.01>Time Response/not implemented
+slider6:25<0,50,5>FFT Overlap (%)
+slider7:12<10,14,1>FFT size (pow2)
+slider8:0<0,1,1{No,Yes}>Swap/not implemented
+
+
+// import surroundlib2.txt
+import surroundlib3.txt
+import surroundlibf.txt
+
+@init
+
+//see surroundlibf.txt
+
+pdc_bot_ch = 0;
+pdc_top_ch = 7;
+
+out0=out1=out4=out5=0;
+
+@slider
+fftsize=2^slider7;
+pdc_delay = fftsize - 1;
+scale = 1/fftsize;
+
+// inspector1=floor(slider3/10);
+overlap_w=overlap_sel[slider6/10]; //40 % overlap
+// overlap_w=slider3/100;
+overlap=floor(overlap_w*fftsize);
+i = 0;
+loop(fftsize,
+	window[i] = min( (0.5 /overlap_w) - abs( (1/overlap_w) *i / fftsize -(0.5/overlap_w)), 1); // adjustable Trapezium window
+	i += 1;
+);
+
+// gain = 10^(slider1 / 20);
+offset = 2*pi / 360 * slider2;
+
+Amount=slider2/100;
+
+mode=slider1+1;//cuz I don't like 0-based mode/slider
+
+//V2 Re-Im modes sound different to original Ma-Ang modes
+
+Response=slider3;
+
+Resp_bins=slider4/100;
+
+//limit min. cutoff to
+// srate==48000?Resp_bins=max(Resp_bins,0.75);//18k @48k
+// srate==44100?Resp_bins=max(Resp_bins,0.8);//17.6k @44k
+
+elements_to_skip=fftsize-floor(Resp_bins*fftsize);
+
+
+@sample
+
+
+// Buffer input
+
+buf1_in[2*overlap + pos]	= spl0 * scale;
+buf1_in[2*overlap + pos+1]	= spl1 * scale;
+
+buf2_in[2*overlap + pos]	= spl4 * scale;
+buf2_in[2*overlap + pos+1]	= spl5 * scale;
+
+(pos += 2) >= (fftsize - overlap )*2? (
+	pos = 0;
+
+	fft_4ch_window_overlap_fft();
+	
+	//silence the frequencies we are skipping
+	memset(buf1_fft+(fftsize-elements_to_skip), 0, 2*elements_to_skip);
+	memset(buf2_fft+(fftsize-elements_to_skip), 0, 2*elements_to_skip);
+	
+
+	i = 0;
+	loop(fftsize / 2 + 1 - (elements_to_skip/2),
+	
+
+		a = i;
+		b = a+1;
+		a2 = 2*fftsize-i;
+		b2 = a2+1;
+ 
+		fft_4ch_untangle_mags();
+
+		// Angles1[i]=atan2(left_r,left_i);
+		// Angles2[i]=atan2(right_r,right_i);
+		// Angles3[i]=atan2(left_r_two,left_i_two);
+		// Angles4[i]=atan2(right_r_two,right_i_two);
+
+		// p1=abs(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]); //for FPA & min2
+
+
+
+		mode==6? //subtract
+		(
+			progress=i/(fftsize/2);
+			
+			//clamp mag to >0, otherwise will make more sound
+			//subtract more, as the frequency increases
+			L_scaling_array[i]=max(Magnitudes1[i]-Magnitudes3[i]*(Amount+((1-Response))*progress),0)/Magnitudes1[i];
+			R_scaling_array[i]=max(Magnitudes2[i]-Magnitudes4[i]*(Amount+((1-Response))*progress),0)/Magnitudes2[i];
+			
+			//temporal averaging for <12khz to sound better, none for >12khz to remove transients. inspired by my newvisp4
+			//but too much tends to reduce volume
+			
+			//if it;s <x khz & not a transient, apply averaging to redude artefacts
+			i<(fftsize/3) && L_scaling_array[i] < L_scaling_old_array[i]? 
+			(
+				L_scaling=L_scaling_array[i]*(0.5)+L_scaling_old_array[i]*(1-0.5);
+				R_scaling=R_scaling_array[i]*(0.5)+R_scaling_old_array[i]*(1-0.5);
+				
+				// L_scaling =L_scaling_array[i];
+				// R_scaling =R_scaling_array[i];
+			)
+			:
+			(	//equivalent to response of 1
+				L_scaling =L_scaling_array[i];
+				R_scaling =R_scaling_array[i];
+			);
+			
+			L_scaling_old_array[i]=L_scaling_array[i]*(0.5)+L_scaling_old_array[i]*(1-0.5);
+			R_scaling_old_array[i]=R_scaling_array[i]*(0.5)+R_scaling_old_array[i]*(1-0.5);
+
+			lr_complex_apply_2_scaling(L_scaling, R_scaling);
+			
+
+
+			// inspector1=(1-response);
+			// inspector2=(1-response)*progress;
+			
+		);
+		
+		
+		
+		(mode==10)? //Min2
+		(
+			Angles1[i]=atan2(left_r,left_i);
+			Angles2[i]=atan2(right_r,right_i);
+			Angles3[i]=atan2(left_r_two,left_i_two);
+			Angles4[i]=atan2(right_r_two,right_i_two);
+			
+			//compute pans as per my V3 upmix
+			// p1=(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]);
+			p2=(Magnitudes4[i]-Magnitudes2[i])/(Magnitudes4[i]+Magnitudes2[i]);
+		//pan isn't that useful for dual stereo-different noise recordings, but useful for High Touch! (different singers on different versions)
+		
+
+			
+			ad1=abs(Angles1[i]-Angles3[i]);
+			ad2=abs(Angles2[i]-Angles4[i]);
+
+			
+			ad1>pi?ad1=2*pi-ad1;//fix angle difference cuz should be under 180*
+			ad2>pi?ad2=2*pi-ad2; 
+
+			L_scaling=(1-(min(ad1*2,pi)/pi))*(1-   (p1));//double ad cuz 90* ad means it's already purely stereo noise
+			R_scaling=(1-(min(ad2*2,pi)/pi))*(1-abs(p2));//Reduce mags the more it's panned & phased
+
+			left_r *= L_scaling^Amount; //raised to power because doing linear multiple 1- is tricky
+			left_i *= L_scaling^Amount;
+			right_r *= R_scaling^Amount;
+			right_i *= R_scaling^Amount;
+
+		);  
+		
+		(mode==3)? //measure pos
+				( 
+		// pos_X=pos_Y=0;		
+		sum_all_mags=Magnitudes1[i]+Magnitudes2[i]+Magnitudes3[i]+Magnitudes4[i];
+		
+		pos_X[i]=(0-Magnitudes1[i]+Magnitudes2[i]-Magnitudes3[i]+Magnitudes4[i])/sum_all_mags;
+		pos_Y[i]=(0-Magnitudes1[i]-Magnitudes2[i]+Magnitudes3[i]+Magnitudes4[i])/sum_all_mags;
+		
+		distance=min(sqrt(pos_X[i]^2+pos_Y[i]^2),1);
+		// distance=min(abs(pos_X[i])+abs(pos_Y[i]),1); //faster
+		
+		L_scaling=distance;
+		//TODO: add temporal averaging
+		
+		left_r  *= L_scaling^Amount; //raised to power because doing linear multiple 1- is tricky
+		left_i  *= L_scaling^Amount;
+		right_r *= L_scaling^Amount;
+		right_i *= L_scaling^Amount;
+		
+			left_r_two *=L_scaling^Amount;
+			left_i_two *=L_scaling^Amount;
+			right_r_two*=L_scaling^Amount;
+			right_i_two*=L_scaling^Amount;
+		
+		
+		// centerness=distance/(sum_all_mags);
+		
+		// inspector1=Magnitudes1[i]+Magnitudes2[i]+Magnitudes3[i]+Magnitudes4[i];
+		// inspector1=Magnitudes5[i];
+		
+		inspector1=L_scaling^Amount;
+		
+		// doing=1;
+		);
+
+
+		
+		buf1_fft[a]	= left_r - right_i;
+		buf1_fft[b]	= left_i + right_r;
+		
+		buf2_fft[a]	= left_r_two - right_i_two;
+		buf2_fft[b]	= left_i_two + right_r_two;
+
+		
+		
+		//may reduce glitching when stopped?
+		i>0?
+		(
+			buf1_fft[a2]= left_r + right_i;
+			buf1_fft[b2]= right_r - left_i;
+			
+			buf2_fft[a2]	= left_r_two + right_i_two;
+			buf2_fft[b2]	= right_r_two - left_i_two;
+		);
+
+		i += 2;
+	);
+
+	// Inverse FFT
+	fft_ipermute(buf1_fft, fftsize);
+	ifft(buf1_fft, fftsize);
+	
+	fft_ipermute(buf2_fft, fftsize);
+	ifft(buf2_fft, fftsize);
+
+	// Overlap-add output
+	memcpy(buf1_out, buf1_out + 2*fftsize - 2*overlap, 2*overlap);
+	memset(buf1_out + 2*overlap, 0, 2*fftsize - 2*overlap);
+	
+	memcpy(buf2_out, buf2_out + 2*fftsize - 2*overlap, 2*overlap);
+	memset(buf2_out + 2*overlap, 0, 2*fftsize - 2*overlap);
+	
+	i = 0;
+	loop(fftsize,
+		buf1_out[i] += buf1_fft[i];
+		buf1_out[i+1] += buf1_fft[i+1];
+		
+		buf2_out[i] += buf2_fft[i];
+		buf2_out[i+1] += buf2_fft[i+1];
+		
+		
+		i += 2;
+	);
+);
+
+//buffer the original spl0
+out0 = buf1_org[pos2]  ;
+out1 = buf1_org[pos2+1];
+
+buf1_org[pos2] =  spl0;
+buf1_org[pos2+1] =  spl1;
+
+// out4 = buf2_org[pos2]  ;
+// out5 = buf2_org[pos2+1];
+
+// buf2_org[pos2] =  spl4;
+// buf2_org[pos2+1] =  spl5;
+
+
+// spl4=out4;
+// spl5=out5;
+
+
+
+
+
+
+
+pos2=(pos2+2)%(pdc_delay*2);
+
+
+spl0 = buf1_out[pos];
+spl1 = buf1_out[pos+1];
+
+spl4 = buf2_out[pos];
+spl5 = buf2_out[pos+1];
+
+//subtract front from original spl0 to get back
+
+
+// spl2= buf2_out[pos];
+
+// spl4=(out4-spl0)*slider8;
+// spl5=(out5-spl1)*slider8;
+
+
+@gfx 500 50
+
+box_width=16;
+
+gfx_a = 0.2; 
+
+// gfx_mode=1.0;
+
+g=2;//counter for gfx
+
+while
+( 
+	set_color(g/(fftsize/2.5)); //update color according to frequency
+	drawbox((pos_X[g]*gfx_w/2)+gfx_w/2,(pos_Y[g]*gfx_h/2)+gfx_h/2); //draw position for each bin
+	// g=ceil(g^1.2);
+	g+=8;
+	g<fftsize/2 - 1 - (elements_to_skip/2);
+
+);

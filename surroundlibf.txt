@@ -39,6 +39,10 @@ L_scaling_old_array=sixteen_k*32;
 R_scaling_array=sixteen_k*33;
 R_scaling_old_array=sixteen_k*34;
 
+pos_X=sixteen_k*51;
+pos_Y=sixteen_k*52;
+
+
 L_scaling=R_scaling=0;
 
 overlap_sel[0]=0.0625;		// 1/16
@@ -102,6 +106,8 @@ Fixed_Response=0.5;
 progress=0;
 
 
+i=0;
+
 pos=pos2=0;
 
 fftsize=0;
@@ -133,8 +139,11 @@ function lr_complex_apply_2_scaling(scaling_l, scaling_r)
 
 function fft_4ch_window_overlap_fft()
 (
-	memcpy(buf1_fft+(fftsize/2),buf1_in+(fftsize/2),fftsize);//copy the middle half cuz window =1;
-	memcpy(buf2_fft+(fftsize/2),buf2_in+(fftsize/2),fftsize);
+	// memcpy(buf1_fft+(fftsize/2),buf1_in+(fftsize/2),fftsize);//copy the middle half cuz window =1;
+	// memcpy(buf2_fft+(fftsize/2),buf2_in+(fftsize/2),fftsize);
+	
+	memcpy(buf1_fft,buf1_in,fftsize*2);
+	memcpy(buf2_fft,buf2_in,fftsize*2);
 
 	// Apply window to top & tail together, so less iterations are needed
 	i = 0;
@@ -187,8 +196,6 @@ function fft_4ch_untangle_mags()
 		right_r_two= ( y_two + y2_two)*0.5;
 		right_i_two= (x2_two -  x_two )*0.5;
 		
-
-
 		Magnitudes1[i]=sqrt(left_r^2+left_i^2); //+very_small_number*0.1
 		Magnitudes2[i]=sqrt(right_r^2+right_i^2);
 		Magnitudes3[i]=sqrt(left_r_two^2+left_i_two^2);
