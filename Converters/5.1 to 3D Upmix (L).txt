@@ -2,7 +2,7 @@
 
 desc: 5.1 to 9.1 (padded 15.1) upmix. in ALPHA
 
-slider1:2<0,3,1{Ambience,Ambience Plus,Discrete SFX,Pan Slice (not implemented)}>Mode
+slider1:1<0,3,1{Ambience,Ambience Plus,Discrete SFX,Pan Slice (not implemented)}>Mode
 slider2:100<0,200,1>Amount (%)
 slider3:1<0,1,0.01>Frequency Response/not implemented
 slider4:75<0,100,1>Cutoff (%)
@@ -21,7 +21,7 @@ import surroundlibf.txt
 //see surroundlibf.txt
 
 pdc_bot_ch = 0;
-pdc_top_ch = 7;
+pdc_top_ch = 14;
 
 out0=out1=out4=out5=0;
 
@@ -173,39 +173,83 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 
 		);  
 		
+		(mode<3)? 
+		(
+			Angles1[i]=atan2(left_r,left_i);
+			Angles2[i]=atan2(right_r,right_i);
+			Angles3[i]=atan2(left_r_two,left_i_two);
+			Angles4[i]=atan2(right_r_two,right_i_two);
+			
+			ad1=abs(Angles1[i]-Angles2[i]); 
+			ad2=abs(Angles3[i]-Angles4[i]);
+
+			
+			ad1>pi?ad1=2*pi-ad1;//fix angle difference cuz should be under 180*
+			ad2>pi?ad2=2*pi-ad2; 
+			
+			mode==1? //90* is at the top
+			(
+				ad1>pi/2?ad1=pi-ad1; //reflect >90*
+				ad2>pi/2?ad2=pi-ad2; 
+								
+				L_scaling=1-(ad1*Amount/(pi/2));
+				R_scaling=1-(ad2*Amount/(pi/2));
+				
+				lr_complex_apply_1_scaling(L_scaling);
+				l2r2_complex_apply_1_scaling(R_scaling);
+			
+			):
+			(	//180* at top
+								
+				L_scaling=1-(ad1*Amount/(pi));
+				R_scaling=1-(ad2*Amount/(pi));
+				
+				lr_complex_apply_1_scaling(L_scaling);
+				l2r2_complex_apply_1_scaling(R_scaling);
+			
+			);
+			
+		
+		
+		);
+		
+		
+		
+		
+		
 		(mode==3)? //measure pos
-				( 
+		( 
 		// pos_X=pos_Y=0;		
 		sum_all_mags=Magnitudes1[i]+Magnitudes2[i]+Magnitudes3[i]+Magnitudes4[i];
 		
 		pos_X[i]=(0-Magnitudes1[i]+Magnitudes2[i]-Magnitudes3[i]+Magnitudes4[i])/sum_all_mags;
 		pos_Y[i]=(0-Magnitudes1[i]-Magnitudes2[i]+Magnitudes3[i]+Magnitudes4[i])/sum_all_mags;
 		
-		distance=min(sqrt(pos_X[i]^2+pos_Y[i]^2),1);
-		// distance=min(abs(pos_X[i])+abs(pos_Y[i]),1); //faster
+		//clamp distance to max of 1
+		// distance=min(sqrt(pos_X[i]^2+pos_Y[i]^2),1);
+		distance=min(abs(pos_X[i])+abs(pos_Y[i]),1); //faster
 		
 		L_scaling=distance;
 		//TODO: add temporal averaging
+
+		//raised to power because doing linear multiple 1- is tricky
+
 		
-		left_r  *= L_scaling^Amount; //raised to power because doing linear multiple 1- is tricky
-		left_i  *= L_scaling^Amount;
-		right_r *= L_scaling^Amount;
-		right_i *= L_scaling^Amount;
+		lr_complex_apply_1_scaling(L_scaling^Amount);
+		l2r2_complex_apply_1_scaling(L_scaling^Amount);
 		
-			left_r_two *=L_scaling^Amount;
-			left_i_two *=L_scaling^Amount;
-			right_r_two*=L_scaling^Amount;
-			right_i_two*=L_scaling^Amount;
-		
+		// left_r_two *=L_scaling^Amount;
+		// left_i_two *=L_scaling^Amount;
+		// right_r_two*=L_scaling^Amount;
+		// right_i_two*=L_scaling^Amount;
 		
 		// centerness=distance/(sum_all_mags);
 		
 		// inspector1=Magnitudes1[i]+Magnitudes2[i]+Magnitudes3[i]+Magnitudes4[i];
 		// inspector1=Magnitudes5[i];
 		
-		inspector1=L_scaling^Amount;
-		
-		// doing=1;
+		// inspector1=L_scaling^Amount;
+
 		);
 
 
@@ -265,16 +309,11 @@ out1 = buf1_org[pos2+1];
 buf1_org[pos2] =  spl0;
 buf1_org[pos2+1] =  spl1;
 
-// out4 = buf2_org[pos2]  ;
-// out5 = buf2_org[pos2+1];
+out4 = buf2_org[pos2]  ;
+out5 = buf2_org[pos2+1];
 
-// buf2_org[pos2] =  spl4;
-// buf2_org[pos2+1] =  spl5;
-
-
-// spl4=out4;
-// spl5=out5;
-
+buf2_org[pos2] =  spl4;
+buf2_org[pos2+1] =  spl5;
 
 
 
@@ -290,16 +329,17 @@ spl1 = buf1_out[pos+1];
 spl4 = buf2_out[pos];
 spl5 = buf2_out[pos+1];
 
-//subtract front from original spl0 to get back
+//subtract processed from original to get height
 
 
-// spl2= buf2_out[pos];
 
-// spl4=(out4-spl0)*slider8;
-// spl5=(out5-spl1)*slider8;
+spl8=(out0-spl0);
+spl9=(out1-spl1);
 
+spl12=(out4-spl4);
+spl13=(out5-spl5);
 
-@gfx 500 50
+@gfx 500 500
 
 box_width=16;
 

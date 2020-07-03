@@ -21,8 +21,14 @@ overlap_sel		= sixteen_k*9;
 window = sixteen_k*10;
 
 pi=3.141592653589793238;
-Angle_Difference=sixteen_k*41;
-Angle_Difference_old=sixteen_k*42;
+
+Angles1=sixteen_k*41;
+Angles2=sixteen_k*42;
+Angles3=sixteen_k*43;
+Angles4=sixteen_k*44;
+Angle_Difference=sixteen_k*45;
+Angle_Difference_old=sixteen_k*46;
+
 Fixed_Response=0.5;
 Magnitudes1=sixteen_k*11;
 Magnitudes2=sixteen_k*12;
@@ -127,6 +133,14 @@ function lr_complex_apply_1_scaling(the_scaling)
 	 left_i*=the_scaling;
 	right_r*=the_scaling;
 	right_i*=the_scaling;
+);
+
+function l2r2_complex_apply_1_scaling(the_scaling)
+(
+	left_r_two *=the_scaling;
+	left_i_two *=the_scaling;
+	right_r_two*=the_scaling;
+	right_i_two*=the_scaling;
 );
 
 function lr_complex_apply_2_scaling(scaling_l, scaling_r)
