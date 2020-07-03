@@ -149,11 +149,11 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 		//pan isn't that useful for dual stereo-different noise recordings, but useful for High Touch! (different singers on different versions)
 
 			
-			ad1>pi?ad1=2*pi-ad1;//fix angle difference cuz should be under 180*
-			ad2>pi?ad2=2*pi-ad2; 
+			Angle_Difference1[i]>pi?Angle_Difference1[i]=2*pi-Angle_Difference1[i];//fix angle difference cuz should be under 180*
+			Angle_Difference2[i]>pi?Angle_Difference2[i]=2*pi-Angle_Difference2[i]; 
 
-			L_scaling=(1-(min(ad1*2,pi)/pi))*(1-   (p1));//double ad cuz 90* ad means it's already purely stereo noise
-			R_scaling=(1-(min(ad2*2,pi)/pi))*(1-abs(p2));//Reduce mags the more it's panned & phased
+			L_scaling=(1-(min(Angle_Difference1[i]*2,pi)/pi))*(1-   (p1));//double ad cuz 90* ad means it's already purely stereo noise
+			R_scaling=(1-(min(Angle_Difference2[i]*2,pi)/pi))*(1-abs(p2));//Reduce mags the more it's panned & phased
 
 			left_r *= L_scaling^Amount; //raised to power because doing linear multiple 1- is tricky
 			left_i *= L_scaling^Amount;
@@ -169,20 +169,20 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 			Angles3[i]=atan2(left_r_two,left_i_two);
 			Angles4[i]=atan2(right_r_two,right_i_two);
 			
-			ad1=abs(Angles1[i]-Angles2[i]); 
-			ad2=abs(Angles3[i]-Angles4[i]);
+			Angle_Difference1[i]=abs(Angles1[i]-Angles2[i]); 
+			Angle_Difference2[i]=abs(Angles3[i]-Angles4[i]);
 
 			
-			ad1>pi?ad1=2*pi-ad1;//fix angle difference cuz should be under 180*
-			ad2>pi?ad2=2*pi-ad2; 
+			Angle_Difference1[i]>pi?Angle_Difference1[i]=2*pi-Angle_Difference1[i];//fix angle difference cuz should be under 180*
+			Angle_Difference2[i]>pi?Angle_Difference2[i]=2*pi-Angle_Difference2[i]; 
 			
 			mode==1? //90* is at the top
 			(
-				ad1>pi/2?ad1=pi-ad1; //reflect >90*
-				ad2>pi/2?ad2=pi-ad2; 
+				Angle_Difference1[i]>pi/2?Angle_Difference1[i]=pi-Angle_Difference1[i]; //reflect >90*
+				Angle_Difference2[i]>pi/2?Angle_Difference2[i]=pi-Angle_Difference2[i]; 
 								
-				L_scaling=1-(ad1*Amount/(pi/2));
-				R_scaling=1-(ad2*Amount/(pi/2));
+				L_scaling=1-(Angle_Difference1[i]*Amount/(pi/2));
+				R_scaling=1-(Angle_Difference2[i]*Amount/(pi/2));
 				
 				// lr_complex_apply_1_scaling(L_scaling);
 				// l2r2_complex_apply_1_scaling(R_scaling);
@@ -190,8 +190,8 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 			):
 			(	//180* at top
 								
-				L_scaling=1-(ad1*Amount/(pi));
-				R_scaling=1-(ad2*Amount/(pi));
+				L_scaling=1-(Angle_Difference1[i]*Amount/(pi));
+				R_scaling=1-(Angle_Difference2[i]*Amount/(pi));
 				
 
 			
@@ -321,18 +321,68 @@ spl13=(out5-spl5);
 
 box_width=16;
 
-gfx_a = 0.2; 
 
 // gfx_mode=1.0;
 
-g=2;//counter for gfx
+g=0;//counter for gfx
 
-while
-( 
-	set_color(g/(fftsize/2.5)); //update color according to frequency
-	drawbox((pos_X[g]*gfx_w/2)+gfx_w/2,(pos_Y[g]*gfx_h/2)+gfx_h/2); //draw position for each bin
-	// g=ceil(g^1.2);
-	g+=8;
-	g<fftsize/2 - 1 - (elements_to_skip/2);
+gfx_r=gfx_g=gfx_b=gfx_a=1;
 
+gfx_a = 0.5; 
+
+
+mode==1?
+(	//draw guides
+	drawbox(gfx_w*0.25,0);
+	drawbox(gfx_w*0.75,0);
+	drawbox(gfx_w*0.25,gfx_h);
+	drawbox(gfx_w*0.75,gfx_h);
+	
+	/*
+	while
+	( 
+		//trying to make a strip indicating how wide it is by drawing alternating bins on different sides but failing
+		set_color(g/(fftsize/2.5)); //update color according to frequency
+		drawbox(gfx_w/2+ ((Angle_Difference1[g]*0.5*(-1^(g/8)))/pi) ,0); //draw position for each bin
+		// g=ceil(g^1.2);
+		g+=8;
+		g<fftsize/2 - 1 - (elements_to_skip/2);
+
+	);
+	*/
+);
+
+
+mode==2?
+(
+	drawbox(gfx_w*0,0);
+	drawbox(gfx_w*1,0);
+	drawbox(gfx_w*0,gfx_h);
+	drawbox(gfx_w*1,gfx_h);
+	
+
+);
+
+gfx_a = 0.2; 
+
+mode==3?
+(	//draw guides, since it pushes absolute center sounds upwards
+	drawbox(gfx_w*0.5,0);
+	drawbox(gfx_w*0.5,gfx_h);
+	
+	drawbox(gfx_w*0,gfx_h*0.5);
+	drawbox(gfx_w*1,gfx_h*0.5);
+	
+	drawbox(gfx_w*0.5,gfx_h*0.5);
+
+
+	while
+	( 
+		set_color(g/(fftsize/2.5)); //update color according to frequency
+		drawbox((pos_X[g]*gfx_w/2)+gfx_w/2,(pos_Y[g]*gfx_h/2)+gfx_h/2); //draw position for each bin
+		// g=ceil(g^1.2);
+		g+=8;
+		g<fftsize/2 - 1 - (elements_to_skip/2);
+
+	);
 );
