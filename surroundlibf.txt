@@ -47,6 +47,11 @@ L_scaling_old_array=sixteen_k*32;
 R_scaling_array=sixteen_k*33;
 R_scaling_old_array=sixteen_k*34;
 
+	Sideness1=sixteen_k*35;
+	Sideness2=sixteen_k*36;
+Sideness1_old=sixteen_k*37;
+Sideness2_old=sixteen_k*38;
+
 pos_X=sixteen_k*51;
 pos_Y=sixteen_k*52;
 
@@ -86,11 +91,11 @@ mode=Amount=0;
 left_r = left_i = right_r= right_i= 0;
 left_r_two = left_i_two = right_r_two= right_i_two= 0;
 
-center_r = center_i = 0;
+center_r = center_i = center_r_two = center_i_two = 0;
 mid_r  = mid_i  = side_r = side_i = 0;
 
 mid = side = 0;
-// Sideness[i]=0;
+
 
 //phase, transient scaling
 P_scaling=T_scaling=0;

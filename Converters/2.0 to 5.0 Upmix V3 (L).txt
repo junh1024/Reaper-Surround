@@ -132,25 +132,25 @@ buf1_in[2*overlap + pos+1]	= spl1 * scale;
 		
 		// sd=s/m+s or m-s/m+s
 		
-		Sideness[i]=min(side/mid,1); //clamp Sideness[i] to 1
+		Sideness1[i]=min(side/mid,1); //clamp Sideness1[i] to 1
 		
-		Sideness[i]=Sideness[i]*(Fixed_Response)+Sideness_old[i]*(1-Fixed_Response);
-		Sideness_old[i]=Sideness[i];
+		Sideness1[i]=Sideness1[i]*(Fixed_Response)+Sideness1_old[i]*(1-Fixed_Response);
+		Sideness1_old[i]=Sideness1[i];
 		
 		//0.7 3dB correction
-		center_r = mid_r *2*(1-Sideness[i])*h_sqrt_2;
-		center_i = mid_i *2*(1-Sideness[i])*h_sqrt_2;
+		center_r = mid_r *2*(1-Sideness1[i])*h_sqrt_2;
+		center_i = mid_i *2*(1-Sideness1[i])*h_sqrt_2;
 		
-		// Sideness[i]=1;
+		// Sideness1[i]=1;
 	
 
 		
 		
 		//M/S decode LR
-		left_r =  (mid_r*Sideness[i]) + (side_r);
-		left_i =  (mid_i*Sideness[i]) + (side_i);
-		right_r = (mid_r*Sideness[i]) - (side_r);
-		right_i = (mid_i*Sideness[i]) - (side_i);	
+		left_r =  (mid_r*Sideness1[i]) + (side_r);
+		left_i =  (mid_i*Sideness1[i]) + (side_i);
+		right_r = (mid_r*Sideness1[i]) - (side_r);
+		right_i = (mid_i*Sideness1[i]) - (side_i);	
 		
 		
 		);
