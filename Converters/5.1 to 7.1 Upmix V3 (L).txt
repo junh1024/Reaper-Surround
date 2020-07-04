@@ -6,7 +6,7 @@ slider1:1<0,1,1{square (cine), circle (ITU)}>Mode
 slider2:100<0,200,1>Amount (%)
 slider3:1<0,1,0.01>Frequency Response/not implemented
 slider4:75<0,100,1>Cutoff (%)
-slider5:1<0,1,0.01>Time Response/not implemented
+slider5:1<0,1,0.01>Time Response
 slider6:25<0,50,5>FFT Overlap (%)
 slider7:12<10,14,1>FFT size (pow2)
 slider8:0<0,1,1{No,Yes}>Swap/not implemented
@@ -27,7 +27,7 @@ out0=out1=out4=out5=0;
 
 @slider
 
-Time_Response=slider5/100;
+Time_Response=slider5;
 fftsize=2^slider7;
 pdc_delay = fftsize - 1;
 scale = 1/fftsize;
@@ -67,8 +67,14 @@ elements_to_skip=fftsize-floor(Resp_bins*fftsize);
 
 
 @sample
-
 //TODO: leak small amount of every into every input to workaround tangling inaccuracies?
+
+// sum_all_spl=(spl0+spl1+spl4+spl5)*0.0001;
+// spl0+=sum_all_spl;
+// spl1+=sum_all_spl;
+// spl4+=sum_all_spl;
+// spl5+=sum_all_spl;
+
 
 // Buffer input
 
@@ -102,26 +108,14 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 		mode==1?
 		
 		(
-			
+			//square mode
 			//MS of left side
 			mid_r  = (left_r+left_r_two)*0.5;
 			mid_i  = (left_i+left_i_two)*0.5;
 			side_r = (left_r-left_r_two)*0.5;
 			side_i = (left_i-left_i_two)*0.5;
 					
-			mid=sqrt(mid_r^2+mid_i^2);
-			side=sqrt(side_r^2+side_i^2);
-			
-			// sd=s/m+s or m-s/m+s
-			
-			Sideness1[i]=min(side/mid,1); //clamp Sideness1[i] to 1
-			
-			Sideness1[i]=Sideness1[i]*(Time_Response)+Sideness1_old[i]*(1-Time_Response);
-			Sideness1_old[i]=Sideness1[i];
-			
-			//0.7 3dB correction
-			center_r = mid_r *2*(1-Sideness1[i])*h_sqrt_2;
-			center_i = mid_i *2*(1-Sideness1[i])*h_sqrt_2;
+			ms_complex_set_sideness_center();
 			
 			//MS of right side
 			mid_r  = (right_r+right_r_two)*0.5;
@@ -152,6 +146,16 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 				buf1_fft[b2]= center_r_two - center_i;
 			);
 
+			
+		):
+		(
+			// circle mode
+			mid_r  = (left_r_two+right_r_two)*0.5;
+			mid_i  = (left_i_two+right_i_two)*0.5;
+			side_r = (left_r_two-right_r_two)*0.5;
+			side_i = (left_i_two-right_i_two)*0.5;
+			
+			ms_complex_set_sideness_center();
 			
 		);
 			

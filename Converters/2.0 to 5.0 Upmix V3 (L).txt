@@ -5,7 +5,7 @@ desc: 2.0 to 5.0 Surround upscale BETA
 slider1:0<0,100,2>Width
 slider2:0<-100,100,1>Depth
 slider3:90<0,180,2>Rear threshold
-slider4:120<0,180,2>Crossover width
+slider4:90<0,180,2>Crossover width
 slider5:50<0,100,2>Rear Width
 slider6:50<0,100,1>Rear LP
 slider7:50<0,100,2>Rear transients
@@ -18,6 +18,8 @@ import surroundlibf.txt
 @init
 
 //see surroundlibf.txt
+
+Time_Response=0.5;
 
 pdc_bot_ch = 0;
 pdc_top_ch = 6;
@@ -125,21 +127,9 @@ buf1_in[2*overlap + pos+1]	= spl1 * scale;
 		(
 		ms_encode_complex();
 		
-		//measure the magnitude of M&S, to decide how much should go in C/S
+	
 		
-		mid=sqrt(mid_r^2+mid_i^2);
-		side=sqrt(side_r^2+side_i^2);
-		
-		// sd=s/m+s or m-s/m+s
-		
-		Sideness1[i]=min(side/mid,1); //clamp Sideness1[i] to 1
-		
-		Sideness1[i]=Sideness1[i]*(Fixed_Response)+Sideness1_old[i]*(1-Fixed_Response);
-		Sideness1_old[i]=Sideness1[i];
-		
-		//0.7 3dB correction
-		center_r = mid_r *2*(1-Sideness1[i])*h_sqrt_2;
-		center_i = mid_i *2*(1-Sideness1[i])*h_sqrt_2;
+		ms_complex_set_sideness_center();
 		
 		// Sideness1[i]=1;
 	
@@ -168,7 +158,7 @@ buf1_in[2*overlap + pos+1]	= spl1 * scale;
 		// ad=Angle_Difference[i];
 		Angle_Difference[i]>pi?Angle_Difference[i]=2*pi-Angle_Difference[i];//fix angle difference cuz should be under 180*
 		
-		Angle_Difference[i]=Angle_Difference[i]*(Fixed_Response)+Angle_Difference_old[i]*(1-Fixed_Response);
+		Angle_Difference[i]=(Angle_Difference[i]*(Time_Response))+(Angle_Difference_old[i]*(1-Time_Response));
 		Angle_Difference_old[i]=Angle_Difference[i];
 		
 		T_scaling=1;
@@ -177,7 +167,7 @@ buf1_in[2*overlap + pos+1]	= spl1 * scale;
 		//remove transients from top half of rear, copied from FFT Multi Tool
 		((i>cutoff_bins/2) && (Magnitudes1[i]>Magnitudes1_old[i]))?
 		(
-			T_scaling=((Magnitudes1[i]*(transient_amount^2)+Magnitudes1_old[i]*(1-(transient_amount^2)))/Magnitudes1[i]);
+			T_scaling=(((Magnitudes1[i]*(transient_amount^2))+(Magnitudes1_old[i]*(1-(transient_amount^2))))/Magnitudes1[i]);
 		);
 		
 		

@@ -98,6 +98,8 @@ mid_r  = mid_i  = side_r = side_i = 0;
 mid = side = 0;
 
 
+sum_all_spl=0;
+
 //phase, transient scaling
 P_scaling=T_scaling=0;
 tmp=a=b=a2=b2=0;
@@ -222,5 +224,24 @@ function fft_4ch_untangle_mags()
 		Magnitudes2[i]=sqrt(right_r^2+right_i^2);
 		Magnitudes3[i]=sqrt(left_r_two^2+left_i_two^2);
 		Magnitudes4[i]=sqrt(right_r_two^2+right_i_two^2);
+
+);
+
+function ms_complex_set_sideness_center()
+(
+		//measure the magnitude of M&S, to decide how much should go in C/S
+	mid=sqrt(mid_r^2+mid_i^2);
+	side=sqrt(side_r^2+side_i^2);
+	
+	// sd=s/m+s or m-s/m+s
+	
+	Sideness1[i]=min(side/mid,1); //clamp Sideness1[i] to 1
+	
+	Sideness1[i]=(Sideness1[i]*(Time_Response))+(Sideness1_old[i]*(1-Time_Response));
+	Sideness1_old[i]=Sideness1[i];
+	
+	//0.7 3dB correction
+	center_r = mid_r *2*(1-Sideness1[i])*h_sqrt_2;
+	center_i = mid_i *2*(1-Sideness1[i])*h_sqrt_2;
 
 );
