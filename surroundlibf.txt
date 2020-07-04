@@ -31,7 +31,7 @@ Angle_Difference_old=sixteen_k*46;
 Angle_Difference1=sixteen_k*47;
 Angle_Difference2=sixteen_k*48;
 
-Fixed_Response=0.5;
+
 Magnitudes1=sixteen_k*11;
 Magnitudes2=sixteen_k*12;
 Magnitudes3=sixteen_k*13;
@@ -73,7 +73,8 @@ Crossover_width=0;
 
 exceeded=0;
 
-
+// Fixed_Response=0.5;
+Time_Response=0;
 
 pi=3.141592653589793238;
 h_pi=pi/2;
@@ -115,7 +116,7 @@ inspector2=0;
 
 Resp_bins=elements_to_skip=0;
 sum_all_mags=0;
-Fixed_Response=0.5;
+
 progress=0;
 
 

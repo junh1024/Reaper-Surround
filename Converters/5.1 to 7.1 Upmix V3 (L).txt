@@ -1,0 +1,228 @@
+// from https://forum.cockos.com/showthread.php?t=190168#30 by Tale, geraintluff, junh1024
+
+desc: 5.1 to 9.1 (padded 15.1) upmix. in ALPHA
+
+slider1:1<0,1,1{square (cine), circle (ITU)}>Mode
+slider2:100<0,200,1>Amount (%)
+slider3:1<0,1,0.01>Frequency Response/not implemented
+slider4:75<0,100,1>Cutoff (%)
+slider5:1<0,1,0.01>Time Response/not implemented
+slider6:25<0,50,5>FFT Overlap (%)
+slider7:12<10,14,1>FFT size (pow2)
+slider8:0<0,1,1{No,Yes}>Swap/not implemented
+
+
+import surroundlib2.txt
+import surroundlib3.txt
+import surroundlibf.txt
+
+@init
+
+//see surroundlibf.txt
+
+pdc_bot_ch = 0;
+pdc_top_ch = 8;
+
+out0=out1=out4=out5=0;
+
+@slider
+
+Time_Response=slider5/100;
+fftsize=2^slider7;
+pdc_delay = fftsize - 1;
+scale = 1/fftsize;
+
+// inspector1=floor(slider3/10);
+overlap_w=overlap_sel[slider6/10]; //40 % overlap
+// overlap_w=slider3/100;
+overlap=floor(overlap_w*fftsize);
+i = 0;
+loop(fftsize,
+	window[i] = min( (0.5 /overlap_w) - abs( (1/overlap_w) *i / fftsize -(0.5/overlap_w)), 1); // adjustable Trapezium window
+	i += 1;
+);
+
+// gain = 10^(slider1 / 20);
+offset = 2*pi / 360 * slider2;
+
+Amount=slider2/100;
+
+
+mode=slider1+1;//cuz I don't like 0-based mode/slider
+
+
+mode<3? //  >100% amount will make it louder in ambience modes.
+(
+	Amount=min(Amount,1); //clamp to 100%
+);
+
+
+
+Response=slider3;
+
+Resp_bins=slider4/100;
+
+
+elements_to_skip=fftsize-floor(Resp_bins*fftsize);
+
+
+@sample
+
+//TODO: leak small amount of every into every input to workaround tangling inaccuracies?
+
+// Buffer input
+
+buf1_in[2*overlap + pos]	= spl0 * scale;
+buf1_in[2*overlap + pos+1]	= spl1 * scale;
+
+buf2_in[2*overlap + pos]	= spl4 * scale;
+buf2_in[2*overlap + pos+1]	= spl5 * scale;
+
+(pos += 2) >= (fftsize - overlap )*2? (
+	pos = 0;
+
+	fft_4ch_window_overlap_fft();
+	
+	//silence the frequencies we are skipping
+	memset(buf1_fft+(fftsize-elements_to_skip), 0, 2*elements_to_skip);
+	memset(buf2_fft+(fftsize-elements_to_skip), 0, 2*elements_to_skip);
+	
+
+	i = 0;
+	loop(fftsize / 2 + 1 - (elements_to_skip/2),
+	
+
+		a = i;
+		b = a+1;
+		a2 = 2*fftsize-i;
+		b2 = a2+1;
+ 
+		fft_4ch_untangle_mags();
+		
+		mode==1?
+		
+		(
+			
+			//MS of left side
+			mid_r  = (left_r+left_r_two)*0.5;
+			mid_i  = (left_i+left_i_two)*0.5;
+			side_r = (left_r-left_r_two)*0.5;
+			side_i = (left_i-left_i_two)*0.5;
+					
+			mid=sqrt(mid_r^2+mid_i^2);
+			side=sqrt(side_r^2+side_i^2);
+			
+			// sd=s/m+s or m-s/m+s
+			
+			Sideness1[i]=min(side/mid,1); //clamp Sideness1[i] to 1
+			
+			Sideness1[i]=Sideness1[i]*(Time_Response)+Sideness1_old[i]*(1-Time_Response);
+			Sideness1_old[i]=Sideness1[i];
+			
+			//0.7 3dB correction
+			center_r = mid_r *2*(1-Sideness1[i])*h_sqrt_2;
+			center_i = mid_i *2*(1-Sideness1[i])*h_sqrt_2;
+			
+			//MS of right side
+			mid_r  = (right_r+right_r_two)*0.5;
+			mid_i  = (right_i+right_i_two)*0.5;
+			side_r = (right_r-right_r_two)*0.5;
+			side_i = (right_i-right_i_two)*0.5;
+					
+			mid=sqrt(mid_r^2+mid_i^2);
+			side=sqrt(side_r^2+side_i^2);
+			
+			// sd=s/m+s or m-s/m+s
+			
+			Sideness2[i]=min(side/mid,1); //clamp Sideness2[i] to 1
+			Sideness2[i]=Sideness2[i]*(Time_Response)+Sideness2_old[i]*(1-Time_Response);
+			Sideness2_old[i]=Sideness2[i];
+			
+			//0.7 3dB correction
+			center_r_two = mid_r *2*(1-Sideness2[i])*h_sqrt_2;
+			center_i_two = mid_i *2*(1-Sideness2[i])*h_sqrt_2;
+			
+			buf1_fft[a]	= center_r - center_i_two;
+			buf1_fft[b]	= center_i + center_r_two;
+
+			//may reduce glitching when stopped?
+			i>0?
+			(
+				buf1_fft[a2]= center_r + center_i_two;
+				buf1_fft[b2]= center_r_two - center_i;
+			);
+
+			
+		);
+			
+			i += 2;
+			
+		);
+		
+	// Inverse FFT
+	fft_ipermute(buf1_fft, fftsize);
+	ifft(buf1_fft, fftsize);
+	
+	// fft_ipermute(buf2_fft, fftsize);
+	// ifft(buf2_fft, fftsize);
+
+	// Overlap-add output
+	memcpy(buf1_out, buf1_out + 2*fftsize - 2*overlap, 2*overlap);
+	memset(buf1_out + 2*overlap, 0, 2*fftsize - 2*overlap);
+	
+	// memcpy(buf2_out, buf2_out + 2*fftsize - 2*overlap, 2*overlap);
+	// memset(buf2_out + 2*overlap, 0, 2*fftsize - 2*overlap);
+	
+	i = 0;
+	loop(fftsize,
+		buf1_out[i] += buf1_fft[i];
+		buf1_out[i+1] += buf1_fft[i+1];
+		
+		// buf2_out[i] += buf2_fft[i];
+		// buf2_out[i+1] += buf2_fft[i+1];
+		
+		
+		i += 2;
+	);
+);
+
+//buffer the original spl0
+out0 = buf1_org[pos2]  ;
+out1 = buf1_org[pos2+1];
+
+buf1_org[pos2] =  spl0;
+buf1_org[pos2+1] =  spl1;
+
+out4 = buf2_org[pos2]  ;
+out5 = buf2_org[pos2+1];
+
+buf2_org[pos2] =  spl4;
+buf2_org[pos2+1] =  spl5;
+
+
+pos2=(pos2+2)%(pdc_delay*2);
+
+spl6 = buf1_out[pos];
+spl7 = buf1_out[pos+1];
+
+
+//do output
+spl0 = out0-(spl6*h_sqrt_2);
+spl1 = out1-(spl7*h_sqrt_2);
+spl4 = out4-(spl6*h_sqrt_2);
+spl5 = out5-(spl7*h_sqrt_2);
+// spl0 = out0;
+// spl1 = out1;
+// spl4 = out4;
+// spl5 = out5;
+
+//subtract processed from original to get height
+
+
+// spl8=(out0-spl0);
+// spl9=(out1-spl1);
+
+// spl12=(out4-spl4);
+// spl13=(out5-spl5);
+
+@gfx 500 500
