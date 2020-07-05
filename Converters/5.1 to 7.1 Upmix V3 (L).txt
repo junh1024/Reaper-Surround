@@ -4,12 +4,12 @@ desc: 5.1 to 7.1 FFT upmix. in BETA
 
 slider1:1<0,1,1{Square (cine),Circle (ITU)}>Mode
 slider2:100<0,200,1>Amount (%)
-slider3:1<0,1,0.01>Frequency Response/not implemented
+slider3:1<0,1,0.01>N/A
 slider4:75<0,100,1>Cutoff (%)
 slider5:1<0,1,0.01>Time Response
 slider6:25<0,50,5>FFT Overlap (%)
 slider7:12<10,14,1>FFT size (pow2)
-slider8:0<0,1,1{No,Yes}>dunno
+slider8:0<0,1,1{No,Yes}>N/A
 
 
 import surroundlib2.txt
@@ -157,7 +157,7 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 			
 			ms_complex_set_sideness_center();
 			
-			l2r2_complex_apply_1_scaling(Sideness1[i]);
+			l2r2_complex_apply_1_scaling(1-(Sideness1[i]*Amount));
 			
 		
 			buf1_fft[a]	= left_r_two - right_i_two;
@@ -237,27 +237,22 @@ pos2=(pos2+2)%(pdc_delay*2);
 
 mode==1?
 (
-spl6 = buf1_out[pos];
-spl7 = buf1_out[pos+1];
+	spl6 = buf1_out[pos]	*Amount;
+	spl7 = buf1_out[pos+1]	*Amount;
 
-
-//do output
-spl0 = out0-(spl6*h_sqrt_2);
-spl1 = out1-(spl7*h_sqrt_2);
-spl4 = out4-(spl6*h_sqrt_2);
-spl5 = out5-(spl7*h_sqrt_2);
+	//do output
+	spl0 = out0-(spl6*h_sqrt_2);
+	spl1 = out1-(spl7*h_sqrt_2);
+	spl4 = out4-(spl6*h_sqrt_2);
+	spl5 = out5-(spl7*h_sqrt_2);
 ):
 (
-spl0 = out0;
-spl1 = out1;
-spl6 = buf1_out[pos];
-spl7 = buf1_out[pos+1];
-
-spl4 = out4-(spl6);
-spl5 = out5-(spl7);
-
-
-
+	spl0 = out0;
+	spl1 = out1;
+	spl4 = buf1_out[pos]	;
+	spl5 = buf1_out[pos+1];
+	spl6 = out4-(spl4);
+	spl7 = out5-(spl5);
 
 );
 
