@@ -4,12 +4,12 @@ desc: 5.1 to 9.1 (padded 15.1) upmix. in ALPHA
 
 slider1:1<0,3,1{Ambience,Ambience +,Discrete SFX,Pan Slice (not implemented)}>Mode
 slider2:100<0,200,1>Amount (%)
-slider3:1<0,1,0.01>Frequency Response/not implemented
+slider3:1<0,1,0.01>N/A
 slider4:75<0,100,1>Cutoff (%)
-slider5:1<0,1,0.01>Time Response/not implemented
+slider5:1<0,1,0.01>Time Response
 slider6:25<0,50,5>FFT Overlap (%)
 slider7:12<10,14,1>FFT size (pow2)
-slider8:0<0,1,1{No,Yes}>Swap/not implemented
+slider8:0<0,1,1{No,Yes}>N/A
 
 
 // import surroundlib2.txt
@@ -54,14 +54,14 @@ mode<3? //  >100% amount will make it louder in ambience modes.
 	Amount=min(Amount,1); //clamp to 100%
 );
 
-
-
 Response=slider3;
 
 Resp_bins=slider4/100;
 
-
 elements_to_skip=fftsize-floor(Resp_bins*fftsize);
+
+Time_Response=slider5;
+
 
 
 @sample
@@ -181,8 +181,8 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 				Angle_Difference1[i]>pi/2?Angle_Difference1[i]=pi-Angle_Difference1[i]; //reflect >90*
 				Angle_Difference2[i]>pi/2?Angle_Difference2[i]=pi-Angle_Difference2[i]; 
 								
-				L_scaling=1-(Angle_Difference1[i]*Amount/(pi/2));
-				R_scaling=1-(Angle_Difference2[i]*Amount/(pi/2));
+				L_scaling_array[i]=1-(Angle_Difference1[i]*Amount/(pi/2));
+				R_scaling_array[i]=1-(Angle_Difference2[i]*Amount/(pi/2));
 				
 				// lr_complex_apply_1_scaling(L_scaling);
 				// l2r2_complex_apply_1_scaling(R_scaling);
@@ -190,15 +190,18 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 			):
 			(	//180* at top
 								
-				L_scaling=1-(Angle_Difference1[i]*Amount/(pi));
-				R_scaling=1-(Angle_Difference2[i]*Amount/(pi));
+				L_scaling_array[i]=1-(Angle_Difference1[i]*Amount/(pi));
+				R_scaling_array[i]=1-(Angle_Difference2[i]*Amount/(pi));
 				
 
 			
 			);
 			
-				lr_complex_apply_1_scaling(L_scaling);
-				l2r2_complex_apply_1_scaling(R_scaling);
+				L_scaling_array[i]= (L_scaling_array[i]*(Time_Response))+(L_scaling_old_array[i]*(1-Time_Response));
+				R_scaling_array[i]= (R_scaling_array[i]*(Time_Response))+(R_scaling_old_array[i]*(1-Time_Response));
+			
+				lr_complex_apply_1_scaling(L_scaling_array[i]);
+				l2r2_complex_apply_1_scaling(R_scaling_array[i]);
 		
 		);
 		
@@ -214,16 +217,20 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 		
 		//clamp distance to max of 1
 		// distance=min(sqrt(pos_X[i]^2+pos_Y[i]^2),1);
-		distance=min(abs(pos_X[i])+abs(pos_Y[i]),1); //faster
+		L_scaling_array[i]=min(abs(pos_X[i])+abs(pos_Y[i]),1); //faster measuring of distance
 		
-		L_scaling=distance;
+		L_scaling_array[i]= (L_scaling_array[i]*(Time_Response))+(L_scaling_old_array[i]*(1-Time_Response));
+		
+
+
+		
 		//TODO: add temporal averaging
 
 		//raised to power because doing linear multiple 1- is tricky
 
 		
-		lr_complex_apply_1_scaling(L_scaling^Amount);
-		l2r2_complex_apply_1_scaling(L_scaling^Amount);
+		lr_complex_apply_1_scaling(L_scaling_array[i]^Amount);
+		l2r2_complex_apply_1_scaling(L_scaling_array[i]^Amount);
 
 		
 		// centerness=distance/(sum_all_mags);
@@ -235,7 +242,8 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 
 		);
 
-
+		L_scaling_old_array[i]=L_scaling_array[i];
+		R_scaling_old_array[i]=R_scaling_array[i];
 		
 		buf1_fft[a]	= left_r - right_i;
 		buf1_fft[b]	= left_i + right_r;
