@@ -1,15 +1,15 @@
 // from https://forum.cockos.com/showthread.php?t=190168#30 by Tale, geraintluff, junh1024
 
-desc: 5.1 to 9.1 (padded 15.1) upmix. in ALPHA
+desc: 5.1 to 7.1 FFT upmix. in BETA
 
-slider1:1<0,1,1{square (cine), circle (ITU)}>Mode
+slider1:1<0,1,1{Square (cine),Circle (ITU)}>Mode
 slider2:100<0,200,1>Amount (%)
 slider3:1<0,1,0.01>Frequency Response/not implemented
 slider4:75<0,100,1>Cutoff (%)
 slider5:1<0,1,0.01>Time Response
 slider6:25<0,50,5>FFT Overlap (%)
 slider7:12<10,14,1>FFT size (pow2)
-slider8:0<0,1,1{No,Yes}>Swap/not implemented
+slider8:0<0,1,1{No,Yes}>dunno
 
 
 import surroundlib2.txt
@@ -21,7 +21,7 @@ import surroundlibf.txt
 //see surroundlibf.txt
 
 pdc_bot_ch = 0;
-pdc_top_ch = 8;
+pdc_top_ch = 9;
 
 out0=out1=out4=out5=0;
 
@@ -157,6 +157,24 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 			
 			ms_complex_set_sideness_center();
 			
+			l2r2_complex_apply_1_scaling(Sideness1[i]);
+			
+		
+			buf1_fft[a]	= left_r_two - right_i_two;
+			buf1_fft[b]	= left_i_two + right_r_two;
+
+			
+			
+			//may reduce glitching when stopped?
+			i>0?
+			(
+
+				buf1_fft[a2]	= left_r_two + right_i_two;
+				buf1_fft[b2]	= right_r_two - left_i_two;
+			);
+				
+			
+			
 		);
 			
 			i += 2;
@@ -191,6 +209,7 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 );
 
 //buffer the original spl0
+
 out0 = buf1_org[pos2]  ;
 out1 = buf1_org[pos2+1];
 
@@ -204,8 +223,20 @@ buf2_org[pos2] =  spl4;
 buf2_org[pos2+1] =  spl5;
 
 
+out2 = buf3_org[pos2]  ;
+out3 = buf3_org[pos2+1];
+
+buf3_org[pos2]	=  spl2;
+buf3_org[pos2+1]=  spl3;
+
+//delay c/lfe, necessary cuz they're not output by fft, so don't have delay, so we add delay cuz they're pushed forward by pdc, and you can't have a non-contiguous selection of chans to (not) PDC
+spl2=out2;
+spl3=out3;
+
 pos2=(pos2+2)%(pdc_delay*2);
 
+mode==1?
+(
 spl6 = buf1_out[pos];
 spl7 = buf1_out[pos+1];
 
@@ -215,18 +246,21 @@ spl0 = out0-(spl6*h_sqrt_2);
 spl1 = out1-(spl7*h_sqrt_2);
 spl4 = out4-(spl6*h_sqrt_2);
 spl5 = out5-(spl7*h_sqrt_2);
-// spl0 = out0;
-// spl1 = out1;
-// spl4 = out4;
-// spl5 = out5;
+):
+(
+spl0 = out0;
+spl1 = out1;
+spl6 = buf1_out[pos];
+spl7 = buf1_out[pos+1];
 
-//subtract processed from original to get height
+spl4 = out4-(spl6);
+spl5 = out5-(spl7);
 
 
-// spl8=(out0-spl0);
-// spl9=(out1-spl1);
 
-// spl12=(out4-spl4);
-// spl13=(out5-spl5);
+
+);
+
+
 
 @gfx 500 500

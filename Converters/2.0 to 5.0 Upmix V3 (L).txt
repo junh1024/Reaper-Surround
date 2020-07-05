@@ -19,7 +19,7 @@ import surroundlibf.txt
 
 //see surroundlibf.txt
 
-Time_Response=0.5;
+
 
 pdc_bot_ch = 0;
 pdc_top_ch = 6;
@@ -56,9 +56,9 @@ cutoff=slider6/100;
 cutoff_bins=floor(cutoff*(fftsize));
 transient_amount=slider7/100;
 
+Time_Response=min(fftsize/8192,1); //clamp to 1, 0.5 @ 4k fft
 
 @sample
-
 
 // Buffer input
 

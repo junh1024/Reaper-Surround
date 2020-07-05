@@ -16,6 +16,8 @@ buf2_fft		= sixteen_k*6;
 buf2_out		= sixteen_k*7;
 buf2_org		= sixteen_k*8;
 
+buf3_org		= sixteen_k*19;
+
 
 overlap_sel		= sixteen_k*9;
 window = sixteen_k*10;
