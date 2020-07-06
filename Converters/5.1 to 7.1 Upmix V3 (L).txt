@@ -103,7 +103,7 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 		a2 = 2*fftsize-i;
 		b2 = a2+1;
  
-		fft_4ch_untangle_mags();
+		fft_4ch_untangle();
 		
 		mode==1?
 		
@@ -184,26 +184,16 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 	// Inverse FFT
 	fft_ipermute(buf1_fft, fftsize);
 	ifft(buf1_fft, fftsize);
-	
-	// fft_ipermute(buf2_fft, fftsize);
-	// ifft(buf2_fft, fftsize);
 
 	// Overlap-add output
 	memcpy(buf1_out, buf1_out + 2*fftsize - 2*overlap, 2*overlap);
 	memset(buf1_out + 2*overlap, 0, 2*fftsize - 2*overlap);
 	
-	// memcpy(buf2_out, buf2_out + 2*fftsize - 2*overlap, 2*overlap);
-	// memset(buf2_out + 2*overlap, 0, 2*fftsize - 2*overlap);
-	
 	i = 0;
 	loop(fftsize,
 		buf1_out[i] += buf1_fft[i];
 		buf1_out[i+1] += buf1_fft[i+1];
-		
-		// buf2_out[i] += buf2_fft[i];
-		// buf2_out[i+1] += buf2_fft[i+1];
-		
-		
+
 		i += 2;
 	);
 );

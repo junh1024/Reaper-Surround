@@ -229,6 +229,30 @@ function fft_4ch_untangle_mags()
 
 );
 
+function fft_4ch_untangle()
+(
+		x =	buf1_fft[a];
+		y =	buf1_fft[b];
+		x2=	buf1_fft[a2];
+		y2=	buf1_fft[b2];
+
+		// for fft tool
+		x_two =	buf2_fft[a];
+		y_two =	buf2_fft[b];
+		x2_two=	buf2_fft[a2];
+		y2_two=	buf2_fft[b2];
+		
+		 left_r = (x + x2)*0.5;
+		 left_i = (y - y2)*0.5;
+		right_r = (y + y2)*0.5;
+		right_i = (x2 - x)*0.5;
+		
+		left_r_two = ( x_two + x2_two)*0.5;
+		left_i_two = ( y_two - y2_two)*0.5;
+		right_r_two= ( y_two + y2_two)*0.5;
+		right_i_two= (x2_two -  x_two )*0.5;
+);
+
 function ms_complex_set_sideness_center()
 (
 		//measure the magnitude of M&S, to decide how much should go in C/S
