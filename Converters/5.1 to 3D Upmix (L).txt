@@ -2,14 +2,16 @@
 
 desc: 5.1 to 9.1 (padded 15.1) upmix. in ALPHA
 
-slider1:1<0,3,1{Ambience,Ambience +,Discrete SFX,Pan Slice (not implemented)}>Mode
+slider1:1<0,4,1{Ambience,Ambience +,Discrete SFX,Discrete SFX +,Pan Slice (not implemented)}>Mode
 slider2:100<0,200,1>Amount (%)
-slider3:1<0,1,0.01>N/A
-slider4:75<0,100,1>Cutoff (%)
-slider5:1<0,1,0.01>Time Response
-slider6:25<0,50,5>FFT Overlap (%)
-slider7:12<10,14,1>FFT size (pow2)
-slider8:0<0,1,1{No,Yes}>N/A
+slider3:0<-1,1,0.05>Threshold/Pan N/A
+slider4:0<0,1,0.05>Crossover/Width N/A
+slider5:75<0,100,1>Cutoff (%)
+slider6:1<0,1,0.01>Time Response
+slider7:25<0,50,5>FFT Overlap (%)
+slider8:12<10,14,1>FFT size (pow2)
+
+
 
 
 // import surroundlib2.txt
@@ -26,12 +28,12 @@ pdc_top_ch = 14;
 out0=out1=out4=out5=0;
 
 @slider
-fftsize=2^slider7;
+fftsize=2^slider8;
 pdc_delay = fftsize - 1;
 scale = 1/fftsize;
 
 // inspector1=floor(slider3/10);
-overlap_w=overlap_sel[slider6/10]; //40 % overlap
+overlap_w=overlap_sel[slider7/10]; //40 % overlap
 // overlap_w=slider3/100;
 overlap=floor(overlap_w*fftsize);
 i = 0;
@@ -56,11 +58,11 @@ mode<3? //  >100% amount will make it louder in ambience modes.
 
 Response=slider3;
 
-Resp_bins=slider4/100;
+Resp_bins=slider5/100;
 
 elements_to_skip=fftsize-floor(Resp_bins*fftsize);
 
-Time_Response=slider5;
+Time_Response=slider6;
 
 
 
@@ -242,6 +244,8 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 
 		);
 
+		//new discrete+ mode, but measures M/S of pairs too?
+		
 		L_scaling_old_array[i]=L_scaling_array[i];
 		R_scaling_old_array[i]=R_scaling_array[i];
 		
