@@ -2,10 +2,10 @@
 
 desc: 5.1 to 9.1 (padded 15.1) upmix. in ALPHA
 
-slider1:1<0,4,1{Ambience,Ambience +,Discrete SFX,Discrete SFX +,Pan Slice (not implemented)}>Mode
+slider1:5<0,4,1{Ambience,Ambience +,Discrete SFX,Discrete SFX +,Pan Slice (not implemented),Function Designer}>Mode
 slider2:100<0,200,1>Amount (%)
-slider3:0<-1,1,0.05>Threshold/Pan N/A
-slider4:0<0,1,0.05>Crossover/Width N/A
+slider3:0<-1,1,0.005>Threshold/Pan N/A
+slider4:0<0,1,0.005>Crossover/Width N/A
 slider5:75<0,100,1>Cutoff (%)
 slider6:1<0,1,0.01>Time Response
 slider7:25<0,50,5>FFT Overlap (%)
@@ -21,6 +21,13 @@ import surroundlibf.txt
 @init
 
 //see surroundlibf.txt
+
+function testpan(thepan,xo)
+(
+	// scaling=min(abs (   max(thepan-(xo/2),0)*(0.5/xo) )  ,1);
+	scaling=min( max( abs(thepan-(Pan ))*(1/xo) -xo  ,0)  ,1 );
+	scaling;
+);
 
 pdc_bot_ch = 0;
 pdc_top_ch = 14;
@@ -56,7 +63,8 @@ mode<3? //  >100% amount will make it louder in ambience modes.
 	Amount=min(Amount,1); //clamp to 100%
 );
 
-Response=slider3;
+Pan=slider3;
+Crossover=slider4;
 
 Resp_bins=slider5/100;
 
@@ -243,6 +251,15 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 		// inspector1=L_scaling^Amount;
 
 		);
+		
+		(mode==5)? //pan slice
+		(
+			doing=2;
+			
+			testpan(Pan,Crossover);
+			// p1=;
+		);
+		
 
 		//new discrete+ mode, but measures M/S of pairs too?
 		
@@ -406,4 +423,15 @@ mode==3?
 		g<fftsize/2 - 1 - (elements_to_skip/2);
 
 	);
+);
+
+mode==6?
+(
+	g=-1;
+	
+	loop(2000,
+	drawbox(gfx_w*(g+1)/2, gfx_h-(gfx_h*testpan(g,Crossover)));
+	g+=0.001;
+	);
+
 );
