@@ -2,10 +2,10 @@
 
 desc: 5.1 to 9.1 (padded 15.1) upmix. in ALPHA
 
-slider1:5<0,4,1{Ambience,Ambience +,Discrete SFX,Discrete SFX +,Pan Slice (not implemented),Function Designer}>Mode
+slider1:4<0,4,1{Ambience,Ambience +,Discrete SFX,Discrete SFX +,Pan Slice,Function Designer}>Mode
 slider2:100<0,200,1>Amount (%)
-slider3:0<-1,1,0.005>Threshold/Pan N/A
-slider4:0<0,1,0.005>Crossover/Width N/A
+slider3:0<-1,1,0.05>Threshold/Pan
+slider4:0<0,1,0.05>Crossover/Width
 slider5:75<0,100,1>Cutoff (%)
 slider6:1<0,1,0.01>Time Response
 slider7:25<0,50,5>FFT Overlap (%)
@@ -254,9 +254,29 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 		
 		(mode==5)? //pan slice
 		(
-			doing=2;
+		
+		p1=abs(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]);
+		p2=abs(Magnitudes4[i]-Magnitudes2[i])/(Magnitudes4[i]+Magnitudes2[i]);
+
+		L_scaling= min( max( abs(p1-(Pan ))*(1/Crossover) -Crossover  ,0)  ,1 );
+		R_scaling= min( max( abs(p2-(Pan ))*(1/Crossover) -Crossover  ,0)  ,1 );
+
+
+		left_r *= L_scaling*Amount; 
+		left_i *= L_scaling*Amount;
+		left_r_two *= L_scaling*Amount; 
+		left_i_two *= L_scaling*Amount;
+
+		right_r *= R_scaling*Amount;
+		right_i *= R_scaling*Amount;
+		right_r_two *= R_scaling*Amount;
+		right_i_two *= R_scaling*Amount;
+	
+	
+	
+	
 			
-			testpan(Pan,Crossover);
+			// testpan(Pan,Crossover);
 			// p1=;
 		);
 		
@@ -424,6 +444,21 @@ mode==3?
 
 	);
 );
+
+mode==5?
+(
+	//draw guides, crossover doesn't need /2 since that's covered by the 2nd *0.5
+	drawbox(0,(-Pan+1)*0.5*gfx_h);
+	drawbox(0,(-Pan+1-(Crossover))*0.5*gfx_h);
+	drawbox(0,(-Pan+1+(Crossover))*0.5*gfx_h);
+
+	drawbox(gfx_w,(-Pan+1)*0.5*gfx_h);
+	drawbox(gfx_w,(-Pan+1-(Crossover))*0.5*gfx_h);
+	drawbox(gfx_w,(-Pan+1+(Crossover))*0.5*gfx_h);
+
+
+);
+
 
 mode==6?
 (

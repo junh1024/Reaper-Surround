@@ -39,6 +39,9 @@ Magnitudes2=sixteen_k*12;
 Magnitudes3=sixteen_k*13;
 Magnitudes4=sixteen_k*14;
 
+Pan_L=sixteen_k*15;
+Pan_R=sixteen_k*16;
+
 Magnitudes1_old=sixteen_k*21;
 Magnitudes2_old=sixteen_k*22;
 Magnitudes3_old=sixteen_k*23;
