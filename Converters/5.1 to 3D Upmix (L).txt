@@ -255,11 +255,11 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 		(mode==5)? //pan slice
 		(
 		
-		L_pan[i]=abs(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]);
-		R_pan[i]=abs(Magnitudes4[i]-Magnitudes2[i])/(Magnitudes4[i]+Magnitudes2[i]);
+		L_pan[i]=(-Magnitudes3[i]+Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]);
+		R_pan[i]=(-Magnitudes4[i]+Magnitudes2[i])/(Magnitudes4[i]+Magnitudes2[i]);
 
 
-
+		inspector1=R_pan[i];
 
 		L_scaling_array[i]=min( max( abs(L_pan[i]-(Pan ))*(1/Crossover) -Crossover  ,0)  ,1 );
 		L_scaling_array[i]= (L_scaling_array[i]*(Time_Response))+(L_scaling_old_array[i]*(1-Time_Response));
@@ -468,6 +468,16 @@ mode==5?
 	drawbox(gfx_w,(-Pan+1-(Crossover))*0.5*gfx_h);
 	drawbox(gfx_w,(-Pan+1+(Crossover))*0.5*gfx_h);
 
+	
+	while
+	( 
+		set_color(g/(fftsize/2.5)); //update color according to frequency
+		drawbox(  gfx_w - ((g*gfx_w)/(fftsize)), (-R_pan[g]+1)*0.5*gfx_h  ) ; //draw position for each bin
+		drawbox(  0 + ((g*gfx_w)/(fftsize)), (-L_pan[g]+1)*0.5*gfx_h  ) ; //draw position for each bin
+		g+=8;
+		g<fftsize/2 - 1 - (elements_to_skip/2);
+
+	);
 
 );
 
