@@ -255,22 +255,34 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 		(mode==5)? //pan slice
 		(
 		
-		p1=abs(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]);
-		p2=abs(Magnitudes4[i]-Magnitudes2[i])/(Magnitudes4[i]+Magnitudes2[i]);
-
-		L_scaling= min( max( abs(p1-(Pan ))*(1/Crossover) -Crossover  ,0)  ,1 );
-		R_scaling= min( max( abs(p2-(Pan ))*(1/Crossover) -Crossover  ,0)  ,1 );
+		L_pan[i]=abs(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]);
+		R_pan[i]=abs(Magnitudes4[i]-Magnitudes2[i])/(Magnitudes4[i]+Magnitudes2[i]);
 
 
-		left_r *= L_scaling*Amount; 
-		left_i *= L_scaling*Amount;
-		left_r_two *= L_scaling*Amount; 
-		left_i_two *= L_scaling*Amount;
 
-		right_r *= R_scaling*Amount;
-		right_i *= R_scaling*Amount;
-		right_r_two *= R_scaling*Amount;
-		right_i_two *= R_scaling*Amount;
+
+		L_scaling_array[i]=min( max( abs(L_pan[i]-(Pan ))*(1/Crossover) -Crossover  ,0)  ,1 );
+		L_scaling_array[i]= (L_scaling_array[i]*(Time_Response))+(L_scaling_old_array[i]*(1-Time_Response));
+		R_scaling_array[i]=min( max( abs(R_pan[i]-(Pan ))*(1/Crossover) -Crossover  ,0)  ,1 );
+		R_scaling_array[i]= (R_scaling_array[i]*(Time_Response))+(R_scaling_old_array[i]*(1-Time_Response));
+		
+		
+		left_r *= L_scaling_array[i]*Amount; 
+		left_i *= L_scaling_array[i]*Amount;
+		left_r_two *= L_scaling_array[i]*Amount; 
+		left_i_two *= L_scaling_array[i]*Amount;
+
+		right_r *= R_scaling_array[i]*Amount;
+		right_i *= R_scaling_array[i]*Amount;
+
+
+
+
+
+
+
+		right_r_two *= R_scaling_array[i]*Amount;
+		right_i_two *= R_scaling_array[i]*Amount;
 	
 	
 	
