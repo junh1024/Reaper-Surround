@@ -41,6 +41,8 @@ Magnitudes4=sixteen_k*14;
 
 L_pan=sixteen_k*15;
 R_pan=sixteen_k*16;
+L_pan_old=sixteen_k*17;
+R_pan_old=sixteen_k*18;
 
 Magnitudes1_old=sixteen_k*21;
 Magnitudes2_old=sixteen_k*22;
@@ -53,12 +55,14 @@ R_scaling_array=sixteen_k*33;
 R_scaling_old_array=sixteen_k*34;
 
 	Sideness1=sixteen_k*35;
-	Sideness2=sixteen_k*36;
-Sideness1_old=sixteen_k*37;
+	Sideness2=sixteen_k*37;
+Sideness1_old=sixteen_k*36;
 Sideness2_old=sixteen_k*38;
 
-pos_X=sixteen_k*51;
-pos_Y=sixteen_k*52;
+	pos_X=sixteen_k*51;
+pos_X_old=sixteen_k*52;
+	pos_Y=sixteen_k*53;
+pos_Y_old=sixteen_k*54;
 
 
 L_scaling=R_scaling=0;
@@ -309,4 +313,10 @@ function ms_complex_set_sideness_center()
 	center_r = mid_r *2*(1-Sideness1[i])*h_sqrt_2;
 	center_i = mid_i *2*(1-Sideness1[i])*h_sqrt_2;
 
+);
+
+function array_1_index_apply_time_response(array, old_array, idx, time_resp)
+(
+	array[idx]= (array[idx]*(time_resp))+(old_array[idx]*(1-time_resp));
+	old_array[idx]=array[idx];
 );

@@ -5,7 +5,7 @@ desc: 5.1 to 9.1 (padded 15.1) upmix. in ALPHA
 slider1:4<0,4,1{Ambience,Ambience +,Discrete SFX,Discrete SFX +,Pan Slice,Function Designer}>Mode
 slider2:100<0,200,1>Amount (%)
 slider3:0<-1,1,0.05>Threshold/Pan
-slider4:0<0,1,0.05>Crossover/Width
+slider4:0.2<0,1,0.05>Crossover/Width
 slider5:75<0,100,1>Cutoff (%)
 slider6:1<0,1,0.01>Time Response
 slider7:25<0,50,5>FFT Overlap (%)
@@ -109,7 +109,7 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 		// p1=abs(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]); //for FPA & min2
 
 
-		mode==6? //subtract
+		mode==16? //subtract
 		(
 			progress=i/(fftsize/2);
 			
@@ -202,13 +202,11 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 								
 				L_scaling_array[i]=1-(Angle_Difference1[i]*Amount/(pi));
 				R_scaling_array[i]=1-(Angle_Difference2[i]*Amount/(pi));
-				
-
 			
 			);
 			
-				L_scaling_array[i]= (L_scaling_array[i]*(Time_Response))+(L_scaling_old_array[i]*(1-Time_Response));
-				R_scaling_array[i]= (R_scaling_array[i]*(Time_Response))+(R_scaling_old_array[i]*(1-Time_Response));
+				array_1_index_apply_time_response(L_scaling_array,L_scaling_old_array,i,Time_Response);
+				array_1_index_apply_time_response(R_scaling_array,R_scaling_old_array,i,Time_Response);
 			
 				lr_complex_apply_1_scaling(L_scaling_array[i]);
 				l2r2_complex_apply_1_scaling(R_scaling_array[i]);
@@ -217,7 +215,7 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 		
 		
 		
-		(mode==3)? //measure pos
+		(mode==3||mode==4)? //measure pos
 		( 
 		// pos_X=pos_Y=0;		
 		sum_all_mags=Magnitudes1[i]+Magnitudes2[i]+Magnitudes3[i]+Magnitudes4[i];
@@ -225,11 +223,14 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 		pos_X[i]=(0-Magnitudes1[i]+Magnitudes2[i]-Magnitudes3[i]+Magnitudes4[i])/sum_all_mags;
 		pos_Y[i]=(0-Magnitudes1[i]-Magnitudes2[i]+Magnitudes3[i]+Magnitudes4[i])/sum_all_mags;
 		
+		array_1_index_apply_time_response(pos_X,pos_X_old,i,Time_Response);
+		array_1_index_apply_time_response(pos_Y,pos_Y_old,i,Time_Response);
+		
 		//clamp distance to max of 1
 		// distance=min(sqrt(pos_X[i]^2+pos_Y[i]^2),1);
 		L_scaling_array[i]=min(abs(pos_X[i])+abs(pos_Y[i]),1); //faster measuring of distance
 		
-		L_scaling_array[i]= (L_scaling_array[i]*(Time_Response))+(L_scaling_old_array[i]*(1-Time_Response));
+		// L_scaling_array[i]= (L_scaling_array[i]*(Time_Response))+(L_scaling_old_array[i]*(1-Time_Response));
 		
 
 
@@ -257,46 +258,32 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 		
 		L_pan[i]=(-Magnitudes3[i]+Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]);
 		R_pan[i]=(-Magnitudes4[i]+Magnitudes2[i])/(Magnitudes4[i]+Magnitudes2[i]);
-
-
-		inspector1=R_pan[i];
-
+		
+		array_1_index_apply_time_response(L_pan,L_pan_old,i,Time_Response);
+		array_1_index_apply_time_response(R_pan,R_pan_old,i,Time_Response);
+		
 		L_scaling_array[i]=min( max( abs(L_pan[i]-(Pan ))*(1/Crossover) -Crossover  ,0)  ,1 );
-		L_scaling_array[i]= (L_scaling_array[i]*(Time_Response))+(L_scaling_old_array[i]*(1-Time_Response));
 		R_scaling_array[i]=min( max( abs(R_pan[i]-(Pan ))*(1/Crossover) -Crossover  ,0)  ,1 );
-		R_scaling_array[i]= (R_scaling_array[i]*(Time_Response))+(R_scaling_old_array[i]*(1-Time_Response));
+		
+		// L_scaling_array[i]= (L_scaling_array[i]*(Time_Response))+(L_scaling_old_array[i]*(1-Time_Response));
+		// R_scaling_array[i]= (R_scaling_array[i]*(Time_Response))+(R_scaling_old_array[i]*(1-Time_Response));
 		
 		
-		left_r *= L_scaling_array[i]*Amount; 
-		left_i *= L_scaling_array[i]*Amount;
+		lr_complex_apply_2_scaling(L_scaling_array[i]*Amount , R_scaling_array[i]*Amount );
+
 		left_r_two *= L_scaling_array[i]*Amount; 
 		left_i_two *= L_scaling_array[i]*Amount;
-
-		right_r *= R_scaling_array[i]*Amount;
-		right_i *= R_scaling_array[i]*Amount;
-
-
-
-
-
-
 
 		right_r_two *= R_scaling_array[i]*Amount;
 		right_i_two *= R_scaling_array[i]*Amount;
 	
-	
-	
-	
-			
 			// testpan(Pan,Crossover);
-			// p1=;
+
 		);
 		
 
 		//new discrete+ mode, but measures M/S of pairs too?
-		
-		L_scaling_old_array[i]=L_scaling_array[i];
-		R_scaling_old_array[i]=R_scaling_array[i];
+
 		
 		buf1_fft[a]	= left_r - right_i;
 		buf1_fft[b]	= left_i + right_r;
