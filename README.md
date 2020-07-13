@@ -2,7 +2,7 @@
 
 Introduction
 ---
-A collection of mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). These are JSFX so DOWNLOAD ZIP & Put them in your Reaper EFFECTS folder. Note if you're cherry picking FX to DL (or updating), that you'll need surroundlib1-3 so get those too [1]. Bugs/suggestions? File an issue or contact me on twitter.
+A collection of mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). These are JSFX so DOWNLOAD ZIP & Put them in your Reaper EFFECTS folder. Note if you're cherry picking FX, you'll probably need surroundlib so get those too [1]. Bugs/suggestions? File an issue or contact me on twitter.
 
 
 Donations
@@ -62,12 +62,18 @@ I have tried to set sensible defaults.
 ### Note 2
 **Surround upmixers**
 
-As said above, these are based on matrixes & are rudimentary, as such they come with ceveats & compromises. The back channels, by default, are purely the side channel of the original. When decoded to stereo, the are completely wide & out of phase. Wide sounds at the back is distracting, hence the default is to reverse the polarity of 1 channel, and make it narrow, pleasing, and undistracting. Unfortunately, this has the effect of making a downmix being lopsided & the surround image sounding strange, so a delay is applied to decorrelate the front & back further. This makes the surround image acceptable, at the cost of phasing when downmixed. A wide back with no delay is, however, downmix-compatible. You may need to change the polarity depending on the depth slider. Controls are provided for convenience but I can't guarantee you won't abuse them to make bad sound. The best I can do is explain the compromises above.
+V1 & V2 upmixers are based on matrixes & are rudimentary so you either have:
+- Wide back, no rear delay (downmix-compatible, but sounds bad cuz a wide back is distracting)
+- Wide back, rear delay (NOT downmix-compatible, due to delay, stil sounds bad)
+- Narrow back, no rear delay (VERY NOT downmix-compatible, due to polarity, stil sounds bad)
+- Narrow back, rear delay  (NOT downmix-compatible, due to delay, sounds acceptable)
+
+To totally avoid this dilemma, please use the V3 series FFT-based upmixers made in 2020.
 
 ### Note 3
 **Sizes & CPU use**
 
-There may be different sizes of the same FX, eg, M(U)cro, (C)ommon, (S)mall, (M)edium, (L)arge, (X)tra Large. Different variations are provided for your convenience if CPU performance is of the utmost concern to you or if you are on a low-performance system (e.g, Atom, Celeron, etc). Obviously, a larger size of the same FX will provide more controls, but also more CPU consumption. On a fast CPU, each FX should use on average 1% of a core, or on a slow system, 5% of a core. The heaviest functions (those involving trig functions) should be optimized although it is not always possible to, and there is a balance to be struck between performance & code debt.
+There may be different sizes of the same FX, eg, M(U)cro, (C)ommon, (S)mall, (M)edium, (L)arge, (X)tra Large. Different variations are provided for your convenience if CPU performance is of the utmost concern to you or if you are on a low-performance system (e.g, Atom, Celeron, etc). Obviously, a larger size of the same FX will provide more controls, but also more CPU consumption. On a fast CPU, each FX should use on average 1% of a core, or on a slow system, 5% of a core.
 
 # Effects listing
 Listed below are the most common/useful effects. For more info, refer to JSFX. It is advised to disable JSFX descriptions.
@@ -111,18 +117,26 @@ Upmixers are considered experimental & are based on matrixes. It's advisable to 
 - 2.0 to 3.0 Upmix (C).txt
 - 2.0 to 4.0 Upmix (M).txt: [Note 2](#note-2)
 - 2.0 to 5.0 Upmix V2 (L).txt: 80% feature-complete DPL1-like surround upmixer, with more controls. [Note 1](#note-1), [Note 2](#note-2)
-- 2.0 to 5.0 Upmix V3 (L).txt: (ALPHA) New upmix based on FFT for maximum separation. It's Competitive with commercial upmixers. Features:
+- 2.0 to 5.0 Upmix V3 (L).txt: (ALPHA) New upmix based on FFT [see FFT Notes](https://github.com/junh1024/Reaper-Surround#fft-notes) for maximum separation. It's Competitive with commercial upmixers. Features:
 	- Basic image controls
-	- Useful threshold controls which control the core algorithm, not 20 useless controls that you can get with other FX afterwards
+	- Useful threshold controls which control the core algorithm, not 15 redundant controls that you can recreate in your DAW
 	- Doesn't lie about PDC
 	- Doesn't have an incorrect/downmix-incompatible bass level (bass is not moved/copied to LFE. It's blank.)
 	- CPU optimized (CPU use depends on channel output)
 	- 3 adjustable filters to increase rear separation, make it sound nicer, less distracting
-	- mandatory 100% phase accuracy. No "faux phase accurate" mode which isn't even close
+	- mandatory 100% phase accuracy by design. No "faux phase accurate" mode which isn't even close
+	- resizable UI which fits on small screens
 - 5.1 to 7.1 Upmix (U).txt:
 - 5.1 to 7.1 Upmix V2 (M).txt: These 2 5>7 upmixers are so rudimentary that they will probably have limited use. Side/Back balance uses the same mid/side detection as the 2>5 upmix. A balance control is provided for convenience, but may be 'bouncy' near the ends. [Note 1](#note-1)
-- 5.1 to 7.1 Upmix V3 (M).txt: (planned)
-- 5.1 to xxx Upmix V3 (M).txt: (planned)
+- 5.1 to 7.1 Upmix V3 (M).txt: Using FFT  [see FFT Notes](https://github.com/junh1024/Reaper-Surround#fft-notes) to upmix 51 to 71. Since 71 is downmixed to 51 by combining the back 4,
+	- Square mode isn't downmix compatible since it upscales the corner 4 to the side. For specialist use only.
+	- Circle mode is downmix compatible since it re interprets the back 2 to back 4. Should work well on content downmixed from 61 or 71.
+- 5.1 to 3D Upmix (L).txt: upmixes Using FFT [see FFT Notes](https://github.com/junh1024/Reaper-Surround#fft-notes) to height sounds that are closer to:
+	- Ambience: 90*
+	- Ambience +: 180*
+	- Discrete SFX: the absolute center
+	- Pan Slice: the pan slider
+	- Function Designer: view the shape of the above mode
 - 6.1 to 7.1 Upmix (M).txt
 - 15.1 to 22.2 Upmix (U).txt
 
@@ -175,7 +189,16 @@ Specialist & Utility
 - Simple Crossfade.txt: Fade between 2 sets of inputs, like a DJ mixer.
 - Surcode Fixer: Fixes delay &/ PDC, width adjustments of Surcode DPL.
 - Surround Fixer.txt
-- FFT Tool suite: (ALPHA) 4in 2out. Max,Min (Denoise),Align (FPA) A,Subtract A,Phase reflect: reflects >90* to <90* ie prevents antiphase,Noise Control/GF3 ARF,Sustainizer A: randomises phase-similar to DtBlkFx's smear mode,Split-Combine Frequency A,Transient. Modes may be suffixed by ARF which means Amount Response FFTsize controls are particularly relevant to the mode.
+- FFT Tool suite: (ALPHA) Using FFT  (see FFT Notes). FFT Multi Tool works on dual stereo, but FFT Stereo Tool works on dual mono (or stereo) (planned). Because it's FFT, it's implicitly per-bin, not broadband.
+	- Max & Min: selects and outputs Max/Min of the inputs (
+	- Align (FPA): aligns the input to the sidechain
+	- Subtract: subtracted from the input, is the sidechain. It's modified for a particular use-case. High frequencies will always have a Time Response of 1 to preserve transients & power , but low frequencies are controlled by the Time Response slider to reduce artefacts (at the expense of bleed). Frequency Response controls an additional subtraction of the HFs from 0=max, 1=none.
+	- Phase limit: limits the Side so it' can't exceed the mid
+	- Phase reflect: reflects >90* to <90* ie prevents antiphase
+	- Noise Control/GF3 ARF: Controls the noise level. Noise is defined as a rolling spatio-average of the frequencies, Frequency Response & FFT Size is the averaging amount.
+	- Transient: Controls the noise level. Transient is defined as louder than the previous frame (time).
+	- Sustainizer: randomises phase-similar to DtBlkFx's smear mode:
+	- Split-Combine Frequency: Amount controls a log frequency. Splits main & sidechain at the frequency, and combines the lower part of main with the upper part of sidechain.
 
 Scripts
 ---
@@ -199,6 +222,41 @@ To install Python for Windows, go to https://www.python.org/downloads/windows/  
 - python 3.5 x86 on Windows x64: C:\Program Files (x86)\Python35 (or wherever you installed it), python35.dll
 
 Then you're ready to go. Run a Reascript by going Actions > Show > Load, Run.
+
+FFT Notes
+---
+
+**General FFT controls**
+- Amount: to apply. Sometimes like a wet knob. >100% may not be unity.
+- Cutoff: lowpass the processing, % of SR.
+- Time Response: speed that the algorithm can respond from 1 (unrestricted) to 0 (frozen, may cause glitches). TR-- = artefacts--, but bleed++. Set to 0.5 @4K FFT Size, decreases with FFT Size for "2.0 to 5.0 Upmix V3 (L).txt", but adjustable in most other FX. Sensible values 0.5-1.
+- Overlap: % of overlap of FFT segments. Overlap++ = CPU++ but artefacts--, % is approximate. See overlap_sel in surroundlibf.txt for exactl amount. It's fixed to 39.0625% in "2.0 to 5.0 Upmix V3 (L).txt", but adjustable in most other FX.
+- FFT Size: length of FFT segments. In terms of 2^n, so 12 = 2^12 = 4096 (default). Size++ = artefacts--, but has little effect on CPU.
+
+**Why is CPU so low?**
+
+Reduction figures are approximate.
+
+- CPU gating of algorithms: un-needed algorithms are switched off by conditionals. Mainly applies to "2.0 to 5.0 Upmix V3 (L).txt" -20% 
+- CPU gating of metrics: un-needed statistics for the current algorithm are generally not measured. Data for GUI is not specifically measured & is generally required for the algorithm. -10%
+- Staying in the cartesian domain, if possible: expensive trigonometric functions are avoided -30%
+- Measuring less channels: For typical audio, what's happening in L is also happening in R, so measuring only 1 ch will get similar results. Mainly applies to "FFT Multi Tool (L).txt" -10%
+- Linear-phase/unity design: Half the channels are processed, and the other half are obtained via subtraction of the result. This means the output MUST add up to the original. This saves some FFT & iFFT operations. Commercial vendors put whatever they want in any channel, and sometimes downmix- incompatible sounds, and it doesn't have to add up to the original. -20%
+- Reduced bandwidth processing: up to 16-18k is processed by default. What's not processed may be moved to the secondary outputs in accordance with unity (above). You can ofc increase this to full. -15%
+- Reduced overlap: New flexible architecture by [Tale](https://www.taletn.com/reaper/mono_synth/) in June. the default overlap (with a bell-shaped window) for nice-sounding FFT is 50%, but 40% (or less) with a trapezium window sounds just as good in many cases. -10%
+- using memcpy & memset: -5%
+
+**Why isn't CPU lower?**
+
+- Not C++: JSFX is slow. +100%
+- Conditionals: checks do take up CPU. +10%
+- More buffers: the additional buffers for adjustable/reduced overlap. +5%
+- GUI: +10%
+- Functions: converting common snippets to functions in accordance with the [DRY principle](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) makes for neater & maintainable code, but adds a measurable CPU increase with languages like JSFX +15%
+
+**And?**
+
+Conclusion: performance or quality is roughly on par with commercial implementations, but not necessarily simultaneously as you may need to make adjustments which increase CPU. My FFT FX typically use 10-15% of a 3Ghz core. If you're exporting long projects on a laptop on power-save mode, they'll do fine. Latency is also higher at a default of 4096sa compared with a typical 2048sa. Performance is balanced with quality, and if you want choice, you have ample control over otherwise "internal" or "unimportant" decisions which commercial vendors decide for you.
 
 FAQ
 ---

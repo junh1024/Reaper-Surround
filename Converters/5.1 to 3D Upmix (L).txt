@@ -2,7 +2,7 @@
 
 desc: 5.1 to 9.1 (padded 15.1) upmix. in ALPHA
 
-slider1:4<0,4,1{Ambience,Ambience +,Discrete SFX,Discrete SFX +,Pan Slice,Function Designer}>Mode
+slider1:4<0,4,1{Ambience,Ambience +,Discrete SFX,Discrete SFX + (N/A),Pan Slice,Function Designer}>Mode
 slider2:100<0,200,1>Amount (%)
 slider3:0<-1,1,0.05>Threshold/Pan
 slider4:0.2<0,1,0.05>Crossover/Width
@@ -231,11 +231,6 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 		L_scaling_array[i]=min(abs(pos_X[i])+abs(pos_Y[i]),1); //faster measuring of distance
 		
 		// L_scaling_array[i]= (L_scaling_array[i]*(Time_Response))+(L_scaling_old_array[i]*(1-Time_Response));
-		
-
-
-		
-		//TODO: add temporal averaging
 
 		//raised to power because doing linear multiple 1- is tricky
 
@@ -251,6 +246,7 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 		
 		// inspector1=L_scaling^Amount;
 
+		// mode4=mags for depth, M/S for phase?
 		);
 		
 		(mode==5)? //pan slice
@@ -280,11 +276,7 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 			// testpan(Pan,Crossover);
 
 		);
-		
 
-		//new discrete+ mode, but measures M/S of pairs too?
-
-		
 		buf1_fft[a]	= left_r - right_i;
 		buf1_fft[b]	= left_i + right_r;
 		
@@ -422,7 +414,7 @@ mode==2?
 
 gfx_a = 0.2; 
 
-mode==3?
+(mode==3||mode==4)?
 (	//draw guides, since it pushes absolute center sounds upwards
 	drawbox(gfx_w*0.5,0);
 	drawbox(gfx_w*0.5,gfx_h);

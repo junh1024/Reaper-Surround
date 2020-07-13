@@ -2,7 +2,7 @@
 
 desc: FFT Multi Tool. Read docs. in ALPHA
 
-slider1:3<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract AR,Phase limit (unused),Phase reflect,Noise Control/GF3 ARF,Sustainizer A,Split-Combine Frequency A,Min2 A,Measure position,transient control A,pan select,bass boost}>Mode
+slider1:3<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract AR,Phase limit,Phase reflect,Noise Control/GF3 ARF,Sustainizer A,Split-Combine Frequency A,Min2 A,N/A,Transient control A,PS N/A,bass boost}>Mode
 slider2:100<0,200,1>Amount (%)
 slider3:1<0,1,0.01>Frequency Response 
 slider4:75<0,100,1>Cutoff (%)
