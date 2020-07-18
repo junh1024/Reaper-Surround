@@ -2,7 +2,7 @@
 
 desc: FFT Stereo Tool. Read docs. in ALPHA
 
-slider1:3<0,7,1{Max,Min (Denoise),Align (FPA) A,Subtract AR,Phase limit,Phase reflect,Sustainizer A,bass boost}>Mode
+slider1:3<0,7,1{Max,Min (Denoise),Align N/A,Subtract AR,Phase limit,Phase reflect,Sustainizer A,bass boost}>Mode
 slider2:100<0,200,1>Amount (%)
 slider3:1<0,1,0.01>Frequency Response 
 slider4:75<0,100,1>Cutoff (%)
@@ -22,6 +22,20 @@ import surroundlibf.txt
 
 pdc_bot_ch = 0;
 pdc_top_ch = 6;
+
+actually_do_difference_output=0;
+
+mode<5?
+(
+	//adaptor so we can reuse 4ch functions
+	Magnitudes3=Magnitudes2;
+	Magnitudes4=Magnitudes2=sixteen_k*99; //silence them
+);
+mode==4?
+(
+	actually_do_difference_output=1;
+);
+
 
 
 @slider
@@ -59,6 +73,17 @@ Resp_bins=slider4/100;
 elements_to_skip=fftsize-floor(Resp_bins*fftsize);
 
 Time_Response=slider5;
+
+mode<5?
+(
+	//adaptor so we can reuse 4ch functions
+	Magnitudes3=Magnitudes2;
+	Magnitudes4=Magnitudes2=sixteen_k*99; //silence them
+);
+mode==4?
+(
+	actually_do_difference_output=1;
+);
 
 
 
@@ -105,11 +130,17 @@ buf1_in[2*overlap + pos+1]	= spl1 * scale;
 	(mode==1)? //Max mode, sounds ok with no overlap, but a bit of artefact
 		(
 			//independently test mags of L&R
-			(Magnitudes1[i]<Magnitudes3[i])?
+			(Magnitudes1[i]<Magnitudes3[i]&&mode==1)?
 			(
-			left_r=left_r_two;
-			left_i=left_i_two;
+			right_r=left_r=left_r_two;
+			right_i=left_i=left_i_two;
+			)
+			:
+			(
+			right_r=left_r;
+			right_i=left_i;
 			);
+			
 
 
 		);
@@ -118,10 +149,14 @@ buf1_in[2*overlap + pos+1]	= spl1 * scale;
 		(
 			(Magnitudes1[i]>Magnitudes3[i])?
 			(
-			left_r=left_r_two;
-			left_i=left_i_two;
+			right_r=left_r=left_r_two;
+			right_i=left_i=left_i_two;
+			)
+			:
+			(
+			right_r=left_r;
+			right_i=left_i;
 			);
-			
 
 		);
 
@@ -320,7 +355,7 @@ buf1_in[2*overlap + pos+1]	= spl1 * scale;
 
 //buffer the original spl0
 out4 = buf1_org[pos2]  ;
-out5 = buf1_org[pos2+1];
+// out5 = buf1_org[pos2+1];
 
 buf1_org[pos2] =  spl0;
 buf1_org[pos2+1] =  spl1;
@@ -331,5 +366,6 @@ pos2=(pos2+2)%(pdc_delay*2);
 
 
 spl0 = buf1_out[pos];
-spl1 = buf1_out[pos+1];
+// spl1 = buf1_out[pos+1];
+spl1 = buf1_out[pos+1]*(1-actually_do_difference_output)+(actually_do_difference_output*(out4-   buf1_out[pos] )) ;
 
