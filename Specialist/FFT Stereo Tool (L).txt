@@ -1,8 +1,8 @@
 // from https://forum.cockos.com/showthread.php?t=190168#30 by Tale, geraintluff, junh1024
 
-desc: FFT Multi Tool. Read docs. in ALPHA
+desc: FFT Stereo Tool. Read docs. in ALPHA
 
-slider1:3<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract AR,Phase limit,Phase reflect,Noise Control/GF3 ARF,Sustainizer A,Split-Combine Frequency A,Min2 A,N/A,Transient control A,PS N/A,bass boost}>Mode
+slider1:3<0,7,1{Max,Min (Denoise),Align (FPA) A,Subtract AR,Phase limit,Phase reflect,Sustainizer A,bass boost}>Mode
 slider2:100<0,200,1>Amount (%)
 slider3:1<0,1,0.01>Frequency Response 
 slider4:75<0,100,1>Cutoff (%)
@@ -70,17 +70,15 @@ Time_Response=slider5;
 buf1_in[2*overlap + pos]	= spl0 * scale;
 buf1_in[2*overlap + pos+1]	= spl1 * scale;
 
-buf2_in[2*overlap + pos]	= spl2 * scale;
-buf2_in[2*overlap + pos+1]	= spl3 * scale;
 
 (pos += 2) >= (fftsize - overlap )*2? (
 	pos = 0;
 
-	fft_4ch_window_overlap_fft();
+	fft_2ch_window_overlap_fft();
 	
 	//silence the frequencies we are skipping
 	memset(buf1_fft+(fftsize-elements_to_skip), 0, 2*elements_to_skip);
-	memset(buf2_fft+(fftsize-elements_to_skip), 0, 2*elements_to_skip);
+	// memset(buf2_fft+(fftsize-elements_to_skip), 0, 2*elements_to_skip);
 	
 
 	i = 0;
@@ -92,14 +90,17 @@ buf2_in[2*overlap + pos+1]	= spl3 * scale;
 		a2 = 2*fftsize-i;
 		b2 = a2+1;
  
-		fft_4ch_untangle_mags();
+		fft_4ch_untangle();
 
+		Magnitudes1[i]=sqrt(left_r^2+left_i^2); //+very_small_number*0.1
+		Magnitudes2[i]=sqrt(right_r^2+right_i^2);
+		
+		
 		// Angles1[i]=atan2(left_r,left_i);
 		// Angles2[i]=atan2(right_r,right_i);
-		// Angles3[i]=atan2(left_r_two,left_i_two);
-		// Angles4[i]=atan2(right_r_two,right_i_two);
 
-		p1=abs(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]); //for FPA & min2
+
+		
 
 	(mode==1)? //Max mode, sounds ok with no overlap, but a bit of artefact
 		(
@@ -109,16 +110,7 @@ buf2_in[2*overlap + pos+1]	= spl3 * scale;
 			left_r=left_r_two;
 			left_i=left_i_two;
 			);
-			
-			(Magnitudes2[i]<Magnitudes4[i])?
-			(
-			right_r=right_r_two;
-			right_i=right_i_two;
 
-			//using memcpy isn't faster for small regions
-			// memcpy(buf0+a,buf2+a,2);
-			// memcpy(buf0+a2,buf2+a2,2);
-			);
 
 		);
 		
@@ -130,13 +122,10 @@ buf2_in[2*overlap + pos+1]	= spl3 * scale;
 			left_i=left_i_two;
 			);
 			
-			(Magnitudes2[i]>Magnitudes4[i])?
-			(
-			right_r=right_r_two;
-			right_i=right_i_two;
-			);
+
 		);
 
+		p1=abs(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]); //for FPA & min2
 		(	//FPA mode, align only close magnitudes
 			mode==3 &&
 			p1 <Amount ;
@@ -162,44 +151,7 @@ buf2_in[2*overlap + pos+1]	= spl3 * scale;
 
 		mode==4? //subtract
 		(
-			progress=i/(fftsize/2);
-			
-			//clamp mag to >0, otherwise will make more sound
-			//subtract more, as the frequency increases
-			L_scaling_array[i]=max(Magnitudes1[i]-Magnitudes3[i]*(Amount+((1-Response))*progress),0)/Magnitudes1[i];
-			R_scaling_array[i]=max(Magnitudes2[i]-Magnitudes4[i]*(Amount+((1-Response))*progress),0)/Magnitudes2[i];
-			
-			//temporal averaging for <12khz to sound better, none for >12khz to remove transients. inspired by my newvisp4
-			//but too much tends to reduce volume
-			
-			//if it;s <x khz & not a transient, apply averaging to redude artefacts
-			i<(fftsize/3) && L_scaling_array[i] < L_scaling_old_array[i]? 
-			(
-				L_scaling=(L_scaling_array[i]*(Time_Response))+(L_scaling_old_array[i]*(1-Time_Response));
-				R_scaling=(R_scaling_array[i]*(Time_Response))+(R_scaling_old_array[i]*(1-Time_Response));
-				
-				// L_scaling =L_scaling_array[i];
-				// R_scaling =R_scaling_array[i];
-			)
-			:
-			(	//equivalent to response of 1
-				L_scaling =L_scaling_array[i];
-				R_scaling =R_scaling_array[i];
-
-				// L_scaling=(L_scaling_array[i]+(L_scaling_array[i]*(Time_Response))+(L_scaling_old_array[i]*(1-Time_Response)))/2;
-				// R_scaling=(R_scaling_array[i]+(R_scaling_array[i]*(Time_Response))+(R_scaling_old_array[i]*(1-Time_Response)))/2;
-								//average of time-scaled response & 1, sounds worse?
-			);
-			
-			L_scaling_old_array[i]=(L_scaling_array[i]*(Time_Response))+(L_scaling_old_array[i]*(1-Time_Response));
-			R_scaling_old_array[i]=(R_scaling_array[i]*(Time_Response))+(R_scaling_old_array[i]*(1-Time_Response));
-
-			lr_complex_apply_2_scaling(L_scaling, R_scaling);
-			
-
-
-			// inspector1=(1-response);
-			// inspector2=(1-response)*progress;
+			fft_4ch_subtract();
 			
 		);
 		
@@ -262,16 +214,8 @@ buf2_in[2*overlap + pos+1]	= spl3 * scale;
 		
 		);
 		
-		(mode==7&&Magnitudes1[i]<old_magnitude)?//Noise control/Gap filler
-		(
-			
-			lr_complex_apply_1_scaling(Amount);
-			
-		);
 		
-		old_magnitude=Magnitudes1[i]*(Response/10)+old_magnitude*(1-Response/10);
-		
-		(mode==8)? // Sustainizer, does not sound good w/ no overlap
+		(mode==7)? // Sustainizer, does not sound good w/ no overlap
 		(
 
 			// left_r*=(-1)^(i/2);
@@ -322,84 +266,12 @@ buf2_in[2*overlap + pos+1]	= spl3 * scale;
 		
 		);
 		
-		(mode==10)? //Min2
-		(
-			Angles1[i]=atan2(left_r,left_i);
-			Angles2[i]=atan2(right_r,right_i);
-			Angles3[i]=atan2(left_r_two,left_i_two);
-			Angles4[i]=atan2(right_r_two,right_i_two);
-			
-			//compute pans as per my V3 upmix
-			// p1=(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]);
-			p2=(Magnitudes4[i]-Magnitudes2[i])/(Magnitudes4[i]+Magnitudes2[i]);
-		//pan isn't that useful for dual stereo-different noise recordings, but useful for High Touch! (different singers on different versions)
-		
 
-			
-			ad1=abs(Angles1[i]-Angles3[i]);
-			ad2=abs(Angles2[i]-Angles4[i]);
-
-			
-			ad1>pi?ad1=2*pi-ad1;//fix angle difference cuz should be under 180*
-			ad2>pi?ad2=2*pi-ad2; 
-
-			L_scaling=(1-(min(ad1*2,pi)/pi))*(1-   (p1));//double ad cuz 90* ad means it's already purely stereo noise
-			R_scaling=(1-(min(ad2*2,pi)/pi))*(1-abs(p2));//Reduce mags the more it's panned & phased
-
-			left_r *= L_scaling^Amount; //raised to power because doing linear multiple 1- is tricky
-			left_i *= L_scaling^Amount;
-			right_r *= R_scaling^Amount;
-			right_i *= R_scaling^Amount;
-
-		);  
-		
-		
-
-		
-		(mode==12&&Magnitudes1[i]>Magnitudes1_old[i])? //transient designer
-		(
-
-			// tmp=Magnitudes1[i];
-			// Magnitudes1[i]=;
-			// Magnitudes1_old[i]=Magnitudes1[i];
-			// scaling*old=new
-			// scaling=new/old
-			
-			//more noticeable w/ lower response so it's squared
-			L_scaling=(Magnitudes1[i]*(Amount^2)+Magnitudes1_old[i]*(1-(Amount^2)))/Magnitudes1[i];
-			// L_scaling=1/L_scaling;
-			
-			lr_complex_apply_1_scaling(L_scaling);
-			
-			// inspector1=Magnitudes1[i];
-			// inspector2=Magnitudes1_old[i];
-			
-			doing=1;
-		);
-		
 		// Magnitudes1_old[i]=Magnitudes1[i]*Response+Magnitudes1_old[i]*(1-Response); //sounds bad
 		// Magnitudes1_old[i]=Magnitudes1[i];
 		
-		(mode==13)? //pan select
-		(
-			abs();
-			panselector=Amount-1;
-			panwidth=Response;
-			pann=min(max((Magnitudes2[i]-Magnitudes1[i])/(Magnitudes2[i]+Magnitudes1[i]),-1),1);
-			
-			// front_coefficient_temp= 1 - ((phadeg- low_thresh )* (1.0/crossover_width))
-			
-			// L_scaling=max(abs(pann)-0.5,) ;panselector
-			L_scaling=1-((pann- panselector+(panwidth/2))*(1/panwidth));
-			
-			left_r  *= L_scaling;
-			left_i  *= L_scaling;
-			right_r *= L_scaling;
-			right_i *= L_scaling;
 		
-		);
-		
-		(mode==14 && i<fftsize/50)? //bass boost select, from mode 12
+		(mode==8 && i<fftsize/50)? //bass boost select, from transient mode 
 		(
 			L_scaling=(Magnitudes1[i]*(Amount^2)+Magnitudes1_old[i]*(1-(Amount^2)))/Magnitudes1[i];
 			// L_scaling=1/L_scaling;
@@ -408,19 +280,7 @@ buf2_in[2*overlap + pos+1]	= spl3 * scale;
 		);
 		Magnitudes1_old[i]=Magnitudes1[i];
 		
-// TODO: center pan
-// generic de distort via harmonics
-// FFT frequency tool (via memcpy): excite via copy frequency, combine-overlap
-// scale shifter
-// combine-overlap standalone IIR version
-// improved transient designer
-// improved Tonal/noise separator, cepstral?
-// select notes via MIDI input
-// 51>71 upscale V3 modes(square M/S, circle-M/S, circle pan) w/ temporal response
-// 51>91h upscale modes(ambience,discrete SFX,pan slice)
-// ambisonics 40 V2,3 decoder
-		
-		
+
 		
 		buf1_fft[a]	= left_r - right_i;
 		buf1_fft[b]	= left_i + right_r;
@@ -434,9 +294,7 @@ buf2_in[2*overlap + pos+1]	= spl3 * scale;
 			buf1_fft[a2]= left_r + right_i;
 			buf1_fft[b2]= right_r - left_i;
 			
-			//prepare c
-			// buf2_fft[a2]= center_r;
-			// buf2_fft[b2]=-center_i;
+
 		);
 
 		i += 2;
@@ -445,25 +303,16 @@ buf2_in[2*overlap + pos+1]	= spl3 * scale;
 	// Inverse FFT
 	fft_ipermute(buf1_fft, fftsize);
 	ifft(buf1_fft, fftsize);
-	
-	// fft_ipermute(buf2_fft, fftsize);
-	// ifft(buf2_fft, fftsize);
 
 	// Overlap-add output
 	memcpy(buf1_out, buf1_out + 2*fftsize - 2*overlap, 2*overlap);
 	memset(buf1_out + 2*overlap, 0, 2*fftsize - 2*overlap);
 	
-	// memcpy(buf2_out, buf2_out + 2*fftsize - 2*overlap, 2*overlap);
-	// memset(buf2_out + 2*overlap, 0, 2*fftsize - 2*overlap);
 	
 	i = 0;
 	loop(fftsize,
 		buf1_out[i] += buf1_fft[i];
 		buf1_out[i+1] += buf1_fft[i+1];
-		
-		// buf2_out[i] += buf2_fft[i];
-		// buf2_out[i+1] += buf2_fft[i+1];
-		
 		
 		i += 2;
 	);
@@ -476,7 +325,7 @@ out5 = buf1_org[pos2+1];
 buf1_org[pos2] =  spl0;
 buf1_org[pos2+1] =  spl1;
 
-spl2=spl3=0;
+// spl2=spl3=0;
 
 pos2=(pos2+2)%(pdc_delay*2);
 
@@ -484,11 +333,3 @@ pos2=(pos2+2)%(pdc_delay*2);
 spl0 = buf1_out[pos];
 spl1 = buf1_out[pos+1];
 
-
-//subtract front from original spl0 to get back
-
-
-// spl2= buf2_out[pos];
-
-spl4=(out4-spl0)*slider8;
-spl5=(out5-spl1)*slider8;
