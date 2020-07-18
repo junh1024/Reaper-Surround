@@ -162,44 +162,7 @@ buf2_in[2*overlap + pos+1]	= spl3 * scale;
 
 		mode==4? //subtract
 		(
-			progress=i/(fftsize/2);
-			
-			//clamp mag to >0, otherwise will make more sound
-			//subtract more, as the frequency increases
-			L_scaling_array[i]=max(Magnitudes1[i]-Magnitudes3[i]*(Amount+((1-Response))*progress),0)/Magnitudes1[i];
-			R_scaling_array[i]=max(Magnitudes2[i]-Magnitudes4[i]*(Amount+((1-Response))*progress),0)/Magnitudes2[i];
-			
-			//temporal averaging for <12khz to sound better, none for >12khz to remove transients. inspired by my newvisp4
-			//but too much tends to reduce volume
-			
-			//if it;s <x khz & not a transient, apply averaging to redude artefacts
-			i<(fftsize/3) && L_scaling_array[i] < L_scaling_old_array[i]? 
-			(
-				L_scaling=(L_scaling_array[i]*(Time_Response))+(L_scaling_old_array[i]*(1-Time_Response));
-				R_scaling=(R_scaling_array[i]*(Time_Response))+(R_scaling_old_array[i]*(1-Time_Response));
-				
-				// L_scaling =L_scaling_array[i];
-				// R_scaling =R_scaling_array[i];
-			)
-			:
-			(	//equivalent to response of 1
-				L_scaling =L_scaling_array[i];
-				R_scaling =R_scaling_array[i];
-
-				// L_scaling=(L_scaling_array[i]+(L_scaling_array[i]*(Time_Response))+(L_scaling_old_array[i]*(1-Time_Response)))/2;
-				// R_scaling=(R_scaling_array[i]+(R_scaling_array[i]*(Time_Response))+(R_scaling_old_array[i]*(1-Time_Response)))/2;
-								//average of time-scaled response & 1, sounds worse?
-			);
-			
-			L_scaling_old_array[i]=(L_scaling_array[i]*(Time_Response))+(L_scaling_old_array[i]*(1-Time_Response));
-			R_scaling_old_array[i]=(R_scaling_array[i]*(Time_Response))+(R_scaling_old_array[i]*(1-Time_Response));
-
-			lr_complex_apply_2_scaling(L_scaling, R_scaling);
-			
-
-
-			// inspector1=(1-response);
-			// inspector2=(1-response)*progress;
+			fft_4ch_subtract();
 			
 		);
 		
