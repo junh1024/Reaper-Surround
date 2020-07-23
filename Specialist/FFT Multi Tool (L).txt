@@ -380,9 +380,10 @@ buf2_in[2*overlap + pos+1]	= spl3 * scale;
 // improved Tonal/noise separator, cepstral?
 // select notes via MIDI input
 // 51>71 upscale V3 modes(square M/S, circle-M/S, circle pan) w/ temporal response
-// 51>91h upscale modes(ambience,discrete SFX,pan slice)
+// 51>91h upscale modes(discrete SFX+?)
 // ambisonics 40 V2,3 decoder
-		
+// cutoff behavior depends  on mode, bypass/silence
+// reduce CPU when no audio
 		
 		
 		buf1_fft[a]	= left_r - right_i;

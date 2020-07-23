@@ -2,10 +2,10 @@
 
 desc: FFT Stereo Tool. Read docs. in ALPHA
 
-slider1:3<0,7,1{Max,Min (Denoise),Align N/A,Subtract AR,Phase limit,Phase reflect,Sustainizer A,bass boost}>Mode
+slider1:5<0,7,1{Max,Min (Denoise),Align N/A,Subtract AR,Phase limit,Phase reflect,Sustainizer A,bass boost}>Mode
 slider2:100<0,200,1>Amount (%)
 slider3:1<0,1,0.01>Frequency Response 
-slider4:75<0,100,1>Cutoff (%)
+slider4:75<0,100,2>Cutoff (%)
 slider5:0.5<0,1,0.01>Time Response 
 slider6:40<0,50,5>FFT Overlap (%)
 slider7:12<10,14,1>FFT size (pow2)
@@ -21,7 +21,7 @@ import surroundlibf.txt
 //see surroundlibf.txt
 
 pdc_bot_ch = 0;
-pdc_top_ch = 6;
+pdc_top_ch = 2;
 
 actually_do_difference_output=0;
 
@@ -36,7 +36,14 @@ mode==4?
 	actually_do_difference_output=1;
 );
 
+fftsize=2^slider7;
 
+out4=0;
+
+// ext_noinit=1;
+// ext_nodenorm=1;
+
+not_silence=1;
 
 @slider
 fftsize=2^slider7;
@@ -95,15 +102,36 @@ mode==4?
 buf1_in[2*overlap + pos]	= spl0 * scale;
 buf1_in[2*overlap + pos+1]	= spl1 * scale;
 
+sum_all_spl+=spl0^2+spl1^2;	//silence detector
 
-(pos += 2) >= (fftsize - overlap )*2? (
+// ( (pos += 2) >= (fftsize - overlap )*2 ) && (sqrt(sum_all_spl)/(fftsize - overlap )) >0.000001 ? ( //makes glitches
+( (pos += 2) >= (fftsize - overlap )*2 ) ? (
 	pos = 0;
-
-	fft_2ch_window_overlap_fft();
 	
-	//silence the frequencies we are skipping
+	
+	
+	
+	//if silence
+	(sqrt(sum_all_spl)/(fftsize - overlap )) <0.000001 ?
+	(
+		elements_to_skip = fftsize;
+		not_silence=0;
+	):
+	(
+		fft_2ch_window_overlap_fft();
+		elements_to_skip=fftsize-floor(Resp_bins*fftsize);
+		not_silence=1;
+	);
+	
+	sum_all_spl=0;	
+	
+	//silence the frequencies we are skipping for some modes
+	
+	mode<5?
+	(
 	memset(buf1_fft+(fftsize-elements_to_skip), 0, 2*elements_to_skip);
-	// memset(buf2_fft+(fftsize-elements_to_skip), 0, 2*elements_to_skip);
+	);
+	
 	
 
 	i = 0;
@@ -345,7 +373,7 @@ buf1_in[2*overlap + pos+1]	= spl1 * scale;
 	
 	
 	i = 0;
-	loop(fftsize,
+	loop(fftsize*not_silence,
 		buf1_out[i] += buf1_fft[i];
 		buf1_out[i+1] += buf1_fft[i+1];
 		

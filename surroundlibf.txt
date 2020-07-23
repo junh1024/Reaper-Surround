@@ -4,7 +4,7 @@ desc: FFT stuff
 //FFT header
 sixteen_k=32768; //distance between arrays
 
-memset(0,0,sixteen_k*50);
+memset(sixteen_k*1,0,sixteen_k*60);
 
 buf1_in			= sixteen_k*1;
 buf1_fft		= sixteen_k*2;
@@ -19,8 +19,8 @@ buf2_org		= sixteen_k*8;
 buf3_org		= sixteen_k*19;
 
 
-overlap_sel		= sixteen_k*9;
-window = sixteen_k*10;
+overlap_sel		= sixteen_k*58;
+window = sixteen_k*59;
 
 pi=3.141592653589793238;
 
