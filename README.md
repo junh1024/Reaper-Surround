@@ -245,6 +245,7 @@ Reduction figures are approximate.
 - Reduced bandwidth processing: up to 16-18k is processed by default. What's not processed may be moved to the secondary outputs in accordance with unity (above). You can ofc increase this to full. -15%
 - Reduced overlap: New flexible architecture by [Tale](https://www.taletn.com/reaper/mono_synth/) in June. the default overlap (with a bell-shaped window) for nice-sounding FFT is 50%, but 40% (or less) with a trapezium window sounds just as good in many cases. -10%
 - using memcpy & memset: -5%
+- CPU gating during silence: functions are disabled as much as reasonable & not give artefacts during silence (only selected FX atm) -20% (depends on project)
 
 **Why isn't CPU lower?**
 

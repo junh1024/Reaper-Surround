@@ -63,7 +63,7 @@ loop(fftsize,
 // gain = 10^(slider1 / 20);
 offset = 2*pi / 360 * slider2;
 
-Amount=slider2/100;
+Amount=max(slider2/100,0.01);//clamp to min of 0.01
 
 mode=slider1+1;//cuz I don't like 0-based mode/slider
 
@@ -232,7 +232,7 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 			side= sqr(side_r)+sqr(side_i);
 
 
-			side>mid?
+			side>mid*(1/Amount)?
 			(	//phase limit
 				mode==5?
 				(
