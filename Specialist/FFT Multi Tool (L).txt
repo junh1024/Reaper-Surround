@@ -381,7 +381,8 @@ buf2_in[2*overlap + pos+1]	= spl3 * scale;
 // select notes via MIDI input
 // 51>71 upscale V3 modes(square M/S, circle-M/S, circle pan) w/ temporal response
 // 51>91h upscale modes(discrete SFX+?)
-// ambisonics 40 V2,3 decoder
+// 51 GUI panner, 51>20 downmix V3 FFT
+// ambisonics 40 V2,3 decoder, microphone tool V3 in FFT
 // cutoff behavior depends  on mode, bypass/silence
 // reduce CPU when no audio
 		
