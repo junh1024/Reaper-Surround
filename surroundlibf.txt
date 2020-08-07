@@ -137,6 +137,8 @@ pos=pos2=0;
 
 fftsize=0;
 
+not_silence=1;
+
 //functions
 function ms_encode_complex()
 (
@@ -359,3 +361,28 @@ function fft_4ch_subtract()
 
 	lr_complex_apply_2_scaling(L_scaling, R_scaling);
 );
+
+function check_silence_set_fftsize()
+(
+	//set fftsize to a small value so DSP is skipped
+	(sqrt(sum_all_spl)/(fftsize - overlap )) <0.000001 ?
+	(
+		not_silence=0;
+		fftsize=-2;
+	):
+	(
+		not_silence=1;
+	);
+	
+	sum_all_spl=0;	
+);
+
+function check_silence_restore_fftsize()
+(
+	//restore FFT size so it won't hang
+	not_silence==0?
+	(
+		fftsize=2^slider8;
+	);
+);
+

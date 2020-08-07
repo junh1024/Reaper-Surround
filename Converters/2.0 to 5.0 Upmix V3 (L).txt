@@ -80,34 +80,28 @@ Time_Response=min(fftsize/8192,1); //clamp to 1, 0.5 @ 4k fft
 buf1_in[2*overlap + pos]	= spl0 * scale;
 buf1_in[2*overlap + pos+1]	= spl1 * scale;
 
-// buf2_in[2*overlap + pos]	= spl0 * scale;
-// buf2_in[2*overlap + pos+1]	= spl1 * scale;
+sum_all_spl+=spl0^2+spl1^2;	//silence detector
 
 (pos += 2) >= (fftsize - overlap )*2? (
 	pos = 0;
 
+	check_silence_set_fftsize(); //reduce CPU
+	
 	// Apply window
 	i = 0;
 	loop(fftsize,
 		buf1_fft[i]		= buf1_in[i] * window[i/2];
 		buf1_fft[i + 1]	= buf1_in[i+1] * window[i/2];
-		
-		// buf2_fft[i]		= buf2_in[i] * window[i/2];
-		// buf2_fft[i + 1]	= buf2_in[i+1] * window[i/2];
-
 		i += 2;
 	);
 
 	// Overlap input
 	memcpy(buf1_in, buf1_in + fftsize*2 - overlap*2, overlap*2);
-	// memcpy(buf2_in, buf2_in + fftsize*2 - overlap*2, overlap*2);
 
 	// FFT
 	fft(buf1_fft, fftsize);
 	fft_permute(buf1_fft, fftsize);
 	
-	// fft(buf2_fft, fftsize);
-	// fft_permute(buf2_fft, fftsize);
 
 	i = 0;
 	loop(fftsize / 2 + 1,
@@ -260,9 +254,11 @@ buf1_in[2*overlap + pos+1]	= spl1 * scale;
 		buf2_out[i] += buf2_fft[i];
 		// buf2_out[i+1] += buf2_fft[i+1];
 		
-		
 		i += 2;
 	);
+	
+	check_silence_restore_fftsize();
+	
 );
 
 //buffer the original spl0
