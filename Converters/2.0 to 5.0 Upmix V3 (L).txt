@@ -8,7 +8,7 @@ slider3:90<0,180,2>Rear threshold
 slider4:90<0,180,2>Crossover width
 slider5:50<0,100,2>Rear Width
 slider6:50<0,100,1>Rear LP
-slider7:50<0,100,2>Rear transients
+slider7:0 <0,100,2>Rear transients
 slider8:12<10,14,1>FFT size (pow2)
 
 import surroundlib2.txt
@@ -66,6 +66,7 @@ calculate_depth_coeffs(depth_coeff);
 R_width_coeff=slider5/100;
 depth2=abs(slider2);
 
+slider6=max(slider6,10);
 cutoff=slider6/100;
 cutoff_bins=floor(cutoff*(fftsize));
 transient_amount=slider7/100;
@@ -162,12 +163,13 @@ buf1_in[2*overlap + pos+1]	= spl1 * scale;
 
 		
 
-		(i<cutoff_bins && abs(slider2)<100)? //rear lowpass		
+		  //rear lowpass depends on slider6, rear hipass at a max of 1% SR when slider6=50%
+		(i> floor (0.01*fftsize* ( 1- max (cutoff-0.5,0)*2)		) && i<cutoff_bins && abs(slider2)<100)? //rear lowpass		
 		// (depth2<=99)? //activate only as needed
 		(
 		Angles1[i]=an1=atan2(left_r_two,left_i_two); //radians, normalize to 0,2pi
 		Angles2[i]=an2=atan2(right_r_two,right_i_two);	
-		Angle_Difference[i]=abs(an1-an2);	
+		Angle_Difference[i]=abs(an1-an2);
 
 		// ad=Angle_Difference[i];
 		Angle_Difference[i]>pi?Angle_Difference[i]=2*pi-Angle_Difference[i];//fix angle difference cuz should be under 180*
