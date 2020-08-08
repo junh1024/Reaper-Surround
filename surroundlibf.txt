@@ -16,7 +16,7 @@ buf2_fft		= sixteen_k*6;
 buf2_out		= sixteen_k*7;
 buf2_org		= sixteen_k*8;
 
-buf3_org		= sixteen_k*19;
+buf3_org		= sixteen_k*9;
 
 
 overlap_sel		= sixteen_k*58;
@@ -125,7 +125,8 @@ cutoff=cutoff_bins=0;
 inspector1=0;
 inspector2=0;
 
-Resp_bins=elements_to_skip=0;
+elements_to_skip=elements_to_skip_prev=0;
+Resp_bins==0;
 sum_all_mags=0;
 
 progress=0;
@@ -135,7 +136,8 @@ i=0;
 
 pos=pos2=0;
 
-fftsize=0;
+fftsize=fftsize_prev=0;
+overlap=overlap_prev=0;
 
 not_silence=1;
 
@@ -362,13 +364,19 @@ function fft_4ch_subtract()
 	lr_complex_apply_2_scaling(L_scaling, R_scaling);
 );
 
-function check_silence_set_fftsize()
+function check_silence_set_fftsize(memset_range)
 (
 	//set fftsize to a small value so DSP is skipped
 	(sqrt(sum_all_spl)/(fftsize - overlap )) <0.000001 ?
 	(
 		not_silence=0;
-		fftsize=-2;
+		fftsize_prev=fftsize;
+		overlap_prev=overlap;
+		elements_to_skip_prev=elements_to_skip;
+		fftsize=16;
+		overlap=0;
+		elements_to_skip=0;
+		memset(sixteen_k*1,0,sixteen_k*memset_range);
 	):
 	(
 		not_silence=1;
@@ -382,7 +390,10 @@ function check_silence_restore_fftsize()
 	//restore FFT size so it won't hang
 	not_silence==0?
 	(
-		fftsize=2^slider8;
+		fftsize=fftsize_prev;
+		overlap=overlap_prev;
+		elements_to_skip=elements_to_skip_prev;
+
 	);
 );
 
