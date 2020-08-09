@@ -117,7 +117,7 @@ Upmixers are considered experimental & are based on matrixes. It's advisable to 
 - 2.0 to 3.0 Upmix (C).txt
 - 2.0 to 4.0 Upmix (M).txt: [Note 2](#note-2)
 - 2.0 to 5.0 Upmix V2 (L).txt: 80% feature-complete DPL1-like surround upmixer, with more controls. [Note 1](#note-1), [Note 2](#note-2)
-- 2.0 to 5.0 Upmix V3 (L).txt: (ALPHA) New upmix based on FFT [see FFT Notes](https://github.com/junh1024/Reaper-Surround#fft-notes) for maximum separation. It's Competitive with commercial upmixers. Features:
+- 2.0 to 5.0 Upmix V3 (L).txt: (ALPHA) New upmix based on FFT for maximum separation. [see FFT Notes](#fft-notes) for controls & explanation. It's Competitive with commercial upmixers. Features:
 	- Basic image controls
 	- Useful threshold controls which control the core algorithm, not 15 redundant controls that you can recreate in your DAW
 	- Doesn't lie about PDC
@@ -128,7 +128,7 @@ Upmixers are considered experimental & are based on matrixes. It's advisable to 
 	- resizable UI which fits on small screens
 - 5.1 to 7.1 Upmix (U).txt:
 - 5.1 to 7.1 Upmix V2 (M).txt: These 2 5>7 upmixers are so rudimentary that they will probably have limited use. Side/Back balance uses the same mid/side detection as the 2>5 upmix. A balance control is provided for convenience, but may be 'bouncy' near the ends. [Note 1](#note-1)
-- 5.1 to 7.1 Upmix V3 (M).txt: Using FFT  [see FFT Notes](https://github.com/junh1024/Reaper-Surround#fft-notes) to upmix 51 to 71. Since 71 is downmixed to 51 by combining the back 4,
+- 5.1 to 7.1 Upmix V3 (M).txt: Using FFT  [see FFT Notes](#fft-notes) to upmix 51 to 71. Since 71 is downmixed to 51 by combining the back 4,
 	- Square mode isn't downmix compatible since it upscales the corner 4 to the side. For specialist use only.
 	- Circle mode is downmix compatible since it re interprets the back 2 to back 4. Should work well on content downmixed from 61 or 71.
 - 5.1 to 3D Upmix (L).txt: upmixes Using FFT [see FFT Notes](https://github.com/junh1024/Reaper-Surround#fft-notes) to height sounds that are closer to:
@@ -231,12 +231,18 @@ Then you're ready to go. Run a Reascript by going Actions > Show > Load, Run.
 FFT Notes
 ---
 
+**General surround controls**
+- Width: Center into Front
+- Depth: mix Rear into Front or vice-versa
+- Rear threshold/crossover: threshold/crossover to move sounds into rear, depending on phase of bins
+- Rear width/lowpass/transients: self-explanatory
+
 **General FFT controls**
 - Amount: to apply. Sometimes like a wet knob. >100% may not be unity.
 - Cutoff: lowpass the processing, % of SR.
 - Time Response: speed that the algorithm can respond from 1 (unrestricted) to 0 (frozen, may cause glitches). TR-- = artefacts--, but bleed++. Set to 0.5 @4K FFT Size, decreases with FFT Size for "2.0 to 5.0 Upmix V3 (L).txt", but adjustable in most other FX. Sensible values 0.5-1.
 - Overlap: % of overlap of FFT segments. Overlap++ = CPU++ but artefacts--, % is approximate. See overlap_sel in surroundlibf.txt for exactl amount. It's fixed to 39.0625% in "2.0 to 5.0 Upmix V3 (L).txt", but adjustable in most other FX.
-- FFT Size: length of FFT segments. In terms of 2^n, so 12 = 2^12 = 4096 (default). Size++ = artefacts--, but has little effect on CPU.
+- FFT Size: length of FFT segments. In terms of 2^n, so 12 = 2^12 = 4096 (default). Size++ = artefacts--, frequency resolution/separation++, temporal resolution--, but has little effect on CPU.
 
 **Why is CPU so low?**
 
