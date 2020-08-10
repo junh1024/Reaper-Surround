@@ -106,24 +106,13 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 
 // ( (pos += 2) >= (fftsize - overlap )*2 ) && (sqrt(sum_all_spl)/(fftsize - overlap )) >0.000001 ? ( //makes glitches
 ( (pos += 2) >= (fftsize - overlap )*2 ) ? (
+
 	pos = 0;
 	
+	check_silence_set_fftsize(0); //reduce CPU
+	not_silence==0?	memset(buf1_out,0,sixteen_k); //silence buffer otherwise will loop audio
 	
-	
-	
-	//if silence
-	(sqrt(sum_all_spl)/(fftsize - overlap )) <0.000001 ?
-	(
-		elements_to_skip = fftsize;
-		not_silence=0;
-	):
-	(
-		fft_2ch_window_overlap_fft();
-		elements_to_skip=fftsize-floor(Resp_bins*fftsize);
-		not_silence=1;
-	);
-	
-	sum_all_spl=0;	
+	fft_2ch_window_overlap_fft();
 	
 	//silence the frequencies we are skipping for some modes
 	
@@ -373,12 +362,15 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 	
 	
 	i = 0;
-	loop(fftsize*not_silence,
+	loop(fftsize,
 		buf1_out[i] += buf1_fft[i];
 		buf1_out[i+1] += buf1_fft[i+1];
 		
 		i += 2;
 	);
+	
+	check_silence_restore_fftsize();
+	
 );
 
 //buffer the original spl0
