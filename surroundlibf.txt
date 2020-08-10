@@ -376,7 +376,9 @@ function check_silence_set_fftsize(memset_range)
 		fftsize=16;
 		overlap=0;
 		elements_to_skip=0;
-		memset(sixteen_k*1,0,sixteen_k*memset_range);
+		// memset(sixteen_k*1,0,sixteen_k*memset_range);
+		memset(buf1_out,0,sixteen_k); //silence buffer otherwise will loop audio
+		memset(buf2_out,0,sixteen_k);
 	):
 	(
 		not_silence=1;

@@ -110,7 +110,7 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 	pos = 0;
 	
 	check_silence_set_fftsize(0); //reduce CPU
-	not_silence==0?	memset(buf1_out,0,sixteen_k); //silence buffer otherwise will loop audio
+	// not_silence==0?	memset(buf1_out,0,sixteen_k); //silence buffer otherwise will loop audio
 	
 	fft_2ch_window_overlap_fft();
 	

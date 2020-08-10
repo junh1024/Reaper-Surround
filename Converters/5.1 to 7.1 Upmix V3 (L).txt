@@ -84,8 +84,13 @@ buf1_in[2*overlap + pos+1]	= spl1 * scale;
 buf2_in[2*overlap + pos]	= spl4 * scale;
 buf2_in[2*overlap + pos+1]	= spl5 * scale;
 
+sum_all_spl+=spl0^2+spl1^2+spl4^2+spl5^2;	//silence detector
+
+
 (pos += 2) >= (fftsize - overlap )*2? (
 	pos = 0;
+
+	check_silence_set_fftsize(0); //reduce CPU
 
 	fft_4ch_window_overlap_fft();
 	
@@ -196,6 +201,8 @@ buf2_in[2*overlap + pos+1]	= spl5 * scale;
 
 		i += 2;
 	);
+	
+	check_silence_restore_fftsize();
 );
 
 //buffer the original spl0
