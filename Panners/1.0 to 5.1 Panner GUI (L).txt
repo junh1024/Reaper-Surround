@@ -1,0 +1,143 @@
+desc: mono to 3.0 panner. with LFE control.
+
+slider1:0<-100,100,1>Pan (deg)
+slider2:100<-100,100,1>Depth
+slider3:0<0,100,1>Width (%)
+slider4:0<0,1,1>Reserved
+slider5:0<0,3,{Move (Mixing),Copy (Mixing),Move (Monitoring),Copy (Monitoring)}>LFE ModeXXX
+slider6:0<0,100,1>LFE Ax(%)XXX
+slider7:0<0,1,1>Reserved
+slider8:0<0,1,1>Reserved
+
+//for 7.1 pan
+import surroundlib1.txt
+//for width
+import surroundlib3.txt
+// "depth" for LFE
+import surroundlib2.txt
+import surroundlibf.txt
+
+@init
+LFE_mode_gain=1;//monitoring 0dB default;
+main_gain=1;
+coeff_A=0;
+coeff_B=0;
+
+
+function do_slider_stuff()
+(
+	// slider1=max(min(slider1,100),-100);
+	slider2=max(min(slider2,100),-100);
+
+//map from -100-+100 to -30-+90, so I can reuse my 7.1 pan function
+pan_front=((slider1+100)*.6)-30;
+calculate_10_to_71_coeffs (pan_front);
+width_coeff=slider3/100; 
+
+//LFE disabled for now due to conflict
+
+/*
+LFE_pan_coeff=(slider6*$pi)/200; //depth scaled from 0-100 to 0>half pi
+calculate_depth_coeffs(LFE_pan_coeff);
+
+//move or copy mode
+slider5%2==0?(main_gain=coeff_B):(main_gain=1;);
+
+//LFE mixing -10dB gain, LFE monitoring 0dB gain.
+slider5<2?(LFE_mode_gain=0.316):(LFE_mode_gain=1;);
+*/
+
+depth_coeff=((slider2-100)*$pi)/400; //depth scaled from 0-100 to 0>half pi
+calculate_depth_coeffs(depth_coeff);
+
+pan_back=(slider1*$pi)/200;
+
+calculate_pan_coeffs(pan_back);
+
+);
+
+@slider
+
+do_slider_stuff();
+
+@sample 
+spl1=spl0;
+
+do_depth(depth_coeff);
+spl4_save=spl4;
+spl5_save=spl5;
+
+in0=(spl0+spl1)*0.7071; //loudness compensation
+main=in0*main_gain;
+
+do_10_to_71_pan(main);//10 to 30 pan
+
+//remap from 7.1 to 3.0
+spl2=spl1;
+spl1=spl7;
+spl7=0;
+
+spl4=spl4_save;
+spl5=spl5_save;
+
+do_width(width_coeff);//phantom or physical center
+
+do_pan(pan_back);
+
+// spl3=in0*LFE_mode_gain*coeff_A;
+
+@gfx 300 300
+// pan=slider1;//pan, from clockwise, degrees
+box_width=floor(0.7*sqrt((gfx_w+gfx_h)/2))*2;
+
+gfx_a = 0.8;
+gfx_r = gfx_g = gfx_b = 0;
+//draw ELL speakers
+
+//LR, C, BL BR
+gfx_g =1;
+
+drawbox(0,0);
+drawbox(gfx_w,0);
+
+drawbox(gfx_w/2,0);
+
+drawbox(0,gfx_h);
+drawbox(gfx_w,gfx_h);
+
+pan_thresh=4;
+
+//if mouse is within threshold of pan knob
+(mouse_cap ==1 ) ? 
+(
+	// this_coeff=;
+	//compute numbers as if the origin was the center
+	pan_x2=  (mouse_x-(gfx_w/2))*200/gfx_w ;
+	pan_y2= -(mouse_y-(gfx_h/2))*200/gfx_h ;
+	
+	slider1=floor(pan_x2);
+	slider2=floor(pan_y2);	
+	do_slider_stuff();
+
+	
+
+	//to draw automation outside of the @slider section
+	slider_automate(slider1);
+	slider_automate(slider2);
+
+
+	gfx_r = gfx_g = gfx_b = 1;
+	// gfx_a+=in0*0.5; //blink box according to input
+	drawbox(mouse_x,mouse_y );
+	
+):
+(	//no mouse activity, displ automation
+	gfx_r =  1; //yellow due to set red previously
+
+	new_x=(slider1+100)*gfx_w/200;
+	new_y=-(slider2-100)*gfx_h/200;
+
+	box_width*=2; //enlarged box 
+	drawbox(new_x,new_y);
+	// box_width/=2;//set back to original box 
+);

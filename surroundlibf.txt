@@ -367,6 +367,7 @@ function fft_4ch_subtract()
 function check_silence_set_fftsize(memset_range)
 (
 	//set fftsize to a small value so DSP is skipped
+	
 	(sqrt(sum_all_spl)/(fftsize - overlap )) <0.000001 ?
 	(
 		not_silence=0;
