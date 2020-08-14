@@ -113,6 +113,27 @@ drawbox(gfx_w/2,0);
 drawbox(0,gfx_h);
 drawbox(gfx_w,gfx_h);
 
+//if too center, draw red box
+abs(slider1)<80&&abs(slider2)<80?
+(
+	
+	box_width=(gfx_w+gfx_h)*0.8/2;
+
+
+	gfx_a=0.1;
+	gfx_g =0;
+	gfx_r =1;
+	
+	
+	drawbox(gfx_w/2,gfx_h/2);
+	
+	//restore state
+	gfx_g =1;
+	gfx_r =0;
+	gfx_a=0.8;
+	box_width=floor(0.7*sqrt((gfx_w+gfx_h)/2))*2;
+);
+
 pan_thresh=4;
 
 //if mouse is within threshold of pan knob
