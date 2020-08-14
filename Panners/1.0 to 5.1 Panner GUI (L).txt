@@ -94,7 +94,7 @@ do_pan(pan_back);
 // inspector2=spl1;
 
 
-@gfx 300 300
+@gfx 500 500
 // pan=slider1;//pan, from clockwise, degrees
 box_width=floor(0.7*sqrt((gfx_w+gfx_h)/2))*2;
 
@@ -116,15 +116,23 @@ drawbox(gfx_w,gfx_h);
 pan_thresh=4;
 
 //if mouse is within threshold of pan knob
-(mouse_cap ==1 ) ? 
+(mouse_cap && 1 ) ? 
 (
 	// this_coeff=;
 	//compute numbers as if the origin was the center
-	pan_x2=  (mouse_x-(gfx_w/2))*200/gfx_w ;
-	pan_y2= -(mouse_y-(gfx_h/2))*200/gfx_h ;
 	
-	slider1=floor(pan_x2);
+	mouse_cap  ==1 || mouse_cap  ==5  ? //mouse & shift, restrict to Y mvt
+	(	pan_x2=  (mouse_x-(gfx_w/2))*200/gfx_w ;	);
+	
+	mouse_cap ==1 || mouse_cap == 9? //mouse & ctrl or cmd (mac), restrict to X mvt
+	
+	(	pan_y2= -(mouse_y-(gfx_h/2))*200/gfx_h ;	);
+	
+
+	slider1=floor(pan_x2);	
+
 	slider2=floor(pan_y2);	
+	
 	do_slider_stuff();
 
 	//to draw automation outside of the @slider section
@@ -134,16 +142,19 @@ pan_thresh=4;
 
 	gfx_r = gfx_g = gfx_b = 1;
 	// gfx_a+=in0*0.5; //blink box according to input
-	drawbox(mouse_x,mouse_y );
+	// drawbox(mouse_x,mouse_y );
+	
 	
 ):
 (	//no mouse activity, displ automation
 	gfx_r =  1; //yellow due to set g previously
 
-	new_x=(slider1+100)*gfx_w/200;
-	new_y=-(slider2-100)*gfx_h/200;
-
 	box_width*=2; //enlarged box 
-	drawbox(new_x,new_y);
+	
 	// box_width/=2;//set back to original box 
 );
+
+new_x=(slider1+100)*gfx_w/200;
+new_y=-(slider2-100)*gfx_h/200;
+
+drawbox(new_x,new_y);
