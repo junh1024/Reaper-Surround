@@ -2,12 +2,12 @@
 
 Introduction
 ---
-A collection of mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). These are JSFX so DOWNLOAD ZIP & Put them in your Reaper EFFECTS folder. Note if you're cherry picking FX, you'll probably need surroundlib so get those too [1]. Bugs/suggestions? File an [issue](https://github.com/junh1024/Reaper-Surround/issues) , [cockos forum thread](https://forum.cockos.com/showthread.php?p=1541506) , or contact me on twitter.
+A collection of mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). These are JSFX so **[DOWNLOAD ZIP](https://github.com/junh1024/Reaper-Surround/archive/master.zip)** & extract them in your Reaper EFFECTS folder. TLDR, you will need to extract ALL files since many depend on each other. Bugs/suggestions? File an [issue](https://github.com/junh1024/Reaper-Surround/issues) , [cockos forum thread](https://forum.cockos.com/showthread.php?p=1541506) , or contact me on twitter.
 
 
 Donations
 ---
-Please PM me on [cockos forums](https://forum.cockos.com/member.php?u=86301) /reddit/Twitter/DC for donation info.
+Donorbox: https://donorbox.org/junh1024
 
 Disclaimer
 ---

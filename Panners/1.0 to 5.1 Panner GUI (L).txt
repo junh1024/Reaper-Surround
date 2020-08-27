@@ -114,15 +114,16 @@ drawbox(0,gfx_h);
 drawbox(gfx_w,gfx_h);
 
 //if too center, draw red box
-abs(slider1)<80&&abs(slider2)<80?
+// abs(slider1)<80&&abs(slider2)<80?
 (
 	
 	box_width=(gfx_w+gfx_h)*0.8/2;
 
-
-	gfx_a=0.1;
-	gfx_g =0;
-	gfx_r =1;
+	temp1=100-((abs(slider1)+abs(slider2))/2);
+	
+	gfx_a=(temp1/100)-0.5;
+	gfx_g =0.2;
+	gfx_r =0.5;
 	
 	
 	drawbox(gfx_w/2,gfx_h/2);
