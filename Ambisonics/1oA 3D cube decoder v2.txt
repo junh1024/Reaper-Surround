@@ -1,4 +1,4 @@
-desc: based on http://www.blueripplesound.com/decoding v5
+desc: based on http://www.blueripplesound.com/decoding v2 (slightly faster)
 
 //W originally .7072 w/o 0.75 adjustment
 
