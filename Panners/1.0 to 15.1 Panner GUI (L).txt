@@ -3,7 +3,7 @@ desc: mono to 15.1/7.1 panner GUI. (phantom center) ALPHA.
 slider1:0<-180,180>Pan (deg)
 slider2:0<-100,100,5>Height
 slider3:100<0,100,5>Width  
-slider4:0<0,100,5>Center (NOT IMPLEMENTED)
+slider4:0<0,100,5>Center
 
 slider5:0<0,3,{Move (Mixing),Copy (Mixing),Move (Monitoring),Copy (Monitoring)}>LFE Mode
 slider6:0<0,100,1>LFE amount (%)
@@ -29,11 +29,21 @@ main_gain=1;
 coeff_A=0;
 coeff_B=0;
 
+center_coeff_forced_width=0;
 
+
+function do_slider_stuff()
+(
+	center_coeff=slider4/100; 
+	center_coeff_forced_width=max(1-(abs(slider1)/30),0);
+
+);
 
 @slider
-ELL_W=slider3/100   ;
-top_W=slider3/100   ;
+ELL_W=slider3/100;
+top_W=slider3/100;
+
+do_slider_stuff();
 
 //LFE stuff
 LFE_pan_coeff=(slider6*$pi)/200; //depth scaled from 0-100 to 0>half pi
@@ -108,6 +118,17 @@ spl0*=main_gain;
 spl1*=main_gain;
 
 
+
+//center
+C_temp = (spl0+spl1)*.7071;
+L_temp = (spl0-spl1)*.5;
+LR_common=(C_temp)*0.7071*(1-(center_coeff*center_coeff_forced_width));
+
+spl2=C_temp*(center_coeff*center_coeff_forced_width);
+
+spl0=  LR_common + L_temp  ;
+spl1=  LR_common - L_temp ;
+
 // conv polar to cart for displ automation
 (slider7==0)?(height_temp=100;):(height_temp=slider2;);
 temp_rad=(155-((100-slider3)/1.8+ height_temp))/(155*2);
@@ -172,6 +193,7 @@ drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 //if mouse is within threshold of pan knob
 (mouse_cap ==1 /*&& mouse_x >=pan_x-box_width*pan_thresh && mouse_y >= pan_y -box_width*pan_thresh && mouse_x <=pan_x+box_width*pan_thresh && mouse_y <= pan_y +box_width*pan_thresh */ ) ? 
 (
+	do_slider_stuff();
 	
 	//compute numbers as if the origin was the center
 	pan_x2=mouse_x-gfx_w/2  ;

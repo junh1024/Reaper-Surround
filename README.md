@@ -2,16 +2,15 @@
 
 Introduction
 ---
-A collection of mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). These are JSFX so **[DOWNLOAD ZIP](https://github.com/junh1024/Reaper-Surround/archive/master.zip)** & extract them in your Reaper EFFECTS folder. TLDR, you will need to extract ALL files since many depend on each other. Bugs/suggestions? File an [issue](https://github.com/junh1024/Reaper-Surround/issues) , [cockos forum thread](https://forum.cockos.com/showthread.php?p=1541506) , or contact me on twitter.
-
+A collection of mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). These are JSFX so **[DOWNLOAD ZIP](https://github.com/junh1024/Reaper-Surround/archive/master.zip)** & extract them in your Reaper EFFECTS folder. TLDR, you will need to extract ALL files since many depend on each other. It is advised to ENABLE "options>show in FX list> JSFX filename" as I refer to them by name. Bugs/suggestions? File an [issue](https://github.com/junh1024/Reaper-Surround/issues) , [cockos forum thread](https://forum.cockos.com/showthread.php?p=1541506) , or contact me on [twitter](https://twitter.com/junh1024/) / [reddit](https://old.reddit.com/user/junh1024) .
 
 Donations
 ---
-Donorbox: https://donorbox.org/junh1024
+I have been working on these tools since January 2014. There are close to 100 tools (not counting tools with multiple modes). I know what's useful for surround & many are unique. If you use them (especially commercially), you are encouraged to donate. By CC (stripe) or Paypal on https://donorbox.org/junh1024 to encourage further development & lets me know they are genuinely useful for work. Also, contact me for custom development based on my stuff.
 
 Disclaimer
 ---
-NO warranty is provided, and these are provided as-is. Although I have been using these since 2015, I reserve the right to make changes, including backwards-incompatible changes. Although it is not in my intrest to do so, as I, too, have projects to keep working. Tools may be added, changed, or deleted at ANY time. Although old versions of this repo are available in the worst case. Experimental tools should be especially prone to change (pending my time & effort), and tools in **/Old** are prone to deletion/already deprecated/may be wrong. Some FX may have unused controls, which are TBD.
+NO warranty is provided, and these are provided as-is. Although I have been using these since 2014, I reserve the right to make changes, including backwards-incompatible changes, although I try not to as I also have projects to keep working. Tools may be added, changed, or deleted at ANY time. Although old versions of this repo are available in the worst case. Alpha/beta tools are especially prone to change  tools in /Old are deprecated.
 
 Introduction to 15.1
 ---
@@ -28,17 +27,18 @@ Introduction to 15.1
 Quick start/Example workflow tools
 ---
 ### 2D workflow:
-* 3.1 Panner (M).txt (for center channel dialog, front SFX, and LFE use), 7.1 Mono panner.txt (for phantom center & surround panning), 7.1 to 5.1 Downmix (M).txt
-* Surround Pan (5.1 GUI panner)
+* 1.0 to 5.1 Panner GUI (L).txt
+* 1.0 to 15.1 Panner GUI (L).txt in "2D 7.1" mode
+* 2.0 to 5.0 Upmix V3 (L).txt
 * < 5.1 Effects & manipulators >
-* 5.1 to 2.0 Downmix (L).txt
+* 5.1 to 2.0 Downmix (L).txt (7.1 aware)
 
 ### 3D workflow:
-* 1.0 to 15.1 Panner (S).txt
-* 1.0 to 15.1 Panner GUI (M).txt
+* 1.0 to 15.1 Panner GUI (L).txt
+* 5.1 to 3D Upmix (L).txt
 * 15.1 to 7.1 Downmix v2 (L).txt
-* 15.1 to 8.0 Speaker Tool (M).txt
 * 15.1 to 3oA Downmix (M).txt
+* 15.1 to 7.1.4 Downmix (S).txt
 * 15.1 to 7.x Downmix (M).txt (11.1h/7.1.4 DTS-X) or 15.1 to 3D Downmix (M).txt (9.1h/5.1.4 Auro3D, AMBEO speaker)
 
 ### Fuma Ambisonics workflow:
@@ -49,34 +49,12 @@ Quick start/Example workflow tools
 - 7.1 Ambisonics decoder.txt	(phantom)
 - 4.0 Ambisonics codec.txt		(phantom)
 
-### Note 1
-**Block-based effects**
-
-These effects analyse a chunk of audio, then make a decision. The audio is not delayed, but the reaction is delayed by half a blocksize. This is done for performance & audio stability reasons. These are NOT based on FFT. To make it react on time would be a big hassle with PDC due to differing pathes, for small benefit & hence isn't implemented. The minimum blocksize that happens in practice is set in Reaper preferences under Audio Device.
-* A small block makes it change faster, and a high response makes it change more, so these 2 things make it behave quicker.
-* A big blocksize would make reactions happen inappropriately, hence blocksize is a suggested 2048 or lower (23+ blocks/sec @48k)
-* A high response would make the audio unstable, hence response shouldn't go above 0.3
-
-I have tried to set sensible defaults.
-
-### Note 2
-**Surround upmixers**
-
-V1 & V2 upmixers are based on matrixes & are rudimentary so you either have:
-- Wide back, no rear delay (downmix-compatible, but sounds bad cuz a wide back is distracting)
-- Wide back, rear delay (NOT downmix-compatible, due to delay, stil sounds bad)
-- Narrow back, no rear delay (VERY NOT downmix-compatible, due to polarity, stil sounds bad)
-- Narrow back, rear delay  (NOT downmix-compatible, due to delay, sounds acceptable)
-
-To totally avoid this dilemma, please use the V3 series FFT-based upmixers made in 2020.
-
-### Note 3
-**Sizes & CPU use**
-
-There may be different sizes of the same FX, eg, M(U)cro, (C)ommon, (S)mall, (M)edium, (L)arge, (X)tra Large. Different variations are provided for your convenience if CPU performance is of the utmost concern to you or if you are on a low-performance system (e.g, Atom, Celeron, etc). Obviously, a larger size of the same FX will provide more controls, but also more CPU consumption. On a fast CPU, each FX should use on average 1% of a core, or on a slow system, 5% of a core.
+### Stereo beatmaking:
+- FFT Multi Tool (L).txt: Noise/Transient control for creative use
+- FFT Stereo Tool (L).txt: Phase limit/reflect modes to tame your width
 
 # Effects listing
-Listed below are the most common/useful effects. For more info, refer to JSFX. It is advised to disable JSFX descriptions.
+Listed below are the most common/useful effects. For more info, refer to JSFX.
 
 Ambisonics Panners (FuMa)
 ---
@@ -94,21 +72,17 @@ Ambisonics Decoders (phantom)
 - 15.1 Ambisonics decoder.txt (hand-tuned)
 - 7.1 Ambisonics decoder.txt
 - 4.0 Ambisonics codec.txt (padded to 5.1)
-- 1oA 11.1bf decoder.txt (wrong)
-- 1oA 3D cube decoder v3.txt
-- 1oA prism.txt
+- 1oA 3D cube decoder v1.txt
+- 1oA prism decoder.txt
 
 Decoders are provided for your convenience but they're not that great.
 
 Panners
 ---
 - 3.1 Panner (M).txt: 3.0 front surround panner, with width control. Move & Copy actions are supported for LFE use, and  Mixing & Monitoring modes for a total of 4 combinations. The specification for LFE in digital mixes, is to gain it by 10dB on playback. Hence while mixing, it is gained by -10dB. For monitoring, this is not applied.
-- 7.1 Mono Panner.txt
-- 1.0 to 15.1 Panner (S).txt
-- 1.0 to 15.1 Panner GUI (M).txt
+- 1.0 to 5.1 Panner GUI (L).txt
+- 1.0 to 15.1 Panner GUI (M).txt (2D 7.1,2.5D 15.1,3D-ish 15.1) modes
 - 7.1 to 15.1 Height Panner v2 (M).txt
-- Surround Pan: 5.1 GUI panner courtesy of Sonic Anomaly. Doesn't work well with UI embedding in REAPER 6+ because the UI doesn't resize.
-- "xtra surround panners.zip" has Sonic Anomaly's V2 & V3 (beta) panners. His V3 has 7.1 panning. These require REAPER 4.59+
 
 Upmixers
 ---
@@ -140,8 +114,6 @@ Upmixers are considered experimental & are based on matrixes. It's advisable to 
 - 6.1 to 7.1 Upmix (M).txt
 - 15.1 to 22.2 Upmix (U).txt
 
-
-
 Manipulators
 ---
 - 3.0 Spread Control (U).txt
@@ -159,6 +131,7 @@ Downmixers
 - 15.1 to 7.1 Downmix v2 (L).txt
 - 15.1 to 7.x Downmix (M).txt
 - 15.1 to 3D Downmix (M).txt
+- 15.1 to 7.1.4 Downmix (S).txt
 - 15.1 to 8.0 Speaker Tool (M).txt (8.0h Order: L R, HL HR, BL BR, SL SR, which is similar & backwards compatible with SMPTE-MS 7.1, for 3D surround playback using commonly available 7.1 sound cards)
 
 ![8.0sh](https://i.imgur.com/1nivgkz.png)
@@ -228,6 +201,33 @@ To install Python for Windows, go to https://www.python.org/downloads/windows/  
 
 Then you're ready to go. Run a Reascript by going Actions > Show > Load, Run.
 
+
+### Note 1
+**Block-based effects**
+
+These effects analyse a chunk of audio, then make a decision. The audio is not delayed, but the reaction is delayed by half a blocksize. This is done for performance & audio stability reasons. These are NOT based on FFT. To make it react on time would be a big hassle with PDC due to differing pathes, for small benefit & hence isn't implemented. The minimum blocksize that happens in practice is set in Reaper preferences under Audio Device.
+* A small block makes it change faster, and a high response makes it change more, so these 2 things make it behave quicker.
+* A big blocksize would make reactions happen inappropriately, hence blocksize is a suggested 2048 or lower (23+ blocks/sec @48k)
+* A high response would make the audio unstable, hence response shouldn't go above 0.3
+
+I have tried to set sensible defaults.
+
+### Note 2
+**Surround upmixers**
+
+V1 & V2 upmixers are based on matrixes & are rudimentary so you either have:
+- Wide back, no rear delay (downmix-compatible, but sounds bad cuz a wide back is distracting)
+- Wide back, rear delay (NOT downmix-compatible, due to delay, stil sounds bad)
+- Narrow back, no rear delay (VERY NOT downmix-compatible, due to polarity, stil sounds bad)
+- Narrow back, rear delay  (NOT downmix-compatible, due to delay, sounds acceptable)
+
+To totally avoid this dilemma, please use the V3 series FFT-based upmixers made in 2020.
+
+### Note 3
+**Sizes & CPU use**
+
+There may be different sizes of the same FX, eg, M(U)cro, (C)ommon, (S)mall, (M)edium, (L)arge, (X)tra Large. Different variations are provided for your convenience if CPU performance is of the utmost concern to you or if you are on a low-performance system (e.g, Atom, Celeron, etc). Obviously, a larger size of the same FX will provide more controls, but also more CPU consumption. On a fast CPU, each FX should use on average 1% of a core, or on a slow system, 5% of a core.
+
 FFT Notes
 ---
 
@@ -272,13 +272,3 @@ Conclusion: performance or quality is roughly on par with commercial implementat
 
 FAQ
 ---
-
-*How do I pan a sound flying directly overhead if your tools only seem to pan to the sides*?
-
-You can (ab)use 5.1 Mix Control (M).txt as a X-Y panner, pan around in 7.1 then push it up & reduce width with 15.1 Width Control (M).txt, or play around with 1.0 to 3oA 3D Panner (S).txt. Elevation for 3oA 3D panners go from 0-180* for exactly this reason. Or use "Surround Pan".
-
-Future Directions
----
-Changes MAY be made to Ambi FX (decoders & conventions), and upmixer FX, and MAY break.
-
-[1]  I'm not asking you to download a 500mb electron app or a labyrinth of dependancies. Just 3 small text files.

@@ -11,13 +11,14 @@ slider1:100<0,100,2>Center Level Control
 width_coeff=slider1/100; 
 
 @sample
-Mid=spl0+spl1;
-Side=spl0-spl1;
+// Mid=spl0+spl1;
+// Side=spl0-spl1;
 
-C_temp = (Mid)*.707;
-L_temp = (Side)*.5;
+C_temp = (spl0+spl1)*.7071;
+L_temp = (spl0-spl1)*.5;
+LR_common=(C_temp)*0.7071*(1-(width_coeff));
 
 spl2=C_temp*(width_coeff);
 
-spl0=  (Mid)*0.5*(1-(width_coeff)) + L_temp  ;
-spl1=  (Mid)*0.5*(1-(width_coeff)) - L_temp ;
+spl0=  LR_common + L_temp  ;
+spl1=  LR_common - L_temp ;
