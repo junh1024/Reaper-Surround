@@ -1,4 +1,4 @@
-desc:Downmix based on Steinberg MixConvert
+desc: Downmix surround to stereo, 7.1 aware.
 
 slider1:100<0,100,10>Front Width
 slider2:100<0,100,10>Rear Width
@@ -17,6 +17,10 @@ import surroundlib3.txt
 F_width_coeff=slider1/100;
 R_width_coeff=slider2/100;
 
+F_gain=slider4/100;
+C_gain=0.7071*slider5/100;
+R_gain=slider6/100;
+
 @sample
 //Front width
 front_width(F_width_coeff);
@@ -25,21 +29,13 @@ front_width(F_width_coeff);
 rear_width(R_width_coeff);
 
 //DPL
-slider3 == 0 ? spl5 = spl5*-1;
+slider3 == 0 ? ( spl5*=-1; spl7*=-1; );
 
-//Levels
-spl0 *=(slider4/100); 
-spl1 *=(slider4/100); 
-spl2 *=(slider5/100); 
-spl3 =0; 
-spl4 *=(slider6/100); 
-spl5 *=(slider6/100);
+//Downmix
+spl0 = (spl0*F_gain)+(spl2*C_gain)+((spl4+spl6)*R_gain); 
+spl1 = (spl1*F_gain)+(spl2*C_gain)+((spl5+spl7)*R_gain); 
 
-//DOwnmix
-spl0 = spl0+(spl2*0.7071)+spl4; 
-spl1 = spl1+(spl2*0.7071)+spl5; 
-spl2 =0; 
-spl3 =0; 
-spl4 =0; 
-spl5 =0;
+//silence surround
+spl2 =spl3 =spl4 =spl5 =0;
+spl6 =spl7 =0;
 
