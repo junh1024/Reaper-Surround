@@ -4,13 +4,12 @@ desc: 5.1 to 7.1 FFT upmix. in BETA
 
 slider1:1<0,1,1{Square (cine),Circle (ITU)}>Mode
 slider2:100<0,200,1>Amount (%)
-slider3:1<0,1,0.01>N/A
-slider4:75<0,100,1>Cutoff (%)
-slider5:1<0,1,0.01>Time Response
-slider6:25<0,50,5>FFT Overlap (%)
-slider7:12<10,14,1>FFT size (pow2)
-slider8:0<0,1,1{No,Yes}>N/A
-
+slider3:50<0,100,1>N/A
+slider4:50<0,100,1>N/A
+slider5:75<0,100,1>Cutoff (%)
+slider6:1<0,1,0.01>Time Response
+slider7:25<0,50,5>FFT Overlap (%)
+slider8:12<10,14,1>FFT size (pow2)
 
 import surroundlib2.txt
 import surroundlib3.txt
@@ -27,13 +26,13 @@ out0=out1=out4=out5=0;
 
 @slider
 
-Time_Response=slider5;
-fftsize=2^slider7;
+Time_Response=slider6;
+fftsize=2^slider8;
 pdc_delay = fftsize - 1;
 scale = 1/fftsize;
 
 // inspector1=floor(slider3/10);
-overlap_w=overlap_sel[slider6/10]; //40 % overlap
+overlap_w=overlap_sel[slider7/10]; //40 % overlap
 // overlap_w=slider3/100;
 overlap=floor(overlap_w*fftsize);
 i = 0;
@@ -60,7 +59,7 @@ mode<3? //  >100% amount will make it louder in ambience modes.
 
 Response=slider3;
 
-Resp_bins=slider4/100;
+Resp_bins=slider5/100;
 
 
 elements_to_skip=fftsize-floor(Resp_bins*fftsize);

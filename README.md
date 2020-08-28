@@ -2,11 +2,11 @@
 
 Introduction
 ---
-A collection of mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). These are JSFX so **[DOWNLOAD ZIP](https://github.com/junh1024/Reaper-Surround/archive/master.zip)** & extract them in your Reaper EFFECTS folder. TLDR, you will need to extract ALL files since many depend on each other. It is advised to ENABLE "options>show in FX list> JSFX filename" as I refer to them by name. Bugs/suggestions? File an [issue](https://github.com/junh1024/Reaper-Surround/issues) , [cockos forum thread](https://forum.cockos.com/showthread.php?p=1541506) , or contact me on [twitter](https://twitter.com/junh1024/) / [reddit](https://old.reddit.com/user/junh1024) .
+A collection of mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). These are JSFX so **[Code-DOWNLOAD ZIP](https://github.com/junh1024/Reaper-Surround/archive/master.zip)** & extract them in your Reaper EFFECTS folder. TLDR, you will need to extract ALL files since many depend on each other. It is advised to ENABLE "options>show in FX list> JSFX filename" as I refer to them by name. Bugs/suggestions? File an [issue](https://github.com/junh1024/Reaper-Surround/issues) ,  or contact me on [twitter](https://twitter.com/junh1024/) / [reddit](https://old.reddit.com/user/junh1024) .
 
 Donations
 ---
-I have been working on these tools since January 2014. There are close to 100 tools (not counting tools with multiple modes). I know what's useful for surround & many are unique. If you use them (especially commercially), you are encouraged to donate. By CC (stripe) or Paypal on https://donorbox.org/junh1024 to encourage further development & lets me know they are genuinely useful for work. Also, contact me for custom development based on my stuff.
+Surround is just a hobby for me since 2014. If you use them (especially commercially), you are encouraged to donate. By CC (stripe) or Paypal on https://donorbox.org/junh1024 to encourage further development & lets me know they are genuinely useful for work. Also, contact me for custom development based on my stuff.
 
 Disclaimer
 ---
@@ -101,8 +101,8 @@ Upmixers are considered experimental & are based on matrixes. It's advisable to 
 	- mandatory 100% phase accuracy by design. No "faux phase accurate" mode which isn't even close
 	- resizable UI which fits on small screens
 - 5.1 to 7.1 Upmix (U).txt:
-- 5.1 to 7.1 Upmix V2 (M).txt: These 2 5>7 upmixers are so rudimentary that they will probably have limited use. Side/Back balance uses the same mid/side detection as the 2>5 upmix. A balance control is provided for convenience, but may be 'bouncy' near the ends. [Note 1](#note-1)
-- 5.1 to 7.1 Upmix V3 (M).txt: Using FFT  [see FFT Notes](#fft-notes) to upmix 51 to 71. Since 71 is downmixed to 51 by combining the back 4,
+- 5.1 to 7.1 Upmix V2 (L).txt: These 2 5>7 upmixers are so rudimentary that they will probably have limited use. Side/Back balance uses the same mid/side detection as the 2>5 upmix. A balance control is provided for convenience, but may be 'bouncy' near the ends. [Note 1](#note-1)
+- 5.1 to 7.1 Upmix V3 (L).txt: Using FFT  [see FFT Notes](#fft-notes) to upmix 51 to 71. Since 71 is downmixed to 51 by combining the back 4,
 	- Square mode isn't downmix compatible since it upscales the corner 4 to the side. For specialist use only.
 	- Circle mode is downmix compatible since it re interprets the back 2 to back 4. Should work well on content downmixed from 61 or 71.
 - 5.1 to 3D Upmix (L).txt: upmixes Using FFT [see FFT Notes](https://github.com/junh1024/Reaper-Surround#fft-notes) to height sounds that are closer to:
