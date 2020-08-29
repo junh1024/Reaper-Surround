@@ -2,9 +2,9 @@
 
 desc: FFT Multi Tool. Read docs. in ALPHA
 
-slider1:3<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract AR,Phase limit,Phase reflect,Noise Control/GF3 ARF,Sustainizer A,Split-Combine Frequency A,Min2 A,N/A,Transient control A,PS N/A,bass boost}>Mode
+slider1:3<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract AR,Noise Control/GF3 ARF,Transient control,Split-Combine Frequency A,Min2 A (deprecated),bass boost (deprecated)}>Mode
 slider2:100<0,200,1>Amount (%)
-slider3:1<0,1,0.01>Frequency Response 
+slider3:1<0,1,0.01>Frequency Response
 slider4:75<0,100,1>Cutoff (%)
 slider5:0.5<0,1,0.01>Time Response 
 slider6:40<0,50,5>FFT Overlap (%)
@@ -147,20 +147,32 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 		)
 		? 
 		(
-			Angles3[i]=atan2(left_r_two,left_i_two);
-			Angles4[i]=atan2(right_r_two,right_i_two);
-
+			//v0
 			// Angle_Difference1[i]=Angles3[i]-Angles1[i];
 			// Angle_Difference2[i]=Angles4[i]-Angles2[i];
 
 			// Angles1[i]+=Angle_Difference1[i]*slider2/100;
 			// Angles2[i]+=Angle_Difference2[i]*slider2/100;
+			
+			//v1
+			// Angles3[i]=atan2(left_r_two,left_i_two);
+			// Angles4[i]=atan2(right_r_two,right_i_two);
 
 			//just synthesize Re & Im with mag set1 & angles set2
-			left_r = Magnitudes1[i]*sin(Angles3[i]) ;
-			left_i = Magnitudes1[i]*cos(Angles3[i]) ;
-			right_r = Magnitudes2[i]*sin(Angles4[i]) ;
-			right_i = Magnitudes2[i]*cos(Angles4[i]) ;
+			// left_r = Magnitudes1[i]*sin(Angles3[i]) ;
+			// left_i = Magnitudes1[i]*cos(Angles3[i]) ;
+			// right_r = Magnitudes2[i]*sin(Angles4[i]) ;
+			// right_i = Magnitudes2[i]*cos(Angles4[i]) ;
+			
+			//v2
+			//take set2 for its phase, but multiply by factor to get mag of set1
+			
+			left_r=left_r_two  *Magnitudes1[i]/Magnitudes3[i];
+			left_i=left_i_two  *Magnitudes1[i]/Magnitudes3[i];
+			right_r=right_r_two*Magnitudes2[i]/Magnitudes4[i];
+			right_i=right_i_two*Magnitudes2[i]/Magnitudes4[i];
+
+			
 
 		);
 
@@ -170,66 +182,8 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 			
 		);
 		
-		
-		(mode==5||mode==6)? //phase limit
-		(
-
-			ms_encode_complex();
 				
-			// mid=sqrt(mid_r^2+mid_i^2);
-			// side=sqrt(side_r^2+side_i^2);
-			
-			//quicker
-			mid=sqr(mid_r)+sqr(mid_i);
-			side= sqr(side_r)+sqr(side_i);
-
-
-			side>mid?
-			(	//phase limit
-				mode==5?
-				(
-					side_r*=(mid/side); 
-					side_i*=(mid/side); 
-
-					//M/S decode LR
-					left_r =  (mid_r) + (side_r);
-					left_i =  (mid_i) + (side_i);
-					right_r = (mid_r) - (side_r);
-					right_i = (mid_i) - (side_i);	
-				):
-				(
-					//phase reflect, reverse polarity of R is the same thing as swapping M&S
-					//sounds better than reverse polarity of R if >90*
-					right_r *=-1  ;
-					right_i *=-1  ;	
-
-				);
-			);
-				
-		/*	
-
-		 //phase reflect, wider bins sound worse w/ no overlap
-
-			// Angles1[i]=atan2(left_r,left_i);
-			// Angles2[i]=atan2(right_r,right_i);
-			
-			// ad1=abs(Angles1[i]-Angles2[i]);//different to below
-			
-			// ad1>pi?ad1=2*pi-ad1;//fix angle difference cuz should be under 180*
-			
-			//reverse polarity of R if >90*, but sounds bad
-			// ad1>(pi/2)?
-			// (
-			// right_r *= -1;
-			// right_i *= -1;
-			// );
-				
-		*/	
-		
-		
-		);
-		
-		(mode==7&&Magnitudes1[i]<old_magnitude)?//Noise control/Gap filler
+		(mode==5&&Magnitudes1[i]<old_magnitude)?//Noise control/Gap filler
 		(
 			
 			lr_complex_apply_1_scaling(Amount);
@@ -238,47 +192,14 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 		
 		old_magnitude=Magnitudes1[i]*(Response/10)+old_magnitude*(1-Response/10);
 		
-		(mode==8)? // Sustainizer, does not sound good w/ no overlap
-		(
-
-			// left_r*=(-1)^(i/2);
-			// right_r*=(-1)^(i/2);
-			// left_i*=(-1)^i;
-			// right_i*=(-1)^i;
-			
-			// rand1=ceil(rand(10));
-			// rand2=ceil(rand(10));
-			
-			// left_r*=(-1)^rand1;
-			// right_r*=(-1)^rand1;
-			// left_i*=(-1)^rand2;
-			// right_i*=(-1)^rand2;
-			
-			//randomise phase, inspired by DTBlkFx
-			phaseadj_l = rand(pi)*Amount;
-			
-			cos_adj_l = cos(phaseadj_l);
-			sin_adj_l = sin(phaseadj_l);
-			
-			//need to put into temporary vars 1st cuz l_i etc get overwritten b4 they're used again= incorrect results
-			 left_r_two = left_r* cos_adj_l - left_i* sin_adj_l;
-			 left_i_two = left_r* sin_adj_l + left_i* cos_adj_l;
-			right_r_two = right_r*cos_adj_l - right_i*sin_adj_l;
-			right_i_two = right_r*sin_adj_l + right_i*cos_adj_l;
-			
-			 left_r =  left_r_two ;
-			 left_i =  left_i_two ;
-			right_r = right_r_two ;
-			right_i = right_i_two ;
-
-		);
+		
 		
 // inspector1=(i)/fftsize;
 
 		// (mode==9&&((i)/fftsize) > Amount)? //Split-Combine Frequency, freq split (linear scale up to nyquist) depends on Amount
 		//Amount controls a log frequency. sqrt of 100 is 10. log can make -ve number so numbers are enlarged 4 comparing
 		//does not sound good w/ no overlap. artefacts @ border frequency
-		(mode==9&& sqrt((i*100)/fftsize) > Amount*10)?
+		(mode==7&& sqrt((i*100)/fftsize) > Amount*10)?
 		(
 		
 		
@@ -289,7 +210,7 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 		
 		);
 		
-		(mode==10)? //Min2
+		(mode==8)? //Min2
 		(
 			Angles1[i]=atan2(left_r,left_i);
 			Angles2[i]=atan2(right_r,right_i);
@@ -323,7 +244,7 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 		
 
 		
-		(mode==12&&Magnitudes1[i]>Magnitudes1_old[i])? //transient designer
+		(mode==6&&Magnitudes1[i]>Magnitudes1_old[i])? //transient designer
 		(
 
 			// tmp=Magnitudes1[i];
@@ -347,7 +268,7 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 		// Magnitudes1_old[i]=Magnitudes1[i]*Response+Magnitudes1_old[i]*(1-Response); //sounds bad
 		// Magnitudes1_old[i]=Magnitudes1[i];
 		
-		(mode==13)? //pan select
+		(mode==139999)? //pan select
 		(
 			abs();
 			panselector=Amount-1;
@@ -366,7 +287,7 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 		
 		);
 		
-		(mode==14 && i<fftsize/50)? //bass boost select, from mode 12
+		(mode==9 && i<fftsize/50)? //bass boost select, from mode 12
 		(
 			L_scaling=(Magnitudes1[i]*(Amount^2)+Magnitudes1_old[i]*(1-(Amount^2)))/Magnitudes1[i];
 			// L_scaling=1/L_scaling;
@@ -383,9 +304,9 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 // improved transient designer
 // improved Tonal/noise separator, cepstral?
 // select notes via MIDI input
-// 51>71 upscale V3 modes(square M/S, circle-M/S, circle pan) w/ temporal response
+// 51>71 upscale, w/ threshold & crossover
 // 51>91h upscale modes(discrete SFX+?)
-// 51 GUI panner, 51>20 downmix V3 FFT
+// 51>20 downmix V3 FFT
 // ambisonics 40 V2,3 decoder, microphone tool V3 in FFT
 // cutoff behavior depends  on mode, bypass/silence
 // reduce CPU when no audio

@@ -1,4 +1,4 @@
-desc: mono to 15.1/7.1 panner GUI. (phantom center) ALPHA.
+desc: mono to 15.1/7.1 panner GUI. ALPHA.
 
 slider1:0<-180,180>Pan (deg)
 slider2:0<-100,100,5>Height
@@ -162,8 +162,11 @@ gfx_b =1;
 drawbox(gfx_w/3,0);
 drawbox(gfx_w*2/3,0);
 
-//Surround
+//center
 gfx_b =0;
+drawbox(gfx_w/2,0);
+
+//Surround
 drawbox(gfx_w/3,gfx_h);
 drawbox(gfx_w*2/3,gfx_h);
 
