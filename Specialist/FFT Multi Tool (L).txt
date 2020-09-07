@@ -384,3 +384,31 @@ spl1 = buf1_out[pos+1];
 
 spl4=(out4-spl0)*slider8;
 spl5=(out5-spl1)*slider8;
+
+@gfx 500 20
+
+box_width=16;
+
+
+// gfx_mode=1.0;
+
+g=0;//counter for gfx
+
+gfx_r=gfx_g=gfx_b=gfx_a=1;
+
+
+mode==4?
+(
+	
+	while
+	( 
+		gfx_a=L_scaling_array[g];
+		set_color(g/(fftsize/2.5)); //update color according to frequency
+		// drawbox( (g*gfx_w)/(fftsize/2),box_width/2) ; //draw position for each bin
+		drawbox( (g*gfx_w)/(fftsize/2),gfx_h*(1-L_scaling_array[g])) ; //draw position for each bin
+		g+=8;
+		g<fftsize/2 - 1 - (elements_to_skip/2);
+
+	);
+
+);

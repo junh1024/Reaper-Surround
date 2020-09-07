@@ -2,11 +2,14 @@
 
 Introduction
 ---
-A collection of mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). These are JSFX so **[Code-DOWNLOAD ZIP](https://github.com/junh1024/Reaper-Surround/archive/master.zip)** & extract them in your Reaper EFFECTS folder. TLDR, you will need to extract ALL files since many depend on each other. It is advised to ENABLE "options>show in FX list> JSFX filename" as I refer to them by name. Bugs/suggestions? File an [issue](https://github.com/junh1024/Reaper-Surround/issues) ,  or contact me on [twitter](https://twitter.com/junh1024/) / [reddit](https://old.reddit.com/user/junh1024) .
+A collection of mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). These are JSFX so **[Code-DOWNLOAD ZIP](https://github.com/junh1024/Reaper-Surround/archive/master.zip)** & extract them in your Reaper EFFECTS folder. TLDR, you will need to **extract ALL files** since many depend on each other. It is advised to ENABLE "options>show in FX list> JSFX filename" as I refer to them by name. Bugs/suggestions? File an [issue](https://github.com/junh1024/Reaper-Surround/issues) ,  or contact me on [twitter](https://twitter.com/junh1024/) / [reddit](https://old.reddit.com/user/junh1024) .
 
 Donations
 ---
 Surround is just a hobby for me since 2014. If you use them (especially commercially), you are encouraged to donate. By CC (stripe) or Paypal on https://donorbox.org/junh1024 to encourage further development & lets me know they are genuinely useful for work. Also, contact me for custom development based on my stuff.
+
+
+![img](https://i.imgur.com/6tE6knI.png)
 
 Disclaimer
 ---
