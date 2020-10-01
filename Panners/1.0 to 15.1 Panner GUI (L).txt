@@ -18,9 +18,8 @@ import surroundlib3.txt
 @init
 theta=rad=0;
 in0=0;
-new_x=new_y=0;
+temp_rad=temp_theta=new_x=new_y=0;
 height_temp=0;
-
 
 
 //LFE
@@ -36,6 +35,14 @@ function do_slider_stuff()
 (
 	center_coeff=slider4/100; 
 	center_coeff_forced_width=max(1-(abs(slider1)/30),0);
+	
+	// conv polar to cart for displ automation
+	(slider7==0)?(height_temp=100;):(height_temp=slider2;);
+	temp_rad=(155-((100-slider3)/1.8+ height_temp))/(155*2);
+	temp_theta=(slider1*$pi/180)+$pi/2;
+	new_x=-cos(temp_theta)*temp_rad*gfx_w+(gfx_w/2);
+	new_y=-sin(temp_theta)*temp_rad*gfx_h+(gfx_h/2);
+
 
 );
 
@@ -54,6 +61,7 @@ slider5%2==0?(main_gain=coeff_B):(main_gain=1;);
 
 //LFE mixing -10dB gain, LFE monitoring 0dB gain.
 slider5<2?(LFE_mode_gain=0.316):(LFE_mode_gain=1;);
+
 
 
 @sample 
@@ -129,12 +137,7 @@ spl2=C_temp*(center_coeff*center_coeff_forced_width);
 spl0=  LR_common + L_temp  ;
 spl1=  LR_common - L_temp ;
 
-// conv polar to cart for displ automation
-(slider7==0)?(height_temp=100;):(height_temp=slider2;);
-temp_rad=(155-((100-slider3)/1.8+ height_temp))/(155*2);
-temp_theta=(slider1*$pi/180)+$pi/2;
-new_x=-cos(temp_theta)*temp_rad*gfx_w+(gfx_w/2);
-new_y=-sin(temp_theta)*temp_rad*gfx_h+(gfx_h/2);
+
 
 
 @gfx 500 500

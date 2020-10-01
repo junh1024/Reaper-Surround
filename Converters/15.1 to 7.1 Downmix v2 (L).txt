@@ -11,7 +11,7 @@ slider6:0<-100,100,2>ELL Side Depth
 slider7:0<-100,100,2>Top Side Depth
 
 slider8:0<0,100,5>Side Physical Level
-slider9:100<0,100 ,1>Height height 
+slider9:70<0,100 ,1>Height height 
 
 
 import surroundlib1.txt

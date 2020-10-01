@@ -2,7 +2,7 @@
 
 Introduction
 ---
-A collection of mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). These are JSFX so **[Code-DOWNLOAD ZIP](https://github.com/junh1024/Reaper-Surround/archive/master.zip)** & extract them in your Reaper EFFECTS folder. TLDR, you will need to **extract ALL files** since many depend on each other. It is advised to ENABLE "options>show in FX list> JSFX filename" as I refer to them by name. Bugs/suggestions? File an [issue](https://github.com/junh1024/Reaper-Surround/issues) ,  or contact me on [twitter](https://twitter.com/junh1024/) / [reddit](https://old.reddit.com/user/junh1024) .
+A collection of mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). These are JSFX so **[CLICK HERE TO DOWNLOAD ZIP](https://github.com/junh1024/Reaper-Surround/archive/master.zip)** & extract them in your Reaper EFFECTS folder. You will need to **extract ALL files** since many depend on each other. It is advised to ENABLE "options > show in FX list > JSFX filename" as I refer to them by name. Bugs/suggestions? File an [issue](https://github.com/junh1024/Reaper-Surround/issues) ,  or contact me on [twitter](https://twitter.com/junh1024/) / [reddit](https://old.reddit.com/user/junh1024) .
 
 Donations
 ---
