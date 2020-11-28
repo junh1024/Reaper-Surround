@@ -52,6 +52,11 @@ function ELL_Side_Depth_71_to_51(ELL_Side_Depth)
 
 function Top_Side_Depth_71_to_51(Top_Side_Depth)
 (
+	// pan_comp_approx=0.41*(1-(2*abs(0.5Top_Side_Depth)));
+	
+	// spl14*(1+pan_comp_approx);
+	// spl15*(1+pan_comp_approx);
+
 	spl8 +=(spl14)*   Top_Side_Depth;
 	spl9 +=(spl15)*   Top_Side_Depth;
 	spl12+=(spl14)*(1-Top_Side_Depth);
@@ -59,6 +64,19 @@ function Top_Side_Depth_71_to_51(Top_Side_Depth)
 );
 
 box_width=0;
+
+function swap_Side_Back_ELL()
+(
+	back_L=spl4;
+	back_R=spl5;
+	
+	spl4=spl6;
+	spl5=spl7;
+	
+	spl6=back_L;
+	spl7=back_R;
+	
+);
 
 //gfx functions
 

@@ -140,6 +140,25 @@ function ELL_Side_Depth_71_to_71(ELL_Side_Depth)
 	);
 );
 
+function Top_Side_Depth_71_to_71(Top_Side_Depth)
+(
+	Top_Side_Depth>0?(
+	//ELL side depth
+	spl8 +=(spl14)*   Top_Side_Depth;
+	spl9 +=(spl15)*   Top_Side_Depth;
+	spl14= (spl14)*(1-Top_Side_Depth);
+	spl15= (spl15)*(1-Top_Side_Depth);
+	)
+	:
+	(
+	Top_Side_Depth*=-1;
+	spl12 +=(spl14)*  Top_Side_Depth;
+	spl13 +=(spl15)*  Top_Side_Depth;
+	spl14= (spl14)*(1-Top_Side_Depth);
+	spl15= (spl15)*(1-Top_Side_Depth);
+	);
+);
+
 delaylen=0;
 
 function calculate_delay_2ch(delay_slider_ms)
