@@ -1,11 +1,17 @@
-desc: bit reduction & shifter w/ GUI.
+desc: multichannel gain, bit reduction & shifter w/ GUI.
 
 slider1:1<0,2,1{Manual,Auto MQ (-1 bit),Auto HQ (+-1 bit)}>Mode
-slider2:16<8,24,1>Bits
-slider3:0<-4,4,1>Shift
-slider4:6<2,16,1>Channels
-slider5:1024<512,8192,512>Blocksize
-slider6:0<-3,0,0.1>Response in 10^ (disabled)
+slider2:0<-3,3,0.1>Volume
+slider3:16<8,24,1>Bits
+slider4:0<-4,4,1>Shift
+slider5:6<2,16,1>Channels
+slider6:1024<512,8192,512>Blocksize
+
+// /old params
+// slider2:16<8,24,1>Bits
+// slider3:0<-4,4,1>Shift
+// slider4:6<2,16,1>Channels
+// slider5:1024<512,8192,512>Blocksize
 
 import surroundlib3.txt
 
@@ -23,20 +29,36 @@ loudness_IM_OLD=400; //array offset
 bits=200; //array offset
 multiply=300; //array offset
 inv_multiply_shift=500;
+
+//if channels >100, must be old blocksize, remap to new params
+slider5>100?
+(
+	remapped=1;
+	slider6=slider5;
+	slider5=slider4;
+	slider4=slider3;
+	slider3=slider2;
+	slider2=0;
+);
+
 shift=0;
 
 gfx_r = gfx_g = gfx_b = 1;
 
-chans=slider4;
+chans=slider5;
 
 
 n=0;
 
 
+
+
 function set_bits_flexi()
 (
 		multiply[n]=2^(bits[n]-1);
-		inv_multiply_shift[n]=(1/multiply[n])*2^slider3;//s3=shift
+		inv_multiply_shift[n]=(1/multiply[n])*2^slider4;//s3=shift
+		
+		multiply[n]*=volume;//volume adj must be after above
 );
 
 function set_bits_fixed()
@@ -44,7 +66,7 @@ function set_bits_fixed()
 	loop //calculate the bits based on difference to average
 	(chans,
 
-		bits[n]=slider2;
+		bits[n]=slider3;
 		set_bits_flexi();
 		
 		n+=1;
@@ -62,15 +84,17 @@ set_bits_fixed();
 
 
 @slider
-blocksize=slider5;
+volume = 2^(slider2/6); // convert from dB to a multiplier
+
+blocksize=slider6;
 response=10^slider6;
 
 mode=slider1;
-chans=slider4;
-shift=2^slider3;
+chans=slider5;
+shift=2^slider4;
 
 chans==2?slider1=0;//manual mode is better for stereo
-// slider4=min(chans,num_ch);//limit chans to what exists, doesn't work.
+// slider5=min(chans,num_ch);//limit chans to what exists, doesn't work.
 
 
 (mode==0)?
@@ -94,16 +118,16 @@ count+=samplesblock;
 		
 		// );
 		
-		(mode>1)?(max_bits=slider2+1;):(max_bits=slider2;); //limit bits deviation to - if MQ
+		(mode>1)?(max_bits=slider3+1;):(max_bits=slider3;); //limit bits deviation to - if MQ
 		
 		n = 0;
 		loop //calculate the bits based on difference to average
 		(chans,
 			// temp_denominator=loudness_IM[n]*response+loudness_IM_OLD[n]*(1-response);
 			// loudness_IM_OLD[n]=temp_denominator;
-			// bits[n]=floor(loudness_IM_ALL*slider2/temp_denominator);
-			bits[n]=floor(loudness_IM_ALL*slider2/loudness_IM[n]);
-			bits[n]=max(min(bits[n],max_bits),slider2-1); //limit bits deviation to +-1 bits
+			// bits[n]=floor(loudness_IM_ALL*slider3/temp_denominator);
+			bits[n]=floor(loudness_IM_ALL*slider3/loudness_IM[n]);
+			bits[n]=max(min(bits[n],max_bits),slider3-1); //limit bits deviation to +-1 bits
 			
 			set_bits_flexi();
 			
@@ -146,13 +170,15 @@ loop(chans-2, //doing chans in pairs doesnt seem to make it faster
 
 @gfx 500 100
 
+remapped?gfx_clear=32768; //if remapped on init, set to green
+
 box_width=gfx_w/(chans*1.2);
 
 g=0;//loop index
 
 loop(chans,
 
-	gfx_a = 0.6-0.2*(bits[g]-slider2); //brighten boxes according to bits deviation
+	gfx_a = 0.6-0.2*(bits[g]-slider3); //brighten boxes according to bits deviation
 	drawbox((g*1.2*box_width)+(box_width/2),0); //1+0.2 cuz add gap
 
 	g+=1;
