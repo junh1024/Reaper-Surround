@@ -1,6 +1,6 @@
 desc:15.1 to 3D Surround Downmix in ALPHA
 
-slider1:0<0,4,1{7.1sh (TrueHD & DTS-HD) 512,9.1h (Auro3D & AMBEO) 514,9.1sh (Atmos) 712,11.1h (DTS-X & MPEG-H) 714,Atmos Big 916}>Output layout
+slider1:4<0,4,1{TrueHD & DTS-HD 5.1.2 side height,Auro3D & AMBEO 5.1.4,Atmos Base 7.1.2,DTS-X Base & MPEG-H 7.1.4,Atmos 9.1.6}>Output layout
 slider2:75<0,100 ,1>Height height NOT IMPLEMENTED
 slider3:0<-100,100,1>Top Side Depth (+ve is front)
 slider4:0<-100,100,1>Side Depth (+ve is front)
@@ -100,13 +100,13 @@ mode==3?
 	silence_top_layer_151()  ;
 	spl8=heightsL;
 	spl9=heightsR;
-	// swap_Side_Back_ELL();
+	swap_Side_Back_ELL();
 );
 
 //111h
 mode==4?
 (
-	// swap_Side_Back_ELL();
+	swap_Side_Back_ELL();
 	
 	spl10= spl12;
 	spl11= spl13;

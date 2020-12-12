@@ -21,11 +21,13 @@ Introduction to 15.1
 ![15.1](https://i.imgur.com/0H320GZ.png)
 
 * 15.1 is HQ channel-based system for 3D surround, based on combining the best of NHK's 22.2, and 7.1 surround.
-* Best used as an intermediary, since delivery of 15.1 is tricky.
-* Order as follows for 15.1: L R C LFE BL BR SL SR, HL HR, BtL BtR, HBL HBR HSL HSR (applies to 5.1/7.1 too)
-* Use Reaper's channel parenting to place stereo tracks statically.
+* It is 7.1.6.2 in Dolby notation.
+* Order as follows for 15.1: L R C LFE BL BR SL SR, HL HR, BtL BtR, HBL HBR HSL HSR (extends SMPTE 5.1)
+* It's intended to be a HQ intermediary for mixing in 3D surround, and "15.1 to 3D Downmix (M).txt" is included to downmix to formats such as Auro3D & AMBEO 5.1.4, Atmos Base 7.1.2, DTS-X Base & MPEG-H 7.1.4, and Atmos 9.1.6
+* Mixing in one of the above formats and converting to another could result in an inferior conversion, hence a format such as my 15.1 is ideal due to a reasonable channel layout.
+* 15.1 Conversion to 3oA is supported for flexible & powerful workflows. FUMA Ambisonics decoders for 3D speaker playback here are included, but are very basic.
 * Use mono panners for dynamic panning of sounds (Mono panners are preferred as there is improved directivity with speaker playback)
-* 15.1 Conversion to 3oA is supported for flexible & powerful workflows. However, ambisonics decoders for 3D speaker playback here are phantom, not full (i.e, don't include C). You will need to convert Fuma to Ambix, then find an Ambix decoder.
+* Use Reaper's [channel parenting](http://d2zjg0qo565n2.cloudfront.net/sites/default/files/focusrite/Screen%20Shot%202015-06-10%20at%2014.42.00.png) to place stereo tracks statically.
 
 Quick start/Example workflow tools
 ---
@@ -39,12 +41,11 @@ Quick start/Example workflow tools
 ### 3D workflow:
 * 1.0 to 15.1 Panner GUI (L).txt
 * 5.1 to 3D Upmix (L).txt
-* 15.1 to 7.1 Downmix v2 (L).txt
-* 15.1 to 3oA Downmix (M).txt
-* 15.1 to 7.1.4 Downmix (S).txt
-* 15.1 to 7.x Downmix (M).txt (11.1h/7.1.4 DTS-X) or 15.1 to 3D Downmix (M).txt (9.1h/5.1.4 Auro3D, AMBEO speaker)
+* 15.1 to 3D Downmix (M).txt
+* 15.1 to 5.1 Downmix (M).txt
 
-### Fuma Ambisonics workflow:
+
+### FUMA Ambisonics workflow:
 - 1.0 to 3oA 3D Panner (S).txt
 - 2.0 to 3oA 2D Panner (M).txt
 - 3oA Rotator (M).txt
@@ -59,7 +60,7 @@ Quick start/Example workflow tools
 # Effects listing
 Listed below are the most common/useful effects. For more info, refer to JSFX.
 
-Ambisonics Panners (FuMa)
+Ambisonics Panners (FUMA)
 ---
 - 1.0 to 3oA 3D Panner (S).txt
 - 2.0 to 3oA 2D Panner (M).txt
@@ -131,10 +132,7 @@ Downmixers
 - 7.1 to 5.1 Downmix (M).txt
 - 15.1 to 5.1 Downmix (M).txt
 - 15.1 to 7.1 Downmix (S).txt
-- 15.1 to 7.1 Downmix v2 (L).txt
-- 15.1 to 7.x Downmix (M).txt
-- 15.1 to 3D Downmix (M).txt
-- 15.1 to 7.1.4 Downmix (S).txt
+- 15.1 to 3D Downmix (M).txt for Auro3D & AMBEO 5.1.4, Atmos Base 7.1.2, DTS-X Base & MPEG-H 7.1.4, and Atmos 9.1.6
 - 15.1 to 8.0 Speaker Tool (M).txt (8.0h Order: L R, HL HR, BL BR, SL SR, which is similar & backwards compatible with SMPTE-MS 7.1, for 3D surround playback using commonly available 7.1 sound cards)
 
 ![8.0sh](https://i.imgur.com/1nivgkz.png)
@@ -273,5 +271,3 @@ Reduction figures are approximate.
 
 Conclusion: performance or quality is roughly on par with commercial implementations, but not necessarily simultaneously as you may need to make adjustments which increase CPU. My FFT FX typically use 10-15% of a 3Ghz core. If you're exporting long projects on a laptop on power-save mode, they'll do fine. Latency is also higher at a default of 4096sa compared with a typical 2048sa. Performance is balanced with quality, and if you want choice, you have ample control over otherwise "internal" or "unimportant" decisions which commercial vendors decide for you.
 
-FAQ
----

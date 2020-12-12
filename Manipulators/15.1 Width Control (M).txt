@@ -1,10 +1,10 @@
-desc:Makes 15.1 height by shifting the side 6 of 7.1 upwards.
+desc:15.1 Width Control
 
 slider1:100<0,100,1>ELL Width
 slider2:0<-3,3,0.1>Pan law (dB)
 slider3:100<0,100,1>Top Width
 slider4:0<-3,3,0.1>Pan law (dB)
-slider5:1<0,1,1{Off,On}>Matrix (reverse polarity of top)
+slider5:0<0,1,1{Off,On}>Matrix (reverse polarity of top)
 
 import surroundlib2.txt
 

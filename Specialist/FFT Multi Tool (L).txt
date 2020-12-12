@@ -299,12 +299,15 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 // TODO: center pan
 // generic de distort via harmonics
 // FFT frequency tool (via memcpy): excite via copy frequency, combine-overlap
+// block tool: m/s compress & centerizer
 // scale shifter
 // combine-overlap standalone IIR version
 // improved transient designer
 // improved Tonal/noise separator, cepstral?
 // select notes via MIDI input
-// 51>71 upscale, w/ threshold & crossover
+// 51>71 upscale V1,V2
+// output_selector clone, 2.0 to 15.1 output selector
+// ms_editor clone
 // 51>91h upscale modes(discrete SFX+?)
 // 51>20 downmix V3 FFT
 // ambisonics 40 V2,3 decoder, microphone tool V3 in FFT

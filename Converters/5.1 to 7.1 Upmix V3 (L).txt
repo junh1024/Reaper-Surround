@@ -2,10 +2,10 @@
 
 desc: 5.1 to 7.1 FFT upmix. in BETA
 
-slider1:1<0,1,1{Square (cine),Circle (ITU)}>Mode
+slider1:1<0,1,1{Square (Cine-auto thresholds),Circle (ITU)}>Mode
 slider2:100<0,200,1>Amount (%)
-slider3:50<0,100,1>N/A
-slider4:50<0,100,1>N/A
+slider3:50<0,100,1>Side threshold
+slider4:100<0,100,1>Crossover width
 slider5:75<0,100,1>Cutoff (%)
 slider6:1<0,1,0.01>Time Response
 slider7:25<0,50,5>FFT Overlap (%)
@@ -14,6 +14,23 @@ slider8:12<10,14,1>FFT size (pow2)
 import surroundlib2.txt
 import surroundlib3.txt
 import surroundlibf.txt
+
+in_pin:L
+in_pin:R
+in_pin:C
+in_pin:LFE
+in_pin:BL
+in_pin:BR
+
+out_pin:L
+out_pin:R
+out_pin:C
+out_pin:LFE
+out_pin:BL
+out_pin:BR
+out_pin:SL
+out_pin:SR
+
 
 @init
 
@@ -25,6 +42,9 @@ pdc_top_ch = 9;
 out0=out1=out4=out5=0;
 
 @slider
+
+Side_threshold= slider3/100;
+Crossover_width=max(slider4/100,0.1);//min of 0.1 since don't want an infinite slope/div 0
 
 Time_Response=slider6;
 fftsize=2^slider8;
@@ -159,10 +179,22 @@ sum_all_spl+=spl0^2+spl1^2+spl4^2+spl5^2;	//silence detector
 			side_r = (left_r_two-right_r_two)*0.5;
 			side_i = (left_i_two-right_i_two)*0.5;
 			
+			// Magnitudes3[i]=sqrt(left_r_two^2+left_i_two^2);
+			// Magnitudes4[i]=sqrt(right_r_two^2+right_i_two^2);
+			
+			// compute pan
+			// p2=abs(Magnitudes4[i]-Magnitudes3[i])/(Magnitudes4[i]+Magnitudes3[i])
+			
 			ms_complex_set_sideness_center();
+			// Sideness1[i]=1;
 			
-			l2r2_complex_apply_1_scaling(1-(Sideness1[i]*Amount));
+			S_scaling= min(max( ( 1-(Sideness1[i]-Side_threshold+(Crossover_width/2))*(1/Crossover_width) )   ,0)     ,1)  ;
+
+			l2r2_complex_apply_1_scaling(S_scaling*Amount);
 			
+			
+			inspector1=Sideness1[i];
+			inspector2=S_scaling;
 		
 			buf1_fft[a]	= left_r_two - right_i_two;
 			buf1_fft[b]	= left_i_two + right_r_two;
