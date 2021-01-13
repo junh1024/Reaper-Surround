@@ -1,7 +1,7 @@
 desc:15.1 to 3D Surround Downmix in ALPHA
 
 slider1:4<0,4,1{TrueHD & DTS-HD 5.1.2 side height,Auro3D & AMBEO 5.1.4,Atmos Base 7.1.2,DTS-X Base & MPEG-H 7.1.4,Atmos 9.1.6}>Output layout
-slider2:75<0,100 ,1>Height height NOT IMPLEMENTED
+slider2:75<0,100 ,1>Height height
 slider3:0<-100,100,1>Top Side Depth (+ve is front)
 slider4:0<-100,100,1>Side Depth (+ve is front)
 slider5:0<50,70,1>Reserved
@@ -13,9 +13,44 @@ import surroundlib1.txt
 import surroundlib2.txt
 import surroundlib3.txt
 
-// @M 916
-// 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
-// L, R, C, LFE, Ls, Rs, Lrs, Rrs, Lw, Rw, Ltf, Rtf, Ltm, Rtm, Ltr, Rtr.
+in_pin:L
+in_pin:R
+in_pin:C
+in_pin:LFE
+in_pin:BL
+in_pin:BR
+in_pin:SL
+in_pin:SR
+in_pin:HL
+in_pin:HR
+in_pin:BtL
+in_pin:BtR
+in_pin:HBL
+in_pin:HBR
+in_pin:HSL
+in_pin:HSR
+
+out_pin:out
+out_pin:out
+out_pin:out
+out_pin:out
+out_pin:out
+out_pin:out
+out_pin:out
+out_pin:out
+out_pin:out
+out_pin:out
+out_pin:out
+out_pin:out
+out_pin:out
+out_pin:out
+out_pin:out
+out_pin:out
+out_pin:out
+out_pin:out
+out_pin:out
+out_pin:out
+
 
 @init
 back_L=back_R=0;

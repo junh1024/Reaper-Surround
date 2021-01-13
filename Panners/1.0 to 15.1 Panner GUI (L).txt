@@ -15,6 +15,27 @@ import surroundlib1.txt
 import surroundlib2.txt
 import surroundlib3.txt
 
+in_pin:mono
+in_pin:mono
+
+out_pin:L
+out_pin:R
+out_pin:C
+out_pin:LFE
+out_pin:BL
+out_pin:BR
+out_pin:SL
+out_pin:SR
+out_pin:HL
+out_pin:HR
+out_pin:BtL
+out_pin:BtR
+out_pin:HBL
+out_pin:HBR
+out_pin:HSL
+out_pin:HSR
+
+
 @init
 theta=rad=0;
 in0=0;
@@ -99,6 +120,9 @@ slider7==0 &&slider3<100 ? //activate only in 2D & close panning
 	spl1 *= slider3/100 ;
 	spl4*= slider3/100 ;
 	spl5*= slider3/100 ;
+	
+	downmix_151_71_v1();
+	
 );
 slider7==1 &&slider3<100? //activate only in 3D & top panning
 (

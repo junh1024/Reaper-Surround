@@ -1,0 +1,62 @@
+
+desc:mapper
+
+slider1:0<0,4,1{1+2   Front,3+4   C/LFE,5+6   Back,7+8   Side,9+10  Height Front,11+12 Bottom,13+14 Height Back,15+16 Height Side}>Output
+slider2:100<0,100 ,1>Amount
+slider3:0<-3,3,0.1>Volume dB
+slider4:0<-100,100,1>Pan
+slider5:0<-3,3,1>Reserved
+slider6:0<-3,3,1>Reserved
+
+
+out_pin:L
+out_pin:R
+out_pin:C
+out_pin:LFE
+out_pin:BL
+out_pin:BR
+out_pin:SL
+out_pin:SR
+out_pin:HL
+out_pin:HR
+out_pin:BtL
+out_pin:BtR
+out_pin:HBL
+out_pin:HBR
+out_pin:HSL
+out_pin:HSR
+
+in_pin:L
+in_pin:R
+
+import surroundlib1.txt
+import surroundlib2.txt
+import surroundlib3.txt
+
+// @M 916
+// 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
+// L, R, C, LFE, Ls, Rs, Lrs, Rrs, Lw, Rw, Ltf, Rtf, Ltm, Rtm, Ltr, Rtr.
+
+@slider
+Amount=slider2/100;
+
+slider1==1?Amount=1;
+
+volume = 2^(slider3/6); // convert from dB to a multiplier
+pan_coeff=(slider4*$pi)/200; //pan scaled from 0-100 to 0>half pi
+calculate_pan_coeffs(pan_coeff);
+
+@sample
+spl0*=volume;
+spl1*=volume;
+do_pan(pan_coeff);
+
+in0=spl0;
+in1=spl1;
+
+spl0=in0*(1-Amount);
+spl1=in1*(1-Amount);
+
+spl(0+(slider1*2))=in0*Amount;
+spl(1+(slider1*2))=in1*Amount;
+
