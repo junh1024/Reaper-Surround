@@ -2,7 +2,7 @@
 
 desc: 5.1 to 9.1 (padded 15.1) upmix. in ALPHA
 
-slider1:4<0,4,1{Ambience,Ambience +,Discrete SFX,Discrete SFX + (N/A),Pan Slice,Function Designer}>Mode
+slider1:1<0,4,1{Ambience,Ambience +,Discrete SFX,Discrete SFX + (N/A),Pan Slice,Function Designer}>Mode
 slider2:100<0,200,1>Amount (%)
 slider3:0<-1,1,0.05>Threshold/Pan
 slider4:0.2<0,1,0.05>Crossover/Width

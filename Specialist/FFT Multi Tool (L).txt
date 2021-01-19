@@ -296,19 +296,24 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 		);
 		Magnitudes1_old[i]=Magnitudes1[i];
 		
-// TODO: center pan
-// generic de distort via harmonics
+// TODO:
+// FD===
 // FFT frequency tool (via memcpy): excite via copy frequency, combine-overlap
-// block tool: m/s compress & centerizer
-// scale shifter
+// center pan
 // combine-overlap standalone IIR version
+// scale shifter like zplane retune
+// generic de-distort via harmonics
 // improved transient designer
 // improved Tonal/noise separator, cepstral?
 // select notes via MIDI input
-// 51>71 upscale V1,V2
-// output_selector clone, 2.0 to 15.1 output selector
+// TD===
 // ms_editor clone
+// block stereo tool: m/s compress & centerizer
+// SURROUND===
+// Unify "2.0 to 3.0 Width (M)" & "3.0 Spread Control (U)"
+// Unified 51>71 upscale V1,V2 with Square & Circle modes
 // 51>91h upscale modes(discrete SFX+?)
+// 2>5 & 5>9 upscalers, revert to Blackman window?
 // 51>20 downmix V3 FFT
 // ambisonics 40 V2,3 decoder, microphone tool V3 in FFT
 // cutoff behavior depends  on mode, bypass/silence

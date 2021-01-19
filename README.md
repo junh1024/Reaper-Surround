@@ -2,14 +2,14 @@
 
 Introduction
 ---
-A collection of mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). These are JSFX so **[CLICK HERE TO DOWNLOAD ZIP](https://github.com/junh1024/Reaper-Surround/archive/master.zip)** & extract them in your Reaper EFFECTS folder. You will need to **extract ALL files** since many depend on each other. It is advised to ENABLE "options > show in FX list > JSFX filename" as I refer to them by name. Bugs/suggestions? File an [issue](https://github.com/junh1024/Reaper-Surround/issues) ,  or contact me on [twitter](https://twitter.com/junh1024/) / [reddit](https://old.reddit.com/user/junh1024) .
+A collection of mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). These are JSFX so **[CLICK HERE TO DOWNLOAD ZIP](https://github.com/junh1024/Reaper-Surround/archive/master.zip)** & extract them in your Reaper EFFECTS folder. It's suggested to **extract ALL files** since many depend on each other. If you want to cherry-pick FX you need the "Library" folder. It is advised to ENABLE "options > show in FX list > JSFX filename" as I refer to them by name. Bugs/suggestions? File an [issue](https://github.com/junh1024/Reaper-Surround/issues) ,  or contact me on [twitter](https://twitter.com/junh1024/) / [reddit](https://old.reddit.com/user/junh1024) .
 
 Donations
 ---
 Surround is just a hobby for me since 2014. If you use them (especially commercially), you are encouraged to donate. By CC (stripe) or Paypal on https://donorbox.org/junh1024 to encourage further development & lets me know they are genuinely useful for work. Also, contact me for custom development based on my stuff.
 
 
-![img](https://i.imgur.com/6tE6knI.png)
+![img](https://i.imgur.com/eDlWKrf.png)
 
 Disclaimer
 ---
@@ -22,7 +22,7 @@ Introduction to 15.1
 
 * 15.1 is HQ channel-based system for 3D surround, based on combining the best of NHK's 22.2, and 7.1 surround.
 * It is 7.1.6.2 in Dolby notation.
-* Order as follows for 15.1: L R C LFE BL BR SL SR, HL HR, BtL BtR, HBL HBR HSL HSR (extends SMPTE 5.1)
+* Order as follows for 15.1: L R C LFE BL BR SL SR, TL TR, BtL BtR, TBL TBR TSL TSR (extends SMPTE 5.1)
 * It's intended to be a HQ intermediary for mixing in 3D surround, and "15.1 to 3D Downmix (M).txt" is included to downmix to formats such as Auro3D & AMBEO 5.1.4, Atmos Base 7.1.2, DTS-X Base & MPEG-H 7.1.4, and Atmos 9.1.6
 * Mixing in one of the above formats and converting to another could result in an inferior conversion, hence a format such as my 15.1 is ideal due to a reasonable channel layout.
 * 15.1 Conversion to 3oA is supported for flexible & powerful workflows. FUMA Ambisonics decoders for 3D speaker playback here are included, but are very basic.
@@ -33,13 +33,13 @@ Quick start/Example workflow tools
 ---
 ### 2D workflow:
 * 1.0 to 5.1 Panner GUI (L).txt
-* 1.0 to 15.1 Panner GUI (L).txt in "2D 7.1" mode
 * 2.0 to 5.0 Upmix V3 (L).txt
 * < 5.1 Effects & manipulators >
-* 5.1 to 2.0 Downmix (L).txt (7.1 aware)
+* 5.1 to 2.0 Downmix (L).txt
 
 ### 3D workflow:
-* 1.0 to 15.1 Panner GUI (L).txt
+* 1.0 to 15.1 Panner GUI (L).txt for mono sources
+- 2.0 to 15.1 Mapper (M).txt for stereo sources
 * 5.1 to 3D Upmix (L).txt
 * 15.1 to 3D Downmix (M).txt
 * 15.1 to 5.1 Downmix (M).txt
@@ -77,7 +77,6 @@ Ambisonics Decoders (phantom)
 - 7.1 Ambisonics decoder.txt
 - 4.0 Ambisonics codec.txt (padded to 5.1)
 - 1oA 3D cube decoder v1.txt
-- 1oA prism decoder.txt
 
 Decoders are provided for your convenience but they're not that great.
 
@@ -85,7 +84,8 @@ Panners
 ---
 - 3.1 Panner (M).txt: 3.0 front surround panner, with width control. Move & Copy actions are supported for LFE use, and  Mixing & Monitoring modes for a total of 4 combinations. The specification for LFE in digital mixes, is to gain it by 10dB on playback. Hence while mixing, it is gained by -10dB. For monitoring, this is not applied.
 - 1.0 to 5.1 Panner GUI (L).txt
-- 1.0 to 15.1 Panner GUI (M).txt (2D 7.1,2.5D 15.1,3D-ish 15.1) modes
+- 1.0 to 15.1 Panner GUI (M).txt
+- 2.0 to 15.1 Mapper (M).txt
 - 7.1 to 15.1 Height Panner v2 (M).txt
 
 Upmixers
@@ -122,7 +122,6 @@ Manipulators
 ---
 - 3.0 Spread Control (U).txt
 - 5.1 Level Control.txt
-- 5.1 Mix Balance (C).txt
 - 5.1 Mix Control (M).txt
 - 15.1 Width Control (M).txt
 
