@@ -1,13 +1,15 @@
-desc:Makes 15.1 height by shifting the side 6 of 7.1 upwards. Non pan-compensated.
+desc:Makes 15.1 height by shifting the side 6 of 7.1 upwards
 
-slider1:0<0,100,2>Height
+slider1:0<-100,100,2>Height (%)
+slider2:-6<-6,-3,3>Pan law (dB)
 
 import surroundlib1.txt
 
 @init
 
 @slider
-calculate_71_to_151_coeffs_npc(slider1);
+slider2==-6?calculate_71_to_151_coeffs_npc(slider1):calculate_71_to_151_coeffs_pc(slider1);
+
 
 @sample 
 do_71_to_151_pan(slider1);
