@@ -315,6 +315,7 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 // 51>91h upscale modes(discrete SFX+?)
 // 2>5 & 5>9 upscalers, revert to Blackman window?
 // 51>20 downmix V3 FFT
+// 2>15 mono pan, no pan law for height
 // ambisonics 40 V2,3 decoder, microphone tool V3 in FFT
 // cutoff behavior depends  on mode, bypass/silence
 // reduce CPU when no audio
