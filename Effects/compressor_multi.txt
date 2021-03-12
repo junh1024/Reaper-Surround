@@ -2,9 +2,9 @@ desc: slow symmetrical surround compressor
 //named according to https://dictionary.cambridge.org/grammar/british-grammar/about-adjectives-and-adverbs/adjectives-order
 //gfx section modified from Liteon's deesser (GPL)
 
-slider1:-3<-32,0,1>Threshold
-slider2:2048<128,4096,128>Blocksize
-slider3:0.3<0.05,0.5,0.05>Responsiveness
+slider1:-10<-50,0,1>Threshold
+slider2:1024<512,4096,512>Blocksize
+slider3:0.15<0.05,0.5,0.05>Responsiveness
 slider4:6<1,16,1>Channels
 
 @init
