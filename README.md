@@ -206,9 +206,8 @@ Then you're ready to go. Run a Reascript by going Actions > Show > Load, Run.
 **Block-based effects**
 
 These effects analyse a chunk of audio, then make a decision. The audio is not delayed, but the reaction is delayed by half a blocksize. This is done for performance & audio stability reasons. These are NOT based on FFT. To make it react on time would be a big hassle with PDC due to differing pathes, for small benefit & hence isn't implemented. The minimum blocksize that happens in practice is set in Reaper preferences under Audio Device.
-* A small block makes it change faster, and a high response makes it change more, so these 2 things make it behave quicker.
-* A big blocksize would make reactions happen inappropriately, hence blocksize is a suggested 2048 or lower (23+ blocks/sec @48k)
-* A high response would make the audio unstable, hence response shouldn't go above 0.3
+* A low blocksize makes it change faster, and a high response makes it change more, so these 2 things make it behave quicker. A high blocksize would make reactions happen abruptly, hence blocksize is a suggested 2048 or lower (23+ blocks/sec @48k)
+* A high response allows faster changes, and a low response allows smaller changes. A response that is too high will make the changes unstable, hence response shouldn't go above 0.3
 
 I have tried to set sensible defaults.
 
