@@ -48,7 +48,7 @@ mode=slider1+1;//cuz I don't like 0-based mode/slider
 
 //V2 Re-Im modes sound different to original Ma-Ang modes
 
-Response=slider3;
+Freq_Response=slider3;
 
 Resp_bins=slider4/100;
 
@@ -190,7 +190,7 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 			
 		);
 		
-		old_magnitude=Magnitudes1[i]*(Response/10)+old_magnitude*(1-Response/10);
+		old_magnitude=Magnitudes1[i]*(Freq_Response/10)+old_magnitude*(1-Freq_Response/10);
 		
 		
 		
@@ -246,33 +246,37 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 		
 		(mode==6&&Magnitudes1[i]>Magnitudes1_old[i])? //transient designer
 		(
-
+			// \QFFT Multi Tool (L).txt\E.*\r\n\s+\Q5.000\E // regex for RPP projects using this mode
 			// tmp=Magnitudes1[i];
 			// Magnitudes1[i]=;
 			// Magnitudes1_old[i]=Magnitudes1[i];
 			// scaling*old=new
 			// scaling=new/old
 			
+			
+			(i/fftsize<Freq_Response^2)?
+			(
 			//more noticeable w/ lower response so it's squared
 			L_scaling=(Magnitudes1[i]*(Amount^2)+Magnitudes1_old[i]*(1-(Amount^2)))/Magnitudes1[i];
 			// L_scaling=1/L_scaling;
 			
 			lr_complex_apply_1_scaling(L_scaling);
-			
+			);
 			// inspector1=Magnitudes1[i];
 			// inspector2=Magnitudes1_old[i];
 			
-			doing=1;
+			// doing=1;
 		);
 		
 		// Magnitudes1_old[i]=Magnitudes1[i]*Response+Magnitudes1_old[i]*(1-Response); //sounds bad
+		Magnitudes1_old[i]=Magnitudes1[i]*Time_Response+Magnitudes1_old[i]*(1-Time_Response);
 		// Magnitudes1_old[i]=Magnitudes1[i];
 		
 		(mode==139999)? //pan select
 		(
 			abs();
 			panselector=Amount-1;
-			panwidth=Response;
+			panwidth=Freq_Response;
 			pann=min(max((Magnitudes2[i]-Magnitudes1[i])/(Magnitudes2[i]+Magnitudes1[i]),-1),1);
 			
 			// front_coefficient_temp= 1 - ((phadeg- low_thresh )* (1.0/crossover_width))
@@ -287,6 +291,7 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 		
 		);
 		
+		/*
 		(mode==9 && i<fftsize/50)? //bass boost select, from mode 12
 		(
 			L_scaling=(Magnitudes1[i]*(Amount^2)+Magnitudes1_old[i]*(1-(Amount^2)))/Magnitudes1[i];
@@ -295,6 +300,7 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 		
 		);
 		Magnitudes1_old[i]=Magnitudes1[i];
+		*/
 		
 // TODO:
 // FD===
