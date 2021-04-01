@@ -16,6 +16,22 @@ import surroundlib2.txt
 import surroundlib3.txt
 import surroundlibf.txt
 
+in_pin:Main in L
+in_pin:Main in R
+in_pin:2ry in L
+in_pin:2ry in R
+in_pin:blank
+in_pin:blank
+
+out_pin:Out L
+out_pin:Out R
+out_pin:blank
+out_pin:blank
+out_pin:Out2 L
+out_pin:Out2 R
+
+
+
 @init
 
 //see surroundlibf.txt
