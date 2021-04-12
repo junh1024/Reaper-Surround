@@ -4,9 +4,9 @@ desc: FFT Multi Tool. Read docs. in ALPHA
 
 slider1:3<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract AR,Noise Control/GF3 ARF,Transient control,Split-Combine Frequency A,Min2 A (deprecated),bass boost (deprecated)}>Mode
 slider2:100<0,200,1>Amount (%)
-slider3:1<0,1,0.01>Frequency Response
+slider3:100<0,200,2>Frequency Response
 slider4:75<0,100,1>Cutoff (%)
-slider5:0.5<0,1,0.01>Time Response 
+slider5:50<0,100,2>Time Response 
 slider6:40<0,50,5>FFT Overlap (%)
 slider7:12<10,14,1>FFT size (pow2)
 slider8:0<0,1,1{No,Yes}>Difference Output
@@ -41,6 +41,12 @@ pdc_top_ch = 6;
 
 
 @slider
+//parameter migration from old version, which had Frequency & Time response 0-1 instead of 0-100
+slider3<2?slider3*=100;
+slider5<2?slider5*=100;
+
+slider3>100?slider3=100; //temporary until I add more functionality to FR
+
 fftsize=2^slider7;
 pdc_delay = fftsize - 1;
 scale = 1/fftsize;
@@ -64,7 +70,7 @@ mode=slider1+1;//cuz I don't like 0-based mode/slider
 
 //V2 Re-Im modes sound different to original Ma-Ang modes
 
-Freq_Response=slider3;
+Freq_Response=slider3/100;
 
 Resp_bins=slider4/100;
 
@@ -74,7 +80,7 @@ Resp_bins=slider4/100;
 
 elements_to_skip=fftsize-floor(Resp_bins*fftsize);
 
-Time_Response=slider5;
+Time_Response=slider5/100;
 
 
 
