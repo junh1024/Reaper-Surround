@@ -2,7 +2,7 @@
 
 desc: FFT Multi Tool. Read docs. in ALPHA
 
-slider1:3<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract AR,Noise Control/GF3 ARF,Transient control,Split-Combine Frequency A,Min2 A (deprecated),bass boost (deprecated)}>Mode
+slider1:3<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract AR,Noise Control/GF3 ARF,Transient control,Split-Combine Frequency A,Min2 A (deprecated),Sustain control (WILL BE MOVED to mode 7)}>Mode
 slider2:100<0,200,1>Amount (%)
 slider3:100<0,200,2>Frequency Response
 slider4:75<0,100,1>Cutoff (%)
@@ -291,7 +291,7 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 		);
 		
 		// Magnitudes1_old[i]=Magnitudes1[i]*Response+Magnitudes1_old[i]*(1-Response); //sounds bad
-		Magnitudes1_old[i]=Magnitudes1[i]*Time_Response+Magnitudes1_old[i]*(1-Time_Response);
+		
 		// Magnitudes1_old[i]=Magnitudes1[i];
 		
 		(mode==139999)? //pan select
@@ -313,16 +313,21 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 		
 		);
 		
-		/*
-		(mode==9 && i<fftsize/50)? //bass boost select, from mode 12
+		
+		(mode==9&&Magnitudes1[i]<Magnitudes1_old[i])? //reverb EXT
 		(
-			L_scaling=(Magnitudes1[i]*(Amount^2)+Magnitudes1_old[i]*(1-(Amount^2)))/Magnitudes1[i];
+			L_scaling=(   ( Magnitudes1[i]*Time_Response) +  ( Magnitudes1_old[i]*(1-(Time_Response)) )   )/Magnitudes1[i];
+			
 			// L_scaling=1/L_scaling;
 			lr_complex_apply_1_scaling(L_scaling);
 		
 		);
-		Magnitudes1_old[i]=Magnitudes1[i];
-		*/
+		
+		
+		Magnitudes1_old[i]=(Magnitudes1[i]*Time_Response )+ (Magnitudes1_old[i]*(1-Time_Response));
+		
+		// Magnitudes1_old[i]=Magnitudes1[i];
+		
 		
 // TODO:
 // FD===
