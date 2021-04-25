@@ -2,7 +2,7 @@
 
 desc: FFT Multi Tool. Read docs. in ALPHA
 
-slider1:3<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract AR,Noise Control/GF3 ARF,Transient control,Split-Combine Frequency A,Min2 A (deprecated),Sustain control (WILL BE MOVED to mode 7)}>Mode
+slider1:3<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract AR,Noise Control/GF3 ARF,Transient control,Sustain control,Min2 A (deprecated)}>Mode
 slider2:100<0,200,1>Amount (%)
 slider3:100<0,200,2>Frequency Response
 slider4:75<0,100,1>Cutoff (%)
@@ -222,7 +222,7 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 		// (mode==9&&((i)/fftsize) > Amount)? //Split-Combine Frequency, freq split (linear scale up to nyquist) depends on Amount
 		//Amount controls a log frequency. sqrt of 100 is 10. log can make -ve number so numbers are enlarged 4 comparing
 		//does not sound good w/ no overlap. artefacts @ border frequency
-		(mode==7&& sqrt((i*100)/fftsize) > Amount*10)?
+		(mode==7999&& sqrt((i*100)/fftsize) > Amount*10)?
 		(
 		
 		
@@ -314,7 +314,7 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 		);
 		
 		
-		(mode==9&&M1_M2_avg<Magnitudes1_old[i])&&(i/fftsize<Freq_Response^2)? //sustain designer
+		(mode==7&&M1_M2_avg<Magnitudes1_old[i])&&(i/fftsize<Freq_Response^2)? //sustain designer
 
 		(
 
