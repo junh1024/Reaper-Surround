@@ -125,6 +125,7 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 		// Angles3[i]=atan2(left_r_two,left_i_two);
 		// Angles4[i]=atan2(right_r_two,right_i_two);
 
+		M1_M2_avg = (Magnitudes1[i] + Magnitudes2[i]) / 2;
 		p1=abs(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]); //for FPA & min2
 
 	(mode==1)? //Max mode, sounds ok with no overlap, but a bit of artefact
@@ -266,7 +267,7 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 		
 
 		
-		(mode==6&&Magnitudes1[i]>Magnitudes1_old[i])? //transient designer
+		(mode==6&&M1_M2_avg>Magnitudes1_old[i]) && (i/fftsize<Freq_Response^2)? //transient designer
 		(
 			// \QFFT Multi Tool (L).txt\E.*\r\n\s+\Q5.000\E // regex for RPP projects using this mode
 			// tmp=Magnitudes1[i];
@@ -276,14 +277,13 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 			// scaling=new/old
 			
 			
-			(i/fftsize<Freq_Response^2)?
-			(
+			
 			//more noticeable w/ lower response so it's squared
-			L_scaling=(Magnitudes1[i]*(Amount^2)+Magnitudes1_old[i]*(1-(Amount^2)))/Magnitudes1[i];
+			L_scaling=(M1_M2_avg*(Amount^2)+Magnitudes1_old[i]*(1-(Amount^2)))/M1_M2_avg;
 			// L_scaling=1/L_scaling;
 			
 			lr_complex_apply_1_scaling(L_scaling);
-			);
+			
 			// inspector1=Magnitudes1[i];
 			// inspector2=Magnitudes1_old[i];
 			
@@ -314,17 +314,19 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 		);
 		
 		
-		(mode==9&&Magnitudes1[i]<Magnitudes1_old[i])? //reverb EXT
+		(mode==9&&M1_M2_avg<Magnitudes1_old[i])&&(i/fftsize<Freq_Response^2)? //sustain designer
+
 		(
-			L_scaling=(   ( Magnitudes1[i]*Time_Response) +  ( Magnitudes1_old[i]*(1-(Time_Response)) )   )/Magnitudes1[i];
-			
+
+			L_scaling=(   ( M1_M2_avg*Time_Response) +  ( Magnitudes1_old[i]*(1-(Time_Response)) )   )/M1_M2_avg;
+
 			// L_scaling=1/L_scaling;
 			lr_complex_apply_1_scaling(L_scaling);
-		
+
 		);
 		
 		
-		Magnitudes1_old[i]=(Magnitudes1[i]*Time_Response )+ (Magnitudes1_old[i]*(1-Time_Response));
+		Magnitudes1_old[i]=(M1_M2_avg*Time_Response )+ (Magnitudes1_old[i]*(1-Time_Response));//using M1_old var to store avg of both
 		
 		// Magnitudes1_old[i]=Magnitudes1[i];
 		
@@ -352,6 +354,11 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 // ambisonics 40 V2,3 decoder, microphone tool V3 in FFT
 // cutoff behavior depends  on mode, bypass/silence
 // reduce CPU when no audio
+// migrate FFT tools back to old 50% infrastructure fore less artefacts
+// transient designer frequency selection part 2
+// sustain designer amount
+
+
 		
 		
 		buf1_fft[a]	= left_r - right_i;
