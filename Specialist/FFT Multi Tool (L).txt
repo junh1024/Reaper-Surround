@@ -4,7 +4,7 @@ desc: FFT Multi Tool. Read docs. in ALPHA
 
 slider1:3<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract AR,Noise Control/GF3 ARF,Transient control,Sustain control,Min2 A (deprecated)}>Mode
 slider2:100<0,200,1>Amount (%)
-slider3:100<0,200,2>Frequency Response
+slider3:100<0,200,2>Frequency Selection
 slider4:75<0,100,1>Cutoff (%)
 slider5:50<0,100,2>Time Response 
 slider6:40<0,50,5>FFT Overlap (%)
@@ -45,7 +45,7 @@ pdc_top_ch = 6;
 slider3<2?slider3*=100;
 slider5<2?slider5*=100;
 
-slider3>100?slider3=100; //temporary until I add more functionality to FR
+// slider3>100?slider3=100; //temporary until I add more functionality to FR
 
 fftsize=2^slider7;
 pdc_delay = fftsize - 1;
@@ -266,8 +266,9 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 		
 		
 
+		Freq_selected = ((i/fftsize<Freq_Response^2) &&  Freq_Response <=1 )    ||    ((i/fftsize>(Freq_Response-1)^2) &&  Freq_Response >1 );
 		
-		(mode==6&&M1_M2_avg>Magnitudes1_old[i]) && (i/fftsize<Freq_Response^2)? //transient designer
+		(mode==6&&M1_M2_avg>Magnitudes1_old[i]) &&  Freq_selected ? //transient designer
 		(
 			// \QFFT Multi Tool (L).txt\E.*\r\n\s+\Q5.000\E // regex for RPP projects using this mode
 			// tmp=Magnitudes1[i];
@@ -279,10 +280,10 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 			
 			
 			//more noticeable w/ lower response so it's squared
-			L_scaling=(M1_M2_avg*(Amount^2)+Magnitudes1_old[i]*(1-(Amount^2)))/M1_M2_avg;
+			L_scaling_array[i]=(M1_M2_avg*(Amount^2)+Magnitudes1_old[i]*(1-(Amount^2)))/M1_M2_avg;
 			// L_scaling=1/L_scaling;
 			
-			lr_complex_apply_1_scaling(L_scaling);
+			lr_complex_apply_1_scaling(L_scaling_array[i]);
 			
 			// inspector1=Magnitudes1[i];
 			// inspector2=Magnitudes1_old[i];
@@ -318,10 +319,10 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 
 		(
 
-			L_scaling=(   ( M1_M2_avg*Time_Response) +  ( Magnitudes1_old[i]*(1-(Time_Response)) )   )/M1_M2_avg;
+			L_scaling_array[i]=(   ( M1_M2_avg*Time_Response) +  ( Magnitudes1_old[i]*(1-(Time_Response)) )   )/M1_M2_avg;
 
 			// L_scaling=1/L_scaling;
-			lr_complex_apply_1_scaling(L_scaling);
+			lr_complex_apply_1_scaling(L_scaling_array[i]);
 
 		);
 		
@@ -338,7 +339,6 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 // combine-overlap standalone IIR version
 // scale shifter like zplane retune
 // generic de-distort via harmonics
-// improved transient designer
 // improved Tonal/noise separator, cepstral?
 // select notes via MIDI input
 // TD===
@@ -355,9 +355,8 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 // cutoff behavior depends  on mode, bypass/silence
 // reduce CPU when no audio
 // migrate FFT tools back to old 50% infrastructure fore less artefacts
-// transient designer frequency selection part 2
 // sustain designer amount
-
+// more gfx
 
 		
 		
@@ -446,7 +445,7 @@ g=0;//counter for gfx
 gfx_r=gfx_g=gfx_b=gfx_a=1;
 
 
-mode==4?
+// mode==4?
 (
 	
 	while

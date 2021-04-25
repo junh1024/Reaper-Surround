@@ -166,10 +166,11 @@ Specialist & Utility
 	- Max & Min: selects and outputs Max/Min of the inputs (
 	- Align (FPA): aligns the input to the sidechain
 	- Subtract: subtracted from the input, is the sidechain. It's modified for a particular use-case. High frequencies will always have a Time Response of 1 to preserve transients & power , but low frequencies are controlled by the Time Response slider to reduce artefacts (at the expense of bleed). Frequency Response controls an additional subtraction of the HFs from 0=max, 1=none.
+	- Noise Control/GF3 ARF: Controls the noise level. Noise is defined as a rolling spatio-average of the frequencies, Frequency Response & FFT Size is the averaging amount.
+	- Transient: Adds or reduces transients. Transient is defined as louder than the previous frame (time).
+	- Sustain: Adds sustain. Sustain is defined as softer than the previous frame.
 	- Phase limit: limits the Side so it' can't exceed the mid
 	- Phase reflect: reflects >90* to <90* ie prevents antiphase
-	- Noise Control/GF3 ARF: Controls the noise level. Noise is defined as a rolling spatio-average of the frequencies, Frequency Response & FFT Size is the averaging amount.
-	- Transient: Controls the noise level. Transient is defined as louder than the previous frame (time).
 	- Sustainizer: randomises phase-similar to DtBlkFx's smear mode:
 	- Split-Combine Frequency: Amount controls a log frequency. Splits main & sidechain at the frequency, and combines the lower part of main with the upper part of sidechain.
 
