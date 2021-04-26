@@ -38,21 +38,42 @@ out_pin:BR
 pdc_bot_ch = 0;
 pdc_top_ch = 6;
 
+buf1_a			= sixteen_k*1;
+buf1_b		= sixteen_k*2;
+// buf1_out		= sixteen_k*3;
+buf1_org		= sixteen_k*4;
+
+buf2_a			= sixteen_k*5;
+buf2_b		= sixteen_k*6;
+// buf2_out		= sixteen_k*7;
+buf2_org		= sixteen_k*8;
+
+
 @slider
-fftsize=2^slider8;
-pdc_delay = fftsize - 1;
-scale = 1/fftsize;
-
-// inspector1=floor(slider3/10);
-overlap_w=overlap_sel[4]; //40 % overlap
-// overlap_w=slider3/100;
-overlap=floor(overlap_w*fftsize);
-i = 0;
-loop(fftsize,
-	window[i] = min( (0.5 /overlap_w) - abs( (1/overlap_w) *i / fftsize -(0.5/overlap_w)), 1); // adjustable Trapezium window
-	i += 1;
+sliderfft = (2^(slider8))|0;
+fftsize != sliderfft ?
+(
+	pos = 0;
+	memset(buf1_a, 0, 2*fftsize);
+	memset(buf1_b, 0, 2*fftsize);
+	memset(buf2_a, 0, 2*fftsize);
+	memset(buf2_b, 0, 2*fftsize);
+	// memset(buf4, 0, 2*fftsize);
+	// memset(buf5, 0, 2*fftsize);
+	memset(window, 0, fftsize);
+	fftsize = sliderfft;
+	w = 2.0*$pi/fftsize;
+	i = 0;
+	
+	loop(fftsize/2,
+		window[i] = 0.42-0.50*cos(i*w)+0.08*cos(2.0*i*w); //blackman window
+		// window[i] =1- (1-abs(i/fftsize)); //triangle window
+		// window[i] =min(2- (2-abs(i/fftsize)),1); //trapezium window
+		// window[i] = 0.5;
+		i += 1;
+	); 
+	pdc_delay = fftsize;
 );
-
 // gain = 10^(slider1 / 20);
 offset = 2*pi / 360 * slider2;
 
@@ -75,32 +96,27 @@ Time_Response=min(fftsize/8192,1); //clamp to 1, 0.5 @ 4k fft
 
 @sample
 
+sum_all_spl+=abs(spl0)+abs(spl1);	//silence detector
+
 // Buffer input
+pos >= fftsize ?
+(
+	tmp = buf1_a;
+	buf1_a = buf1_b;
+	buf1_b = tmp;
 
-buf1_in[2*overlap + pos]	= spl0 * scale;
-buf1_in[2*overlap + pos+1]	= spl1 * scale;
-
-sum_all_spl+=spl0^2+spl1^2;	//silence detector
-
-(pos += 2) >= (fftsize - overlap )*2? (
-	pos = 0;
-
-	check_silence_set_fftsize(0); //reduce CPU
+	tmp = buf2_a;
+	buf2_a = buf2_b;
+	buf2_b = tmp;
 	
-	// Apply window
-	i = 0;
-	loop(fftsize,
-		buf1_fft[i]		= buf1_in[i] * window[i/2];
-		buf1_fft[i + 1]	= buf1_in[i+1] * window[i/2];
-		i += 2;
-	);
+	// tmp = buf4;
+	// buf5 = buf5;
+	// buf4 = tmp;
+	
+	check_silence_set_fftsize(0); //reduce CPU
 
-	// Overlap input
-	memcpy(buf1_in, buf1_in + fftsize*2 - overlap*2, overlap*2);
-
-	// FFT
-	fft(buf1_fft, fftsize);
-	fft_permute(buf1_fft, fftsize);
+	fft(buf1_a, fftsize);
+	fft_permute(buf1_a, fftsize);
 	
 
 	i = 0;
@@ -113,10 +129,10 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 		b2 = a2+1;
  
 
-		x =	buf1_fft[a];
-		y =	buf1_fft[b];
-		x2=	buf1_fft[a2];
-		y2=	buf1_fft[b2];
+		x =	buf1_a[a];
+		y =	buf1_a[b];
+		x2=	buf1_a[a2];
+		y2=	buf1_a[b2];
 
 		
 		//we have 2 sets cuz  L&R are modified for LRC, but we want to measure the phase of the original LR
@@ -212,54 +228,64 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 		// (Angle_Difference[i]>Rear_threshold-Crossover_width&&Angle_Difference[i]<Rear_threshold+Crossover_width)?
 		// (Angle_Difference[i]>Rear_threshold)?
 
-		buf1_fft[a]	= left_r - right_i;
-		buf1_fft[b]	= left_i + right_r;
-		buf2_fft[a] = center_r;
-		buf2_fft[b] = center_i;	
-		
-		
-		//may reduce glitching when stopped?
-		i>0?
-		(
-			buf1_fft[a2]= left_r + right_i;
-			buf1_fft[b2]= right_r - left_i;
-			
-			//prepare c
-			buf2_fft[a2]= center_r;
-			buf2_fft[b2]=-center_i;
-		);
+		//more voodoo
+		buf1_a[a]  = left_r - right_i;
+		buf1_a[b]  = left_i + right_r;
+		buf1_a[a2] = left_r + right_i;
+		buf1_a[b2] = right_r - left_i;
 
-		i += 2;
+		//prepare c
+
+		buf2_a[a] = center_r;
+		buf2_a[b] = center_i;
+		buf2_a[a2]= center_r;
+		buf2_a[b2]=-center_i;
+		
+		i += 2
 	);
 
-	// Inverse FFT
-	fft_ipermute(buf1_fft, fftsize);
-	ifft(buf1_fft, fftsize);
+	fft_ipermute(buf1_a, fftsize);
+	ifft(buf1_a, fftsize);
 	
-	fft_ipermute(buf2_fft, fftsize);
-	ifft(buf2_fft, fftsize);
+	// width_coeff<1?(
+	fft_ipermute(buf2_a, fftsize);
+	ifft(buf2_a, fftsize);
+// );
 
-	// Overlap-add output
-	memcpy(buf1_out, buf1_out + 2*fftsize - 2*overlap, 2*overlap);
-	memset(buf1_out + 2*overlap, 0, 2*fftsize - 2*overlap);
+check_silence_restore_fftsize();
+
+	pos=0;
 	
-	memcpy(buf2_out, buf2_out + 2*fftsize - 2*overlap, 2*overlap);
-	memset(buf2_out + 2*overlap, 0, 2*fftsize - 2*overlap);
 	
-	i = 0;
-	loop(fftsize,
-		buf1_out[i] += buf1_fft[i];
-		buf1_out[i+1] += buf1_fft[i+1];
-		
-		buf2_out[i] += buf2_fft[i];
-		// buf2_out[i+1] += buf2_fft[i+1];
-		
-		i += 2;
-	);
-	
-	check_silence_restore_fftsize();
 	
 );
+
+	
+	
+	
+
+//windowing?
+w1 = window[pos/2];
+w2 = window[(fftsize-pos)/2-1];
+sw = (w1+w2)*fftsize;
+
+out0 = (buf1_a[pos]+buf1_b[fftsize+pos])/sw;
+out1 = (buf1_a[pos+1]+buf1_b[fftsize+pos+1])/sw;
+out2 = (buf2_a[pos]+buf2_b[fftsize+pos])/sw;
+// out3 = (buf2_a[pos+1]+buf1_b[fftsize+pos+1])/sw;
+
+
+
+buf1_a[pos] = w1*spl0;
+buf1_a[pos+1] = w1*spl1;
+buf1_b[fftsize+pos] = w2*spl0;
+buf1_b[fftsize+pos+1] = w2*spl1;
+
+//more stuff for 2nd input
+buf2_a[pos] = w1*spl2;
+// buf2_a[pos+1] = w1*spl3;
+buf2_b[fftsize+pos] = w2*spl2;
+// buf2_b[fftsize+pos+1] = w2*spl3;
 
 //buffer the original spl0
 out4 = buf1_org[pos2]  ;
@@ -268,28 +294,29 @@ out5 = buf1_org[pos2+1];
 buf1_org[pos2] =  spl0;
 buf1_org[pos2+1] =  spl1;
 
-// spl4=out4;
-// spl5=out5;
-
-pos2=(pos2+2)%(pdc_delay*2);
 
 
-spl0 = buf1_out[pos];
-spl1 = buf1_out[pos+1];
 
+spl4=out4;
+spl5=out5;
+
+spl0 = out0;
+spl1 = out1;
+
+spl2= out2;
 
 //subtract front from original spl0 to get back
+spl4=out4-out0-(h_sqrt_2*out2);
+spl5=out5-out1-(h_sqrt_2*out2);
 
 
-spl2= buf2_out[pos];
-
-spl4=out4-spl0-(h_sqrt_2*spl2);
-spl5=out5-spl1-(h_sqrt_2*spl2);
+pos += 2;
+pos2=(pos2+2)%(fftsize*2);
 
 
 do_width(width_coeff);
-do_cross_width(R_width_coeff);
 do_depth(depth_coeff);
+do_cross_width(R_width_coeff);
 
 
 @gfx 500 50
@@ -310,7 +337,7 @@ g=2;//counter for gfx
 while
 ( 
 	set_color(g/(fftsize/2.5)); //update color according to frequency
-	gfx_a = min(sqrt(Magnitudes1[g])*fftsize/4,1); //set alpha to magnitude , a >1 looks weird
+	gfx_a = min(sqrt(Magnitudes1[g])*(fftsize/4000),1); //set alpha to magnitude , a >1 looks weird
 	drawbox(Angle_Difference[g]*gfx_w/pi,gfx_h-g*gfx_h/(fftsize/2) ); //draw position for each bin
 	// g=ceil(g^1.2);
 	g+=8;

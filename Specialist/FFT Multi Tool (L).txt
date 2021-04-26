@@ -356,8 +356,9 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 // reduce CPU when no audio
 // migrate FFT tools back to old 50% infrastructure fore less artefacts
 // sustain designer amount
-// more gfx
-
+// more gfx for FFTMT
+// log freq gfx display
+// check silence fn test magnitude, cleanup, buf vars
 		
 		
 		buf1_fft[a]	= left_r - right_i;
