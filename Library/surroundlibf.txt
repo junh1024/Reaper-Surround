@@ -6,6 +6,9 @@ sixteen_k=32768; //distance between arrays
 
 memset(sixteen_k*1,0,sixteen_k*60);
 
+
+
+
 buf1_in			= sixteen_k*1;
 buf1_fft		= sixteen_k*2;
 buf1_out		= sixteen_k*3;
@@ -17,6 +20,17 @@ buf2_out		= sixteen_k*7;
 buf2_org		= sixteen_k*8;
 
 buf3_org		= sixteen_k*9;
+
+
+buf1_a			= sixteen_k*1;
+buf1_b			= sixteen_k*2;
+buf1_out		= sixteen_k*3;
+buf1_org		= sixteen_k*4;
+
+buf2_a			= sixteen_k*5;
+buf2_b			= sixteen_k*6;
+buf2_out		= sixteen_k*7;
+buf2_org		= sixteen_k*8;
 
 
 overlap_sel		= sixteen_k*58;
@@ -267,6 +281,43 @@ function fft_4ch_untangle_mags()
 	Magnitudes4[i]=sqrt(right_r_two^2+right_i_two^2);
 
 );
+
+function fft_4ch_untangle_mags_2()
+(
+	x =	buf1_a[a];
+	y =	buf1_a[b];
+	x2=	buf1_a[a2];
+	y2=	buf1_a[b2];
+
+	// for fft tool
+	x_two =	buf2_a[a];
+	y_two =	buf2_a[b];
+	x2_two=	buf2_a[a2];
+	y2_two=	buf2_a[b2];
+	
+	 left_r = (x + x2)*0.5;
+	 left_i = (y - y2)*0.5;
+	right_r = (y + y2)*0.5;
+	right_i = (x2 - x)*0.5;
+	
+	left_r_two = ( x_two + x2_two)*0.5;
+	left_i_two = ( y_two - y2_two)*0.5;
+	right_r_two= ( y_two + y2_two)*0.5;
+	right_i_two= (x2_two -  x_two )*0.5;
+	
+	Magnitudes1[i]=sqrt(left_r^2+left_i^2); //+very_small_number*0.1
+	Magnitudes2[i]=sqrt(right_r^2+right_i^2);
+	Magnitudes3[i]=sqrt(left_r_two^2+left_i_two^2);
+	Magnitudes4[i]=sqrt(right_r_two^2+right_i_two^2);
+
+);
+
+
+
+
+
+
+
 
 function fft_4ch_mags_fast()
 (

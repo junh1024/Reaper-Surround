@@ -47,19 +47,31 @@ slider5<2?slider5*=100;
 
 // slider3>100?slider3=100; //temporary until I add more functionality to FR
 
-fftsize=2^slider7;
-pdc_delay = fftsize - 1;
-scale = 1/fftsize;
-
-// inspector1=floor(slider3/10);
-overlap_w=overlap_sel[slider6/10]; //40 % overlap
-// overlap_w=slider3/100;
-overlap=floor(overlap_w*fftsize);
-i = 0;
-loop(fftsize,
-	window[i] = min( (0.5 /overlap_w) - abs( (1/overlap_w) *i / fftsize -(0.5/overlap_w)), 1); // adjustable Trapezium window
-	i += 1;
+sliderfft = (2^(slider7))|0;
+fftsize != sliderfft ?
+(
+	pos = 0;
+	memset(buf1_a, 0, 2*fftsize);
+	memset(buf1_b, 0, 2*fftsize);
+	memset(buf2_a, 0, 2*fftsize);
+	memset(buf2_b, 0, 2*fftsize);
+	// memset(buf4, 0, 2*fftsize);
+	// memset(buf5, 0, 2*fftsize);
+	memset(window, 0, fftsize);
+	fftsize = sliderfft;
+	w = 2.0*$pi/fftsize;
+	i = 0;
+	
+	loop(fftsize/2,
+		window[i] = 0.42-0.50*cos(i*w)+0.08*cos(2.0*i*w); //blackman window
+		// window[i] =1- (1-abs(i/fftsize)); //triangle window
+		// window[i] =min(2- (2-abs(i/fftsize)),1); //trapezium window
+		// window[i] = 0.5;
+		i += 1;
+	); 
+	pdc_delay = fftsize;
 );
+
 
 // gain = 10^(slider1 / 20);
 offset = 2*pi / 360 * slider2;
@@ -86,27 +98,30 @@ Time_Response=slider5/100;
 
 @sample
 
+sum_all_spl+=abs(spl0)+abs(spl1);	//silence detector
 
 // Buffer input
+pos >= fftsize ?
+(
+	tmp = buf1_a;
+	buf1_a = buf1_b;
+	buf1_b = tmp;
 
-buf1_in[2*overlap + pos]	= spl0 * scale;
-buf1_in[2*overlap + pos+1]	= spl1 * scale;
-
-buf2_in[2*overlap + pos]	= spl2 * scale;
-buf2_in[2*overlap + pos+1]	= spl3 * scale;
-
-sum_all_spl+=spl0^2+spl1^2;	//silence detector
-
-(pos += 2) >= (fftsize - overlap )*2? (
-	pos = 0;
+	tmp = buf2_a;
+	buf2_a = buf2_b;
+	buf2_b = tmp;
 
 	check_silence_set_fftsize(0); //reduce CPU
 	
-	fft_4ch_window_overlap_fft();
+	fft(buf1_a, fftsize);
+	fft_permute(buf1_a, fftsize);
+	
+	fft(buf2_a, fftsize);
+	fft_permute(buf2_a, fftsize);
 	
 	//silence the frequencies we are skipping
-	memset(buf1_fft+(fftsize-elements_to_skip), 0, 2*elements_to_skip);
-	memset(buf2_fft+(fftsize-elements_to_skip), 0, 2*elements_to_skip);
+	memset(buf1_a+(fftsize-elements_to_skip), 0, 2*elements_to_skip);
+	// memset(buf2_a+(fftsize-elements_to_skip), 0, 2*elements_to_skip);
 	
 
 	i = 0;
@@ -118,7 +133,7 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 		a2 = 2*fftsize-i;
 		b2 = a2+1;
  
-		fft_4ch_untangle_mags();
+		fft_4ch_untangle_mags_2();
 
 		// Angles1[i]=atan2(left_r,left_i);
 		// Angles2[i]=atan2(right_r,right_i);
@@ -361,54 +376,47 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 // check silence fn test magnitude, cleanup, buf vars
 		
 		
-		buf1_fft[a]	= left_r - right_i;
-		buf1_fft[b]	= left_i + right_r;
-		// buf2_fft[a] = center_r;
-		// buf2_fft[b] = center_i;	
-		
-		
-		//may reduce glitching when stopped?
-		i>0?
-		(
-			buf1_fft[a2]= left_r + right_i;
-			buf1_fft[b2]= right_r - left_i;
-			
-			//prepare c
-			// buf2_fft[a2]= center_r;
-			// buf2_fft[b2]=-center_i;
-		);
+		//more voodoo
+		buf1_a[a]  = left_r - right_i;
+		buf1_a[b]  = left_i + right_r;
+		buf1_a[a2] = left_r + right_i;
+		buf1_a[b2] = right_r - left_i;
 
 		i += 2;
 	);
 
 	// Inverse FFT
-	fft_ipermute(buf1_fft, fftsize);
-	ifft(buf1_fft, fftsize);
+	fft_ipermute(buf1_a, fftsize);
+	ifft(buf1_a, fftsize);
 	
-	// fft_ipermute(buf2_fft, fftsize);
-	// ifft(buf2_fft, fftsize);
 
-	// Overlap-add output
-	memcpy(buf1_out, buf1_out + 2*fftsize - 2*overlap, 2*overlap);
-	memset(buf1_out + 2*overlap, 0, 2*fftsize - 2*overlap);
-	
-	// memcpy(buf2_out, buf2_out + 2*fftsize - 2*overlap, 2*overlap);
-	// memset(buf2_out + 2*overlap, 0, 2*fftsize - 2*overlap);
-	
-	i = 0;
-	loop(fftsize,
-		buf1_out[i] += buf1_fft[i];
-		buf1_out[i+1] += buf1_fft[i+1];
-		
-		// buf2_out[i] += buf2_fft[i];
-		// buf2_out[i+1] += buf2_fft[i+1];
-		
-		i += 2;
-	);
 	
 	check_silence_restore_fftsize();
-	
+	pos=0;
 );
+
+//windowing?
+w1 = window[pos/2];
+w2 = window[(fftsize-pos)/2-1];
+sw = (w1+w2)*fftsize;
+
+out0 = (buf1_a[pos]+buf1_b[fftsize+pos])/sw;
+out1 = (buf1_a[pos+1]+buf1_b[fftsize+pos+1])/sw;
+// out2 = (buf2_a[pos]+buf2_b[fftsize+pos])/sw;
+// out3 = (buf2_a[pos+1]+buf1_b[fftsize+pos+1])/sw;
+
+
+
+buf1_a[pos] = w1*spl0;
+buf1_a[pos+1] = w1*spl1;
+buf1_b[fftsize+pos] = w2*spl0;
+buf1_b[fftsize+pos+1] = w2*spl1;
+
+//more stuff for 2nd input
+buf2_a[pos] = w1*spl2;
+buf2_a[pos+1] = w1*spl3;
+buf2_b[fftsize+pos] = w2*spl2;
+buf2_b[fftsize+pos+1] = w2*spl3;
 
 //buffer the original spl0
 out4 = buf1_org[pos2]  ;
@@ -417,22 +425,27 @@ out5 = buf1_org[pos2+1];
 buf1_org[pos2] =  spl0;
 buf1_org[pos2+1] =  spl1;
 
-spl2=spl3=0;
-
-pos2=(pos2+2)%(pdc_delay*2);
 
 
-spl0 = buf1_out[pos];
-spl1 = buf1_out[pos+1];
 
+
+spl0 = out0;
+spl1 = out1;
+
+// spl2= out2;
 
 //subtract front from original spl0 to get back
-
-
-// spl2= buf2_out[pos];
-
 spl4=(out4-spl0)*slider8;
 spl5=(out5-spl1)*slider8;
+
+
+
+pos += 2;
+pos2=(pos2+2)%(fftsize*2);
+
+
+spl2=0;
+spl3=0;
 
 @gfx 500 20
 

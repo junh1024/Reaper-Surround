@@ -38,15 +38,7 @@ out_pin:BR
 pdc_bot_ch = 0;
 pdc_top_ch = 6;
 
-buf1_a			= sixteen_k*1;
-buf1_b		= sixteen_k*2;
-// buf1_out		= sixteen_k*3;
-buf1_org		= sixteen_k*4;
 
-buf2_a			= sixteen_k*5;
-buf2_b		= sixteen_k*6;
-// buf2_out		= sixteen_k*7;
-buf2_org		= sixteen_k*8;
 
 
 @slider
@@ -254,12 +246,12 @@ pos >= fftsize ?
 	fft_ipermute(buf1_a, fftsize);
 	ifft(buf1_a, fftsize);
 	
-	// width_coeff<1?(
+	width_coeff<1?(
 	fft_ipermute(buf2_a, fftsize);
 	ifft(buf2_a, fftsize);
-// );
+);
 
-check_silence_restore_fftsize();
+	check_silence_restore_fftsize();
 
 	pos=0;
 	
@@ -304,8 +296,8 @@ buf1_org[pos2+1] =  spl1;
 
 
 
-spl4=out4;
-spl5=out5;
+// spl4=out4;
+// spl5=out5;
 
 spl0 = out0;
 spl1 = out1;
