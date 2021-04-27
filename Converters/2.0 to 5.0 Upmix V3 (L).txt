@@ -94,7 +94,14 @@ transient_amount=slider7/100;
 
 Time_Response=min(fftsize/8192,1); //clamp to 1, 0.5 @ 4k fft
 
+big_number=2^32;
+
 @sample
+
+// small hack to avoid glitches where pan is 100% side, due to L&R sharing the same FFT
+small_noise=(spl0+spl1)/big_number;
+spl0+=small_noise;
+spl1+=small_noise;
 
 sum_all_spl+=abs(spl0)+abs(spl1);	//silence detector
 
