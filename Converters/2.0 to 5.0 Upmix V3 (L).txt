@@ -43,31 +43,10 @@ pdc_top_ch = 6;
 
 @slider
 sliderfft = (2^(slider8))|0;
-fftsize != sliderfft ?
-(
-	pos = 0;
-	memset(buf1_a, 0, 2*fftsize);
-	memset(buf1_b, 0, 2*fftsize);
-	memset(buf2_a, 0, 2*fftsize);
-	memset(buf2_b, 0, 2*fftsize);
-	// memset(buf4, 0, 2*fftsize);
-	// memset(buf5, 0, 2*fftsize);
-	memset(window, 0, fftsize);
-	fftsize = sliderfft;
-	w = 2.0*$pi/fftsize;
-	i = 0;
-	
-	loop(fftsize/2,
-		window[i] = 0.42-0.50*cos(i*w)+0.08*cos(2.0*i*w); //blackman window
-		// window[i] =1- (1-abs(i/fftsize)); //triangle window
-		// window[i] =min(2- (2-abs(i/fftsize)),1); //trapezium window
-		// window[i] = 0.5;
-		i += 1;
-	); 
-	pdc_delay = fftsize;
-);
+fftsize != sliderfft ? fft_initialize();
+
 // gain = 10^(slider1 / 20);
-offset = 2*pi / 360 * slider2;
+// offset = 2*pi / 360 * slider2;
 
 
 Rear_threshold= slider3*pi/180;
