@@ -6,7 +6,7 @@ slider1:5<0,7,1{Max,Min (Denoise),Align N/A,Subtract AR,Phase limit,Phase reflec
 slider2:100<0,200,1>Amount (%)
 slider3:1<0,1,0.01>Frequency Response 
 slider4:75<0,100,2>Cutoff (%)
-slider5:0.5<0,1,0.01>Time Response 
+slider5:50<0,100,0.1>Time Response 
 slider6:40<0,50,5>FFT Overlap (%)
 slider7:12<10,14,1>FFT size (pow2)
 slider8:0<0,1,1{No,Yes}>Difference Output
@@ -36,7 +36,6 @@ mode==4?
 	actually_do_difference_output=1;
 );
 
-fftsize=2^slider7;
 
 out4=0;
 
@@ -46,22 +45,15 @@ out4=0;
 not_silence=1;
 
 @slider
-fftsize=2^slider7;
-pdc_delay = fftsize - 1;
-scale = 1/fftsize;
+sliderfft = (2^(slider7))|0;
+fftsize != sliderfft ? fft_initialize();
 
-// inspector1=floor(slider3/10);
-overlap_w=overlap_sel[slider6/10]; //40 % overlap
-// overlap_w=slider3/100;
-overlap=floor(overlap_w*fftsize);
-i = 0;
-loop(fftsize,
-	window[i] = min( (0.5 /overlap_w) - abs( (1/overlap_w) *i / fftsize -(0.5/overlap_w)), 1); // adjustable Trapezium window
-	i += 1;
-);
+//parameter migration from old version, which had Frequency & Time response 0-1 instead of 0-100
+slider3<2?slider3*=100;
+slider5<2?slider5*=100;
 
-// gain = 10^(slider1 / 20);
-offset = 2*pi / 360 * slider2;
+Time_Response=slider5/100;
+
 
 Amount=max(slider2/100,0.01);//clamp to min of 0.01
 
@@ -79,7 +71,6 @@ Resp_bins=slider4/100;
 
 elements_to_skip=fftsize-floor(Resp_bins*fftsize);
 
-Time_Response=slider5;
 
 mode<5?
 (
@@ -97,31 +88,22 @@ mode==4?
 @sample
 
 
-// Buffer input
 
-buf1_in[2*overlap + pos]	= spl0 * scale;
-buf1_in[2*overlap + pos+1]	= spl1 * scale;
+sum_all_spl+=abs(spl0)+abs(spl1);	//silence detector
 
-sum_all_spl+=spl0^2+spl1^2;	//silence detector
+pos >= fftsize ?
+(
+	tmp = buf1_a;
+	buf1_a = buf1_b;
+	buf1_b = tmp;
 
-// ( (pos += 2) >= (fftsize - overlap )*2 ) && (sqrt(sum_all_spl)/(fftsize - overlap )) >0.000001 ? ( //makes glitches
-( (pos += 2) >= (fftsize - overlap )*2 ) ? (
-
-	pos = 0;
-	
 	check_silence_set_fftsize(0); //reduce CPU
-	// not_silence==0?	memset(buf1_out,0,sixteen_k); //silence buffer otherwise will loop audio
 	
-	fft_2ch_window_overlap_fft();
-	
-	//silence the frequencies we are skipping for some modes
-	
-	mode<5?
-	(
-	memset(buf1_fft+(fftsize-elements_to_skip), 0, 2*elements_to_skip);
-	);
-	
-	
+	fft(buf1_a, fftsize);
+	fft_permute(buf1_a, fftsize);
+
+	//silence the frequencies we are skipping
+	memset(buf1_a+(fftsize-elements_to_skip), 0, 2*elements_to_skip);
 
 	i = 0;
 	loop(fftsize / 2 + 1 - (elements_to_skip/2),
@@ -132,10 +114,7 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 		a2 = 2*fftsize-i;
 		b2 = a2+1;
  
-		fft_4ch_untangle();
-
-		Magnitudes1[i]=sqrt(left_r^2+left_i^2); //+very_small_number*0.1
-		Magnitudes2[i]=sqrt(right_r^2+right_i^2);
+		fft_2ch_untangle_mags_2();
 		
 		
 		// Angles1[i]=atan2(left_r,left_i);
@@ -323,69 +302,60 @@ sum_all_spl+=spl0^2+spl1^2;	//silence detector
 		// Magnitudes1_old[i]=Magnitudes1[i];
 		
 		
-		(mode==8 && i<fftsize/50)? //bass boost select, from transient mode 
-		(
-			L_scaling=(Magnitudes1[i]*(Amount^2)+Magnitudes1_old[i]*(1-(Amount^2)))/Magnitudes1[i];
-			// L_scaling=1/L_scaling;
-			lr_complex_apply_1_scaling(L_scaling);
-		
-		);
+
 		Magnitudes1_old[i]=Magnitudes1[i];
-		
 
-		
-		buf1_fft[a]	= left_r - right_i;
-		buf1_fft[b]	= left_i + right_r;
-		// buf2_fft[a] = center_r;
-		// buf2_fft[b] = center_i;	
-		
-		
-		//may reduce glitching when stopped?
-		i>0?
-		(
-			buf1_fft[a2]= left_r + right_i;
-			buf1_fft[b2]= right_r - left_i;
-			
-
-		);
+		//more voodoo
+		buf1_a[a]  = left_r - right_i;
+		buf1_a[b]  = left_i + right_r;
+		buf1_a[a2] = left_r + right_i;
+		buf1_a[b2] = right_r - left_i;
 
 		i += 2;
 	);
 
 	// Inverse FFT
-	fft_ipermute(buf1_fft, fftsize);
-	ifft(buf1_fft, fftsize);
+	fft_ipermute(buf1_a, fftsize);
+	ifft(buf1_a, fftsize);
+	
 
-	// Overlap-add output
-	memcpy(buf1_out, buf1_out + 2*fftsize - 2*overlap, 2*overlap);
-	memset(buf1_out + 2*overlap, 0, 2*fftsize - 2*overlap);
-	
-	
-	i = 0;
-	loop(fftsize,
-		buf1_out[i] += buf1_fft[i];
-		buf1_out[i+1] += buf1_fft[i+1];
-		
-		i += 2;
-	);
 	
 	check_silence_restore_fftsize();
-	
+	pos=0;
 );
+
+
+//windowing?
+w1 = window[pos/2];
+w2 = window[(fftsize-pos)/2-1];
+sw = (w1+w2)*fftsize;
+
+out0 = (buf1_a[pos]+buf1_b[fftsize+pos])/sw;
+out1 = (buf1_a[pos+1]+buf1_b[fftsize+pos+1])/sw;
+
+buf1_a[pos] = w1*spl0;
+buf1_a[pos+1] = w1*spl1;
+buf1_b[fftsize+pos] = w2*spl0;
+buf1_b[fftsize+pos+1] = w2*spl1;
+
 
 //buffer the original spl0
 out4 = buf1_org[pos2]  ;
-// out5 = buf1_org[pos2+1];
+out5 = buf1_org[pos2+1];
 
 buf1_org[pos2] =  spl0;
 buf1_org[pos2+1] =  spl1;
 
-// spl2=spl3=0;
 
-pos2=(pos2+2)%(pdc_delay*2);
+spl0 = out0;
+// spl1 = out1;
 
+//subtract front from original spl0 to get back
+// spl4=(out4-spl0)*slider8;
+//this gets a bit tricky cuz we output the processed R or the difference
+spl1 = out1*(1-actually_do_difference_output)+(actually_do_difference_output*(out4-   out1 )) ;
 
-spl0 = buf1_out[pos];
-// spl1 = buf1_out[pos+1];
-spl1 = buf1_out[pos+1]*(1-actually_do_difference_output)+(actually_do_difference_output*(out4-   buf1_out[pos] )) ;
+pos += 2;
+pos2=(pos2+2)%(fftsize*2);
+
 

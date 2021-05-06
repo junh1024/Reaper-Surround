@@ -313,6 +313,24 @@ function fft_4ch_untangle_mags_2()
 );
 
 
+function fft_2ch_untangle_mags_2()
+(
+	x =	buf1_a[a];
+	y =	buf1_a[b];
+	x2=	buf1_a[a2];
+	y2=	buf1_a[b2];
+
+	
+	 left_r = (x + x2)*0.5;
+	 left_i = (y - y2)*0.5;
+	right_r = (y + y2)*0.5;
+	right_i = (x2 - x)*0.5;
+	
+	Magnitudes1[i]=sqrt(left_r^2+left_i^2); //+very_small_number*0.1
+	Magnitudes2[i]=sqrt(right_r^2+right_i^2);
+
+);
+
 
 
 
