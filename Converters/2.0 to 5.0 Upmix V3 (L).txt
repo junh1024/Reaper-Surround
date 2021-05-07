@@ -45,10 +45,6 @@ pdc_top_ch = 6;
 sliderfft = (2^(slider8))|0;
 fftsize != sliderfft ? fft_initialize();
 
-// gain = 10^(slider1 / 20);
-// offset = 2*pi / 360 * slider2;
-
-
 Rear_threshold= slider3*pi/180;
 Crossover_width=max(slider4*pi/180,0.1);//min of 0.1 since don't want an infinite slope/div 0
 width_coeff=slider1/100; 
@@ -238,9 +234,7 @@ pos >= fftsize ?
 	
 );
 
-	
-	
-	
+
 
 //windowing?
 w1 = window[pos/2];
