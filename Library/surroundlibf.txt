@@ -224,32 +224,7 @@ function fft_4ch_window_overlap_fft()
 	fft_permute(buf2_fft, fftsize);
 );
 
-function fft_2ch_window_overlap_fft()
-(
-	// memcpy(buf1_fft+(fftsize/2),buf1_in+(fftsize/2),fftsize);//copy the middle half cuz window =1;
-	// memcpy(buf2_fft+(fftsize/2),buf2_in+(fftsize/2),fftsize);
-	
-	memcpy(buf1_fft,buf1_in,fftsize*2);
 
-	// Apply window to top & tail together, so less iterations are needed
-	i = 0;
-	loop(fftsize/2-(overlap/4),
-		buf1_fft[i]	=buf1_in[i]	*window[i/2];
-		buf1_fft[i+1]=buf1_in[i+1]*window[i/2];
-		buf1_fft[fftsize*2-i]	=buf1_in[fftsize*2-i]	*window[fftsize-i/2];
-		buf1_fft[fftsize*2-i+1]	=buf1_in[fftsize*2-i+1]	*window[fftsize-i/2];
-		
-		i += 2;
-	);
-
-
-	// Overlap input
-	memcpy(buf1_in, buf1_in + fftsize*2 - overlap*2, overlap*2);
-
-	// FFT
-	fft(buf1_fft, fftsize);
-	fft_permute(buf1_fft, fftsize);
-);
 
 
 function fft_4ch_untangle_mags()

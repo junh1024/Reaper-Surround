@@ -77,7 +77,6 @@ Time_Response=slider5/100;
 
 sum_all_spl+=abs(spl0)+abs(spl1);	//silence detector
 
-// Buffer input
 pos >= fftsize ?
 (
 	tmp = buf1_a;
@@ -110,7 +109,17 @@ pos >= fftsize ?
 		a2 = 2*fftsize-i;
 		b2 = a2+1;
  
-		fft_4ch_untangle_mags_2();
+ 
+			(mode <=4  || mode ==8) ? 
+			( 
+				fft_4ch_untangle_mags_2();  
+			)   
+			:
+			(	 
+				fft_2ch_untangle_mags_2()	;
+			);
+
+
 
 		// Angles1[i]=atan2(left_r,left_i);
 		// Angles2[i]=atan2(right_r,right_i);
@@ -339,16 +348,14 @@ pos >= fftsize ?
 // SURROUND===
 // Unify "2.0 to 3.0 Width (M)" & "3.0 Spread Control (U)"
 // Unified 51>71 upscale V1,V2 with Square & Circle modes
+// 51>71 upscale V3 with 4ch discrete mode
 // 51>91h upscale modes(discrete SFX+?)
-// 2>5 & 5>9 upscalers, revert to Blackman window?
 // 51>20 downmix V3 FFT
 // 2>15 mono pan, no pan law for height
 // ambisonics 40 V2,3 decoder, microphone tool V3 in FFT
 // cutoff behavior depends  on mode, bypass/silence
-// reduce CPU when no audio
 // migrate FFT tools back to old 50% infrastructure fore less artefacts
 // sustain designer amount
-// more gfx for FFTMT
 // log freq gfx display
 // check silence fn test magnitude, cleanup, buf vars
 // surround layout converter
@@ -365,9 +372,7 @@ pos >= fftsize ?
 	// Inverse FFT
 	fft_ipermute(buf1_a, fftsize);
 	ifft(buf1_a, fftsize);
-	
-
-	
+		
 	check_silence_restore_fftsize();
 	pos=0;
 );
@@ -441,10 +446,10 @@ gfx_r=gfx_g=gfx_b=gfx_a=1;
 	
 	while
 	( 
-		gfx_a=L_scaling_array[g];
+		gfx_a=min( L_scaling_array[g],1);
 		set_color(g/(fftsize/2.5)); //update color according to frequency
 		// drawbox( (g*gfx_w)/(fftsize/2),box_width/2) ; //draw position for each bin
-		drawbox( (g*gfx_w)/(fftsize/2),gfx_h*(1-L_scaling_array[g])) ; //draw position for each bin
+		drawbox( (g*gfx_w)/(fftsize/2),gfx_h*(1- ( L_scaling_array[g]*.5 ) )) ; //draw position for each bin, half height so mag increases don't draw offscreen
 		g+=8;
 		g<fftsize/2 - 1 - (elements_to_skip/2);
 

@@ -35,22 +35,14 @@ pdc_top_ch = 14;
 out0=out1=out4=out5=0;
 
 @slider
-fftsize=2^slider8;
-pdc_delay = fftsize - 1;
-scale = 1/fftsize;
+sliderfft = (2^(slider8))|0;
+fftsize != sliderfft ? fft_initialize();
 
-// inspector1=floor(slider3/10);
-overlap_w=overlap_sel[slider7/10]; //40 % overlap
-// overlap_w=slider3/100;
-overlap=floor(overlap_w*fftsize);
-i = 0;
-loop(fftsize,
-	window[i] = min( (0.5 /overlap_w) - abs( (1/overlap_w) *i / fftsize -(0.5/overlap_w)), 1); // adjustable Trapezium window
-	i += 1;
-);
 
-// gain = 10^(slider1 / 20);
-offset = 2*pi / 360 * slider2;
+//parameter migration from old version, which had Frequency & Time response 0-1 instead of 0-100
+slider5<2?slider5*=100;
+
+Time_Response=slider5/100;
 
 Amount=slider2/100;
 
@@ -70,34 +62,35 @@ Resp_bins=slider5/100;
 
 elements_to_skip=fftsize-floor(Resp_bins*fftsize);
 
-Time_Response=slider6;
 
 
 
 @sample
 
 
-// Buffer input
+sum_all_spl+=abs(spl0)+abs(spl1)+abs(spl4)+abs(spl5);	//silence detector
 
-buf1_in[2*overlap + pos]	= spl0 * scale;
-buf1_in[2*overlap + pos+1]	= spl1 * scale;
+pos >= fftsize ?
+(
+	tmp = buf1_a;
+	buf1_a = buf1_b;
+	buf1_b = tmp;
 
-buf2_in[2*overlap + pos]	= spl4 * scale;
-buf2_in[2*overlap + pos+1]	= spl5 * scale;
-
-sum_all_spl+=spl0^2+spl1^2+spl4^2+spl5^2;	//silence detector
-
-(pos += 2) >= (fftsize - overlap )*2? (
-	pos = 0;
+	tmp = buf2_a;
+	buf2_a = buf2_b;
+	buf2_b = tmp;
 
 	check_silence_set_fftsize(0); //reduce CPU
 	
-	fft_4ch_window_overlap_fft();
+	fft(buf1_a, fftsize);
+	fft_permute(buf1_a, fftsize);
+	
+	fft(buf2_a, fftsize);
+	fft_permute(buf2_a, fftsize);
 	
 	//silence the frequencies we are skipping
-	memset(buf1_fft+(fftsize-elements_to_skip), 0, 2*elements_to_skip);
-	memset(buf2_fft+(fftsize-elements_to_skip), 0, 2*elements_to_skip);
-	
+	memset(buf1_a+(fftsize-elements_to_skip), 0, 2*elements_to_skip);
+	memset(buf2_a+(fftsize-elements_to_skip), 0, 2*elements_to_skip);	
 
 	i = 0;
 	loop(fftsize / 2 + 1 - (elements_to_skip/2),
@@ -108,7 +101,7 @@ sum_all_spl+=spl0^2+spl1^2+spl4^2+spl5^2;	//silence detector
 		a2 = 2*fftsize-i;
 		b2 = a2+1;
  
-		fft_4ch_untangle_mags();
+		fft_4ch_untangle_mags_2();
 
 		// p1=abs(Magnitudes3[i]-Magnitudes1[i])/(Magnitudes3[i]+Magnitudes1[i]); //for FPA & min2
 
@@ -281,96 +274,92 @@ sum_all_spl+=spl0^2+spl1^2+spl4^2+spl5^2;	//silence detector
 
 		);
 
-		buf1_fft[a]	= left_r - right_i;
-		buf1_fft[b]	= left_i + right_r;
-		
-		buf2_fft[a]	= left_r_two - right_i_two;
-		buf2_fft[b]	= left_i_two + right_r_two;
+		//more voodoo
+		buf1_a[a]  = left_r - right_i;
+		buf1_a[b]  = left_i + right_r;
+		buf1_a[a2] = left_r + right_i;
+		buf1_a[b2] = right_r - left_i;
 
-		
-		
-		//may reduce glitching when stopped?
-		i>0?
-		(
-			buf1_fft[a2]= left_r + right_i;
-			buf1_fft[b2]= right_r - left_i;
-			
-			buf2_fft[a2]	= left_r_two + right_i_two;
-			buf2_fft[b2]	= right_r_two - left_i_two;
-		);
+		buf2_a[a]  = left_r_two - right_i_two;
+		buf2_a[b]  = left_i_two + right_r_two;
+		buf2_a[a2] = left_r_two + right_i_two;
+		buf2_a[b2] = right_r_two - left_i_two;
 
 		i += 2;
 	);
 
 	// Inverse FFT
-	fft_ipermute(buf1_fft, fftsize);
-	ifft(buf1_fft, fftsize);
-	
-	fft_ipermute(buf2_fft, fftsize);
-	ifft(buf2_fft, fftsize);
+	fft_ipermute(buf1_a, fftsize);
+	ifft(buf1_a, fftsize);
 
-	// Overlap-add output
-	memcpy(buf1_out, buf1_out + 2*fftsize - 2*overlap, 2*overlap);
-	memset(buf1_out + 2*overlap, 0, 2*fftsize - 2*overlap);
-	
-	memcpy(buf2_out, buf2_out + 2*fftsize - 2*overlap, 2*overlap);
-	memset(buf2_out + 2*overlap, 0, 2*fftsize - 2*overlap);
-	
-	i = 0;
-	loop(fftsize,
-		buf1_out[i] += buf1_fft[i];
-		buf1_out[i+1] += buf1_fft[i+1];
-		
-		buf2_out[i] += buf2_fft[i];
-		buf2_out[i+1] += buf2_fft[i+1];
-		
-		
-		i += 2;
-	);
+	fft_ipermute(buf2_a, fftsize);
+	ifft(buf2_a, fftsize);
 	
 	check_silence_restore_fftsize();
+	pos=0;
 );
 
-//buffer the original spl0
-out0 = buf1_org[pos2]  ;
-out1 = buf1_org[pos2+1];
 
-buf1_org[pos2] =  spl0;
-buf1_org[pos2+1] =  spl1;
+//windowing?
+w1 = window[pos/2];
+w2 = window[(fftsize-pos)/2-1];
+sw = (w1+w2)*fftsize;
 
-out4 = buf2_org[pos2]  ;
-out5 = buf2_org[pos2+1];
-
-buf2_org[pos2] =  spl4;
-buf2_org[pos2+1] =  spl5;
-
+//delay c/lfe
 out2 = buf3_org[pos2]  ;
 out3 = buf3_org[pos2+1];
 
 buf3_org[pos2]	=  spl2;
 buf3_org[pos2+1]=  spl3;
 
-//delay c/lfe
 spl2=out2;
 spl3=out3;
 
-pos2=(pos2+2)%(pdc_delay*2);
+out0 = (buf1_a[pos]+buf1_b[fftsize+pos])/sw;
+out1 = (buf1_a[pos+1]+buf1_b[fftsize+pos+1])/sw;
+out4 = (buf2_a[pos]+buf2_b[fftsize+pos])/sw;
+out5 = (buf2_a[pos+1]+buf2_b[fftsize+pos+1])/sw;
+
+//buffer inputs
+buf1_a[pos] = w1*spl0;
+buf1_a[pos+1] = w1*spl1;
+buf1_b[fftsize+pos] = w2*spl0;
+buf1_b[fftsize+pos+1] = w2*spl1;
+
+buf2_a[pos] = w1*spl4;
+buf2_a[pos+1] = w1*spl5;
+buf2_b[fftsize+pos] = w2*spl4;
+buf2_b[fftsize+pos+1] = w2*spl5;
+
+//buffer the originals
+out8 = buf1_org[pos2]  ;
+out9 = buf1_org[pos2+1];
+out12 = buf2_org[pos2]  ;
+out13 = buf2_org[pos2+1];
+
+buf1_org[pos2] =  spl0;
+buf1_org[pos2+1] =  spl1;
+buf2_org[pos2] =  spl4;
+buf2_org[pos2+1] =  spl5;
 
 //do output
-spl0 = buf1_out[pos];
-spl1 = buf1_out[pos+1];
+spl0 = out0;
+spl1 = out1;
 
-spl4 = buf2_out[pos];
-spl5 = buf2_out[pos+1];
+spl4 = out4;
+spl5 = out5;
 
 //subtract processed from original to get height
+spl8=(out8-spl0);
+spl9=(out9-spl1);
+
+spl12=(out12-spl4);
+spl13=(out13-spl5);
 
 
-spl8=(out0-spl0);
-spl9=(out1-spl1);
+pos += 2;
+pos2=(pos2+2)%(fftsize*2);
 
-spl12=(out4-spl4);
-spl13=(out5-spl5);
 
 @gfx 500 500
 
