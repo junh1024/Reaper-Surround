@@ -7,7 +7,7 @@ slider2:100<0,200,1>Amount (%)
 slider3:0<-1,1,0.05>Threshold/Pan
 slider4:0.2<0,1,0.05>Crossover/Width
 slider5:75<0,100,1>Cutoff (%)
-slider6:1<0,1,0.01>Time Response
+slider6:50<0,100,2>Time Response 
 slider7:25<0,50,5>FFT Overlap (%)
 slider8:12<10,14,1>FFT size (pow2)
 
@@ -40,9 +40,8 @@ fftsize != sliderfft ? fft_initialize();
 
 
 //parameter migration from old version, which had Frequency & Time response 0-1 instead of 0-100
-slider5<2?slider5*=100;
-
-Time_Response=slider5/100;
+slider6<2?slider6*=100;
+Time_Response=slider6/100;
 
 Amount=slider2/100;
 

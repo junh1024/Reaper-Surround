@@ -2,12 +2,12 @@
 
 desc: 5.1 to 7.1 FFT upmix. in BETA
 
-slider1:1<0,1,1{Square (Cine-auto thresholds),Circle (ITU)}>Mode
+slider1:1<0,1,1{Square (Cine-auto thresholds),Circle (ITU), Circle+ (ITU)}>Mode
 slider2:100<0,200,1>Amount (%)
 slider3:50<0,100,1>Side threshold
 slider4:100<0,100,1>Crossover width
 slider5:75<0,100,1>Cutoff (%)
-slider6:1<0,1,0.01>Time Response
+slider6:50<0,100,2>Time Response 
 slider7:25<0,50,5>FFT Overlap (%)
 slider8:12<10,14,1>FFT size (pow2)
 
@@ -46,23 +46,13 @@ out0=out1=out4=out5=0;
 Side_threshold= slider3/100;
 Crossover_width=max(slider4/100,0.1);//min of 0.1 since don't want an infinite slope/div 0
 
-Time_Response=slider6;
-fftsize=2^slider8;
-pdc_delay = fftsize - 1;
-scale = 1/fftsize;
 
-// inspector1=floor(slider3/10);
-overlap_w=overlap_sel[slider7/10]; //40 % overlap
-// overlap_w=slider3/100;
-overlap=floor(overlap_w*fftsize);
-i = 0;
-loop(fftsize,
-	window[i] = min( (0.5 /overlap_w) - abs( (1/overlap_w) *i / fftsize -(0.5/overlap_w)), 1); // adjustable Trapezium window
-	i += 1;
-);
+//parameter migration from old version, which had Frequency & Time response 0-1 instead of 0-100
+slider6<2?slider6*=100;
+Time_Response=slider6/100;
 
-// gain = 10^(slider1 / 20);
-offset = 2*pi / 360 * slider2;
+sliderfft = (2^(slider8))|0;
+fftsize != sliderfft ? fft_initialize();
 
 Amount=slider2/100;
 
@@ -95,27 +85,30 @@ elements_to_skip=fftsize-floor(Resp_bins*fftsize);
 // spl5+=sum_all_spl;
 
 
-// Buffer input
-
-buf1_in[2*overlap + pos]	= spl0 * scale;
-buf1_in[2*overlap + pos+1]	= spl1 * scale;
-
-buf2_in[2*overlap + pos]	= spl4 * scale;
-buf2_in[2*overlap + pos+1]	= spl5 * scale;
-
-sum_all_spl+=spl0^2+spl1^2+spl4^2+spl5^2;	//silence detector
+sum_all_spl+=abs(spl0)+abs(spl1)+abs(spl4)+abs(spl5);	//silence detector
 
 
-(pos += 2) >= (fftsize - overlap )*2? (
-	pos = 0;
+pos >= fftsize ?
+(
+	tmp = buf1_a;
+	buf1_a = buf1_b;
+	buf1_b = tmp;
+
+	tmp = buf2_a;
+	buf2_a = buf2_b;
+	buf2_b = tmp;
 
 	check_silence_set_fftsize(0); //reduce CPU
-
-	fft_4ch_window_overlap_fft();
+	
+	fft(buf1_a, fftsize);
+	fft_permute(buf1_a, fftsize);
+	
+	fft(buf2_a, fftsize);
+	fft_permute(buf2_a, fftsize);
 	
 	//silence the frequencies we are skipping
-	memset(buf1_fft+(fftsize-elements_to_skip), 0, 2*elements_to_skip);
-	memset(buf2_fft+(fftsize-elements_to_skip), 0, 2*elements_to_skip);
+	memset(buf1_a+(fftsize-elements_to_skip), 0, 2*elements_to_skip);
+	memset(buf2_a+(fftsize-elements_to_skip), 0, 2*elements_to_skip);	
 	
 
 	i = 0;
@@ -160,15 +153,11 @@ sum_all_spl+=spl0^2+spl1^2+spl4^2+spl5^2;	//silence detector
 			center_r_two = mid_r *2*(1-Sideness2[i])*h_sqrt_2;
 			center_i_two = mid_i *2*(1-Sideness2[i])*h_sqrt_2;
 			
-			buf1_fft[a]	= center_r - center_i_two;
-			buf1_fft[b]	= center_i + center_r_two;
+			buf1_a[a]= center_r - center_i_two;
+			buf1_a[b]= center_i + center_r_two;
+			buf1_a[a2]= center_r + center_i_two;
+			buf1_a[b2]= center_r_two - center_i;
 
-			//may reduce glitching when stopped?
-			i>0?
-			(
-				buf1_fft[a2]= center_r + center_i_two;
-				buf1_fft[b2]= center_r_two - center_i;
-			);
 
 			
 		):
@@ -196,20 +185,11 @@ sum_all_spl+=spl0^2+spl1^2+spl4^2+spl5^2;	//silence detector
 			inspector1=Sideness1[i];
 			inspector2=S_scaling;
 		
-			buf1_fft[a]	= left_r_two - right_i_two;
-			buf1_fft[b]	= left_i_two + right_r_two;
+			buf1_a[a]	= left_r_two - right_i_two;
+			buf1_a[b]	= left_i_two + right_r_two;
+			buf1_a[a2]	= left_r_two + right_i_two;
+			buf1_a[b2]	= right_r_two - left_i_two;
 
-			
-			
-			//may reduce glitching when stopped?
-			i>0?
-			(
-
-				buf1_fft[a2]	= left_r_two + right_i_two;
-				buf1_fft[b2]	= right_r_two - left_i_two;
-			);
-				
-			
 			
 		);
 			
@@ -218,38 +198,17 @@ sum_all_spl+=spl0^2+spl1^2+spl4^2+spl5^2;	//silence detector
 		);
 		
 	// Inverse FFT
-	fft_ipermute(buf1_fft, fftsize);
-	ifft(buf1_fft, fftsize);
-
-	// Overlap-add output
-	memcpy(buf1_out, buf1_out + 2*fftsize - 2*overlap, 2*overlap);
-	memset(buf1_out + 2*overlap, 0, 2*fftsize - 2*overlap);
-	
-	i = 0;
-	loop(fftsize,
-		buf1_out[i] += buf1_fft[i];
-		buf1_out[i+1] += buf1_fft[i+1];
-
-		i += 2;
-	);
+	fft_ipermute(buf1_a, fftsize);
+	ifft(buf1_a, fftsize);
 	
 	check_silence_restore_fftsize();
+	pos=0;
 );
 
-//buffer the original spl0
-
-out0 = buf1_org[pos2]  ;
-out1 = buf1_org[pos2+1];
-
-buf1_org[pos2] =  spl0;
-buf1_org[pos2+1] =  spl1;
-
-out4 = buf2_org[pos2]  ;
-out5 = buf2_org[pos2+1];
-
-buf2_org[pos2] =  spl4;
-buf2_org[pos2+1] =  spl5;
-
+//windowing?
+w1 = window[pos/2];
+w2 = window[(fftsize-pos)/2-1];
+sw = (w1+w2)*fftsize;
 
 out2 = buf3_org[pos2]  ;
 out3 = buf3_org[pos2+1];
@@ -261,29 +220,57 @@ buf3_org[pos2+1]=  spl3;
 spl2=out2;
 spl3=out3;
 
-pos2=(pos2+2)%(pdc_delay*2);
+out0 = (buf1_a[pos]+buf1_b[fftsize+pos])/sw;
+out1 = (buf1_a[pos+1]+buf1_b[fftsize+pos+1])/sw;
+out4 = (buf2_a[pos]+buf2_b[fftsize+pos])/sw;
+out5 = (buf2_a[pos+1]+buf2_b[fftsize+pos+1])/sw;
+
+//buffer inputs
+buf1_a[pos] = w1*spl0;
+buf1_a[pos+1] = w1*spl1;
+buf1_b[fftsize+pos] = w2*spl0;
+buf1_b[fftsize+pos+1] = w2*spl1;
+
+buf2_a[pos] = w1*spl4;
+buf2_a[pos+1] = w1*spl5;
+buf2_b[fftsize+pos] = w2*spl4;
+buf2_b[fftsize+pos+1] = w2*spl5;
+
+//buffer the originals
+out0_org	= buf1_org[pos2]  ;
+out1_org	= buf1_org[pos2+1];
+out4_org	= buf2_org[pos2]  ;
+out5_org	= buf2_org[pos2+1];
+
+buf1_org[pos2] =  spl0;
+buf1_org[pos2+1] =  spl1;
+buf2_org[pos2] =  spl4;
+buf2_org[pos2+1] =  spl5;
+
+
 
 mode==1?
 (
-	spl6 = buf1_out[pos]	*Amount;
-	spl7 = buf1_out[pos+1]	*Amount;
+	spl6 = out0*Amount;
+	spl7 = out1*Amount;
 
 	//do output
-	spl0 = out0-(spl6*h_sqrt_2);
-	spl1 = out1-(spl7*h_sqrt_2);
-	spl4 = out4-(spl6*h_sqrt_2);
-	spl5 = out5-(spl7*h_sqrt_2);
+	spl0 = out0_org-(spl6*h_sqrt_2);
+	spl1 = out1_org-(spl7*h_sqrt_2);
+	spl4 = out4_org-(spl6*h_sqrt_2);
+	spl5 = out5_org-(spl7*h_sqrt_2);
 ):
 (
-	spl0 = out0;
-	spl1 = out1;
-	spl4 = buf1_out[pos]	;
-	spl5 = buf1_out[pos+1];
-	spl6 = out4-(spl4);
-	spl7 = out5-(spl5);
+	spl0 = out0_org;
+	spl1 = out1_org;
+	spl4 = out0;
+	spl5 = out1;
+	spl6 = out4_org-(spl4);
+	spl7 = out5_org-(spl5);
 
 );
 
-
+pos += 2;
+pos2=(pos2+2)%(fftsize*2);
 
 @gfx 500 500
