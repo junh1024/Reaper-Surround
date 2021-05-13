@@ -347,18 +347,19 @@ pos >= fftsize ?
 // block stereo tool: m/s compress & centerizer
 // SURROUND===
 // Unify "2.0 to 3.0 Width (M)" & "3.0 Spread Control (U)"
-// Unified 51>71 upscale V1,V2 with Square & Circle modes
-// 51>71 upscale V3 with 4ch discrete mode
+// Unified 51>71 upscale V1
 // 51>91h upscale modes(discrete SFX+?)
 // 51>20 downmix V3 FFT
-// 2>15 mono pan, no pan law for height
+// 2>15 mono pan, no pan law for height, nicer 71 mode
 // ambisonics 40 V2,3 decoder, microphone tool V3 in FFT
 // cutoff behavior depends  on mode, bypass/silence
-// migrate FFT tools back to old 50% infrastructure fore less artefacts
 // sustain designer amount
 // log freq gfx display
 // check silence fn test magnitude, cleanup, buf vars
 // surround layout converter
+// 15.1 surround visualizer w/bias ball
+// coordinate automation tool (convert btw cubular & circular)
+// lfo automation tool, better than PMOD in RPR cuz it has offset
 		
 		//more voodoo
 		buf1_a[a]  = left_r - right_i;

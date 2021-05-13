@@ -2,7 +2,7 @@
 
 desc: 5.1 to 7.1 FFT upmix. in BETA
 
-slider1:1<0,1,1{Square (Cine-auto thresholds),Circle (ITU), Circle+ (ITU)}>Mode
+slider1:1<0,1,1{Square (Cine-auto thresholds),Circle (ITU),Circle+ (ITU)}>Mode
 slider2:100<0,200,1>Amount (%)
 slider3:50<0,100,1>Side threshold
 slider4:100<0,100,1>Crossover width
@@ -162,34 +162,74 @@ pos >= fftsize ?
 			
 		):
 		(
-			// circle mode
-			mid_r  = (left_r_two+right_r_two)*0.5;
-			mid_i  = (left_i_two+right_i_two)*0.5;
-			side_r = (left_r_two-right_r_two)*0.5;
-			side_i = (left_i_two-right_i_two)*0.5;
-			
-			// Magnitudes3[i]=sqrt(left_r_two^2+left_i_two^2);
-			// Magnitudes4[i]=sqrt(right_r_two^2+right_i_two^2);
-			
-			// compute pan
-			// p2=abs(Magnitudes4[i]-Magnitudes3[i])/(Magnitudes4[i]+Magnitudes3[i])
-			
-			ms_complex_set_sideness_center();
-			// Sideness1[i]=1;
-			
-			S_scaling= min(max( ( 1-(Sideness1[i]-Side_threshold+(Crossover_width/2))*(1/Crossover_width) )   ,0)     ,1)  ;
+			mode==2?
+			(
+				// circle mode
+				mid_r  = (left_r_two+right_r_two)*0.5;
+				mid_i  = (left_i_two+right_i_two)*0.5;
+				side_r = (left_r_two-right_r_two)*0.5;
+				side_i = (left_i_two-right_i_two)*0.5;
+				
+				// Magnitudes3[i]=sqrt(left_r_two^2+left_i_two^2);
+				// Magnitudes4[i]=sqrt(right_r_two^2+right_i_two^2);
+				
+				// compute pan
+				// p2=abs(Magnitudes4[i]-Magnitudes3[i])/(Magnitudes4[i]+Magnitudes3[i])
+				
+				ms_complex_set_sideness_center();
+				// Sideness1[i]=1;
+				
+				S_scaling= min(max( ( 1-(Sideness1[i]-Side_threshold+(Crossover_width/2))*(1/Crossover_width) )   ,0)     ,1)  ;
 
-			l2r2_complex_apply_1_scaling(S_scaling*Amount);
+				l2r2_complex_apply_1_scaling(S_scaling*Amount);
+				
+				
+				inspector1=Sideness1[i];
+				inspector2=S_scaling;
 			
-			
-			inspector1=Sideness1[i];
-			inspector2=S_scaling;
-		
-			buf1_a[a]	= left_r_two - right_i_two;
-			buf1_a[b]	= left_i_two + right_r_two;
-			buf1_a[a2]	= left_r_two + right_i_two;
-			buf1_a[b2]	= right_r_two - left_i_two;
-
+				buf1_a[a]	= left_r_two - right_i_two;
+				buf1_a[b]	= left_i_two + right_r_two;
+				buf1_a[a2]	= left_r_two + right_i_two;
+				buf1_a[b2]	= right_r_two - left_i_two;
+			)
+			:
+			(
+				//Circle+ discrete mode by analyzing all 4 ch
+				m1=Magnitudes1[i]=sqrt(left_r^2+left_i^2); //+very_small_number*0.1
+				m2=Magnitudes2[i]=sqrt(right_r^2+right_i^2);
+				m3=Magnitudes3[i]=sqrt(left_r_two^2+left_i_two^2);
+				m4=Magnitudes4[i]=sqrt(right_r_two^2+right_i_two^2);
+				
+				//how loud rear is compared to front
+				p1=m3/(m1+m3);
+				p2=m4/(m2+m4);
+				
+				/*
+				rear output (vert axis) as fn of p1 depth pan at defaults
+				^(1)
+				|   /
+				|__/ 
+				 ----(1)>
+				*/
+				
+				
+				Rear_thresh=100-slider3;
+				
+				//turn down rear if also in front aka move to sides
+				//Rear_thresh/50 = 1 @ defaults
+				L_scaling=max(  p1*2 -(Rear_thresh/50) ,0);
+				R_scaling=max(  p2*2 -(Rear_thresh/50) ,0);
+				
+				left_r_two *=L_scaling;
+				left_i_two *=L_scaling;
+				right_r_two*=R_scaling;
+				right_i_two*=R_scaling;
+				
+				buf1_a[a]	= left_r_two - right_i_two;
+				buf1_a[b]	= left_i_two + right_r_two;
+				buf1_a[a2]	= left_r_two + right_i_two;
+				buf1_a[b2]	= right_r_two - left_i_two;			
+			)
 			
 		);
 			
