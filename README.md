@@ -41,8 +41,7 @@ Quick start/Example workflow tools
 * 1.0 to 15.1 Panner GUI (L).txt for mono sources
 - 2.0 to 15.1 Mapper (M).txt for stereo sources
 * 5.1 to 3D Upmix (L).txt
-* 15.1 to 3D Downmix (M).txt
-* 15.1 to 5.1 Downmix (M).txt
+* Multi Mix Convert (L).txt
 
 
 ### FUMA Ambisonics workflow:
@@ -84,7 +83,7 @@ Panners
 ---
 - 3.1 Panner (M).txt: 3.0 front surround panner, with width control. Move & Copy actions are supported for LFE use, and  Mixing & Monitoring modes for a total of 4 combinations. The specification for LFE in digital mixes, is to gain it by 10dB on playback. Hence while mixing, it is gained by -10dB. For monitoring, this is not applied.
 - 1.0 to 5.1 Panner GUI (L).txt
-- 1.0 to 15.1 Panner GUI (M).txt
+- 1.0 to 15.1 Panner GUI (L).txt
 - 2.0 to 15.1 Mapper (M).txt
 - 7.1 to 15.1 Height Panner v2 (M).txt
 
@@ -116,7 +115,6 @@ Upmixers are considered experimental & are based on matrixes. It's advisable to 
 	- Pan Slice: the pan slider
 	- Function Designer: view the shape of the above mode
 - 6.1 to 7.1 Upmix (M).txt
-- 15.1 to 22.2 Upmix (U).txt
 
 Manipulators
 ---
@@ -131,7 +129,7 @@ Downmixers
 - 7.1 to 5.1 Downmix (M).txt
 - 15.1 to 5.1 Downmix (M).txt
 - 15.1 to 7.1 Downmix (S).txt
-- 15.1 to 3D Downmix (M).txt for Auro3D & AMBEO 5.1.4, Atmos Base 7.1.2, DTS-X Base & MPEG-H 7.1.4, and Atmos 9.1.6
+- Multi Mix Convert (L).txt for 5.1, 7.1, 5.1.2, Auro3D & AMBEO 5.1.4, Atmos Base 7.1.2, DTS-X Base & MPEG-H 7.1.4, Atmos 9.1.6, and 22.2 NHK. It internally converts to 15.1 so speakers which aren't in 15.1 will get downmixed.
 - 15.1 to 8.0 Speaker Tool (M).txt (8.0h Order: L R, HL HR, BL BR, SL SR, which is similar & backwards compatible with SMPTE-MS 7.1, for 3D surround playback using commonly available 7.1 sound cards)
 
 ![8.0sh](https://i.imgur.com/1nivgkz.png)

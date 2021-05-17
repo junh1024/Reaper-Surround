@@ -135,7 +135,7 @@ slider7==0 &&slider3<100 ? //activate only in 2D & close panning
 	spl4*= slider3/100 ;
 	spl5*= slider3/100 ;
 	
-	downmix_151_71_v1();
+	// downmix_151_71_v1();
 	
 );
 slider7==1 &&slider3<100? //activate only in 3D & top panning
