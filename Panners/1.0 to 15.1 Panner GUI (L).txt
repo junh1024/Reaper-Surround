@@ -17,6 +17,20 @@ import surroundlib3.txt
 
 in_pin:mono
 in_pin:mono
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
 
 out_pin:L
 out_pin:R
@@ -60,7 +74,7 @@ function do_slider_stuff()
 	center_coeff_forced_width=max(1-(abs(slider1)/30),0);
 	
 	// conv polar to cart for displ automation
-	(slider7==0)?(height_temp=100;):(height_temp=slider2;);
+	(slider7==0)?(height_temp=-slider3+100;):(height_temp=slider2;);
 	temp_rad=(155-((100-slider3)/1.8+ height_temp))/(155*2);
 	temp_theta=(slider1*$pi/180)+$pi/2;
 	new_x=-cos(temp_theta)*temp_rad*gfx_w+(gfx_w/2);
@@ -113,8 +127,8 @@ slider7==0 &&slider3<100 ? //activate only in 2D & close panning
 
 	//ell depth bleed for ell panning
 
-	spl16 += (spl0+spl4) * (100-slider3 )/100 ;
-	spl17 += (spl1+spl5) * (100-slider3 )/100 ;
+	spl6 += (spl0+spl4) * (100-slider3 )/100 ;
+	spl7 += (spl1+spl5) * (100-slider3 )/100 ;
 
 	spl0 *= slider3/100 ;
 	spl1 *= slider3/100 ;
@@ -212,7 +226,7 @@ slider7>0?
 (
 	gfx_g = gfx_b = 0;
 	gfx_r = 0.8;
-);
+
 
 height_toe_in=gfx_w/20;
 
@@ -226,7 +240,7 @@ drawbox(gfx_w*2/3-height_toe_in,gfx_h*2/3);
 drawbox(gfx_w/3-height_toe_in/2,gfx_h/2);
 drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 
-
+);
 
 //if mouse is within threshold of pan knob
 (mouse_cap ==1 /*&& mouse_x >=pan_x-box_width*pan_thresh && mouse_y >= pan_y -box_width*pan_thresh && mouse_x <=pan_x+box_width*pan_thresh && mouse_y <= pan_y +box_width*pan_thresh */ ) ? 
@@ -249,7 +263,7 @@ drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 	
 	slider2>100? //width to emulate top pan
 	(
-		slider3=floor(min(100-(slider2-100)*1.8,100));
+		slider3=min(100-(slider2-100)*1.8,100);
 		slider2=100;
 	):
 	(
@@ -261,7 +275,14 @@ drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 		slider2=max(0,slider2) // restrict bottom panning to front
 	);
 	
-	slider7<1?(slider2=0;);// restrict height panning to 3D
+	
+	slider7<1?
+	(
+		slider2=0;// restrict height panning to 3D
+		slider3=min(100*(rad/0.24),100); // Width reduction applies to whole area in 7.1
+	);
+	
+	slider3=floor(slider3); //round width
 	
 	ELL_W=slider3/100 ;
 	top_W=slider3/100 ;

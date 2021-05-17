@@ -347,10 +347,10 @@ pos >= fftsize ?
 // block stereo tool: m/s compress & centerizer
 // SURROUND===
 // Unify "2.0 to 3.0 Width (M)" & "3.0 Spread Control (U)"
-// Unified 51>71 upscale V1
+// Unified 51>71 upscale V1, V2 with modes
 // 51>91h upscale modes(discrete SFX+?)
 // 51>20 downmix V3 FFT
-// 2>15 mono pan, no pan law for height, nicer 71 mode
+// 2>15 mono pan, no pan law for height
 // ambisonics 40 V2,3 decoder, microphone tool V3 in FFT
 // cutoff behavior depends  on mode, bypass/silence
 // sustain designer amount
