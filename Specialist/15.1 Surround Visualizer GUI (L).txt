@@ -1,0 +1,158 @@
+desc: desc
+
+slider1:1<0,1,1{x,x}>Input layout
+slider2:1<0,1,1{x,x}>Mode
+slider3:100<0,200 ,1>Scaling
+slider4:10<0,100 ,1}>Time response
+
+
+in_pin:mono
+in_pin:mono
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+
+out_pin:L
+out_pin:R
+out_pin:C
+out_pin:LFE
+out_pin:BL
+out_pin:BR
+out_pin:SL
+out_pin:SR
+out_pin:TL
+out_pin:TR
+out_pin:BtL
+out_pin:BtR
+out_pin:TBL
+out_pin:TBR
+out_pin:TSL
+out_pin:TSR
+
+import surroundlib3.txt
+
+@init
+
+samples=0;
+samples_old=16;
+
+@slider
+
+Time_Response=slider4/100;
+
+@sample
+//sample capture
+samples[0	]=	spl0	;
+samples[1	]=	spl1	;
+samples[2	]=	spl2	;
+samples[3	]=	spl3	;
+samples[4	]=	spl4	;
+samples[5	]=	spl5	;
+samples[6	]=	spl6	;
+samples[7	]=	spl7	;
+samples[8	]=	spl8	;
+samples[9	]=	spl9	;
+samples[10	]=	spl10	;
+samples[11	]=	spl11	;
+samples[12	]=	spl12	;
+samples[13	]=	spl13	;
+samples[14	]=	spl14	;
+samples[15	]=	spl15	;
+
+
+@gfx 500 500
+// box_width=16;
+//box size scales with window size, hits 16 at 500x500
+//while not being too small for smaller sizes, like MCP embedding
+i=0;
+loop(16,
+	
+	
+	samples[i]=pow(abs(samples[i]),1/4);
+	samples[i]=(samples[i]*Time_Response) + (samples_old[i]*(1-Time_Response));
+	
+	samples_old[i]=samples[i];
+	
+	
+	
+	// Time_Response
+	
+	i+=1;
+	);
+
+
+box_width=floor(2.8*sqrt((gfx_w+gfx_h)/2));
+
+gfx_a = 0.8;
+gfx_r = gfx_g = gfx_b = 0;
+
+gfx_x = 0; gfx_y = 0;
+
+
+//draw ELL speakers
+
+//LR = cyan = includes bottom
+gfx_g =1;
+gfx_b =1;
+
+gfx_a = samples[0];
+drawbox(gfx_w*0.25,gfx_h*0.05);
+
+gfx_a = samples[1];
+drawbox(gfx_w*0.75,gfx_h*0.05);
+
+//center
+gfx_b =0;
+gfx_a = samples[2];
+drawbox(gfx_w/2,0);
+
+//Surround
+gfx_a = samples[4];
+drawbox(gfx_w*0.25,gfx_h*0.95);
+gfx_a = samples[5];
+drawbox(gfx_w*0.75,gfx_h*0.95);
+
+gfx_a = samples[6];
+drawbox(0,gfx_h/2);
+gfx_a = samples[7];
+drawbox(gfx_w,gfx_h/2);
+
+//draw height
+
+slider7>0?
+(
+	gfx_g = gfx_b = 0;
+	gfx_r = 0.8;
+
+
+height_toe_in=gfx_w/20;
+
+gfx_a = samples[8];
+drawbox(gfx_w/3+height_toe_in,gfx_h/3);
+gfx_a = samples[9];
+drawbox(gfx_w*2/3-height_toe_in,gfx_h/3);
+
+//H S
+gfx_a = samples[12];
+drawbox(gfx_w/3+height_toe_in,gfx_h*2/3);
+gfx_a = samples[13];
+drawbox(gfx_w*2/3-height_toe_in,gfx_h*2/3);
+
+gfx_a = samples[14];
+drawbox(gfx_w/3-height_toe_in/2,gfx_h/2);
+gfx_a = samples[15];
+drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
+
+);
+
