@@ -1,0 +1,107 @@
+desc: desc
+
+slider1:1<0,10,1{ ,=,==,===,====,=====,======,=======,========,=========,==========}>L
+slider2:1<0,10,1{ ,=,==,===,====,=====,======,=======,========,=========,==========}>R
+slider3:0<0,10,0.1>C
+slider4:10<0,10 ,1}>Time response %
+
+in_pin:mono
+in_pin:mono
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+in_pin:blank
+
+out_pin:L
+out_pin:R
+out_pin:C
+out_pin:LFE
+out_pin:BL
+out_pin:BR
+out_pin:SL
+out_pin:SR
+out_pin:TL
+out_pin:TR
+out_pin:BtL
+out_pin:BtR
+out_pin:TBL
+out_pin:TBR
+out_pin:TSL
+out_pin:TSR
+
+import surroundlib3.txt
+
+@init
+
+samples=0;
+samples_old=16;
+
+@slider
+
+Time_Response=(100-slider4)/100;
+
+@sample
+//sample capture
+samples[0	]=	spl0	;
+samples[1	]=	spl1	;
+samples[2	]=	spl2	;
+samples[3	]=	spl3	;
+samples[4	]=	spl4	;
+samples[5	]=	spl5	;
+samples[6	]=	spl6	;
+samples[7	]=	spl7	;
+samples[8	]=	spl8	;
+samples[9	]=	spl9	;
+samples[10	]=	spl10	;
+samples[11	]=	spl11	;
+samples[12	]=	spl12	;
+samples[13	]=	spl13	;
+samples[14	]=	spl14	;
+samples[15	]=	spl15	;
+
+//possible TODOs: use | instead of =, more characters, up to 5.1, gain.
+
+@gfx 250 0
+// box_width=16;
+//box size scales with window size, hits 16 at 500x500
+//while not being too small for smaller sizes, like MCP embedding
+i=0;
+loop(3,
+	
+	
+	samples[i]=pow(abs(samples[i]),1/4);
+	
+	samples[i]>samples_old[i]?samples[i]=(samples[i]+samples_old[i])/2;
+	
+	samples[i]<samples_old[i]?
+	(
+	samples[i]=samples_old[i]*Time_Response;
+	
+	);
+
+	
+		// samples[i]=(samples[i]*Time_Response) + (samples_old[i]*(1-Time_Response));
+
+	
+	slider(i+1)=samples[i]*10;
+	
+	samples_old[i]=samples[i];
+
+	
+	
+	// Time_Response
+	
+	i+=1;
+	);
+
+sliderchange(5)//all sliders bitmask
