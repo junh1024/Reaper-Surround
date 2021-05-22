@@ -3,7 +3,7 @@ desc: desc
 slider1:1<0,1,1{x,x}>Input layout
 slider2:1<0,1,1{x,x}>Mode
 slider3:100<0,200 ,1>Scaling
-slider4:10<0,100 ,1}>Time response
+slider4:10<0,10 ,1}>Time response %
 
 
 in_pin:mono
@@ -49,7 +49,7 @@ samples_old=16;
 
 @slider
 
-Time_Response=slider4/100;
+Time_Response=(100-slider4)/100;
 
 @sample
 //sample capture
@@ -80,10 +80,21 @@ loop(16,
 	
 	
 	samples[i]=pow(abs(samples[i]),1/4);
-	samples[i]=(samples[i]*Time_Response) + (samples_old[i]*(1-Time_Response));
+	
+	samples[i]>samples_old[i]?samples[i]=(samples[i]+samples_old[i])/2;
+	
+	samples[i]<samples_old[i]?
+	(
+	samples[i]=samples_old[i]*Time_Response;
+	
+	);
+
+	
+		// samples[i]=(samples[i]*Time_Response) + (samples_old[i]*(1-Time_Response));
+
 	
 	samples_old[i]=samples[i];
-	
+
 	
 	
 	// Time_Response
