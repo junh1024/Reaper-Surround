@@ -1,0 +1,53 @@
+desc:Simple upmix from 5.1 to 7.1 by duplicating rears for ITU/Circle 7.1
+
+slider1:1<0,1,1{Square (cine),Circle (ITU)}>Mode
+slider2:100<0,200,1>Upmix amount
+slider3:-6<-6,-3,0.1>Pan Law
+slider4:0<-1,1,0.1>Reserved
+
+@init
+
+@slider
+mode=slider1+1;
+gain = 2^(slider3/6); // convert from dB to a multiplier
+
+depth_temp=( (  slider2/2  ) *$pi)/200; //map slider to 0>half pi
+
+//coefficients for -3dB pan law
+side_coeff_3=cos( depth_temp - ($pi/2)  );
+other_coeff_3=cos( depth_temp );
+
+//coefficients for -6dB pan law
+other_coeff_6=(200-slider2)/200;
+side_coeff_6=slider2/200;
+
+blend_coeff=(slider3+6)/3;
+
+//final coefficients according to slider
+side_coeff=side_coeff_6*(1-blend_coeff)+(side_coeff_3*blend_coeff);
+other_coeff=other_coeff_6*(1-blend_coeff)+(other_coeff_3*blend_coeff);
+
+
+@sample
+
+mode==1?
+(
+	//square
+	spl6 += (spl0+spl4)*side_coeff;
+	spl7 += (spl1+spl5)*side_coeff;
+	spl4 *= other_coeff;
+	spl5 *= other_coeff;
+	spl0 *= other_coeff;
+	spl1 *= other_coeff;
+	
+)
+:
+(
+	//circle
+	//Reversed order is important
+	spl6 = side_coeff*spl4;
+	spl7 = side_coeff*spl5;
+	spl4 = other_coeff*spl4;
+	spl5 = other_coeff*spl5; 
+
+);
