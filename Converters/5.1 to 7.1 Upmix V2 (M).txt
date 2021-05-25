@@ -1,22 +1,41 @@
 desc: upmix from 5.1 to 7.1 by duplicating rears for ITU/Circle 7.1
 
-slider1:0<-100,100,1>Rear/Side Balance
-slider2:0<0,1,0.01>Pan
-slider3:1024<512,8192,512>Blocksize
-slider4:0.1<0.05,1,0.05>Responsiveness
+slider1:1<0,1,1{Square (disabled),Circle (ITU),Circle + (disabled)}>Mode
+slider2:100<0,200,1>Amount (%)
+slider3:0<0,1,0.01>FL
+slider4:0<0,1,0.01>Pan
+slider5:0.2<0.05,1,0.05>Responsiveness
+slider6:1024<512,8192,512>Blocksize
+
+// slider1:0<-100,100,1>Rear/Side Balance
+// slider2:0<0,1,0.01>Pan
+// slider3:1024<512,8192,512>Blocksize
+// slider4:0.1<0.05,1,0.05>Responsiveness
 
 import surroundlib2.txt
 
-
 @init
 
+
+@slider
+// gain = 2^(slider1/6); // convert from dB to a multiplier
+
+//parameter migration from old version
+
+slider3>300?
+(
+	slider6=slider3    ;
+	slider5=slider4    ;
+	slider4=slider2    ;
+	slider2=slider1+100;
+);
 
 @block
 count+=samplesblock;
 
 (count>blocksize)?
 (
-	slider2=MidSide_stats_analyze(slider2,response);
+	slider4=MidSide_stats_analyze(slider4,response);
 	count=0;
 );
 
@@ -24,20 +43,21 @@ count+=samplesblock;
 // slider1=(slider2-0.5)*200;
 // depth_temp=( ( (  slider1/2 )+ 50 ) *$pi)/200; //map -100 to 100 to 0>half pi
 
-depth_temp=(slider2/2*$pi); //map -100 to 100 to 0>half pi
-depth_temp+=( ( (  slider1/2 ) ) *$pi)/200; //map -100 to 100 to 0>half pi
+depth_temp=(slider4/2*$pi); //map -100 to 100 to 0>half pi
 
-// depth_temp=max(min(depth_temp,$pi/2),($pi/-2));
+slider2<100?depth_temp*=slider2/100:depth_temp+=((slider2-100)/100)*($pi/2);
 
-side_coeff=cos( depth_temp - ($pi/2)  );
+// depth_temp+=( ( (  slider2-100 ) ) *$pi)/200; //map -100 to 100 to 0>half pi
+
+depth_temp=min(depth_temp,$pi/2);
+
+side_coeff=sin( depth_temp  );
 back_coeff=cos( depth_temp );
 
-blocksize=slider3;
-response=slider4;
+blocksize=slider6;
+response=slider5;
 
 
-@slider
-// gain = 2^(slider1/6); // convert from dB to a multiplier
 
 
 

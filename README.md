@@ -201,6 +201,28 @@ To install Python for Windows, go to https://www.python.org/downloads/windows/  
 Then you're ready to go. Run a Reascript by going Actions > Show > Load, Run.
 
 
+## VST Compatibility
+VST Compatibility for windows is achieved through ReaJS. You can then run some FX in your favorite DAW (surround FX may not work in some hosts) or even live in APO Equalizer.
+
+1. Install Reaplugs 64bit https://www.reaper.fm/reaplugs/ into "C:\Program Files\VSTPlugIns"
+2. Navigate into that directory , and search for "reajs.ini"
+3. Open "reajs.ini" and change the file to these if using surround. Use 8 for 7.1.
+```
+inputs=6    ; number of audio inputs (0-64)
+outputs=6    ; number of audio outputs (0-64)
+```
+4. Extract [this zip](https://github.com/junh1024/Reaper-Surround/archive/master.zip) into "JS\Effects\"
+5. Load ReaJS into your host and select your FX
+
+### AAX Compatibility
+AAX Compatibility for Pro Tools windows is limited due to the FILM order for channels and limited options for channel count. I haven't tested this.
+
+6. Follow steps 1-4 as above
+7. Insert ReaJS in a VST to AAX loader like DDMF metaplugin
+8. Insert the loader into a 2 or 6ch track
+9. Load ReaJS into your loader and select your FX
+10. If a 5.1 surround FX was selected previously, load another ReaJS, select "Multi Mix Convert (L).txt", and select 5.1 SMPTE input, 5.1 FILM output.
+
 ### Note 1
 **Block-based effects**
 

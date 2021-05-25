@@ -39,8 +39,8 @@ desc:Multi-format surround converter in ALPHA. Pan law -3dB.
 // s10	upmix
 
 
-slider1:15<0,23,1{x,2.0 Stereo,5.1/3.0 (Film),4.0 Quad,5.1 (SMPTE),5.1.2 (SMPTE),7.1 (SMPTE-Dolby),7.1 (SMPTE-MS),5.1.4/5.1.6 Auro-3D (SMPTE),7.1.2/7.1 Atmos Base (SMPTE-Dolby),7.1.4 DTS-X (SMPTE-Dolby),7.1.4 MPEG-H (SMPTE-MS),13,14,9.1.6 Atmos CBA (SMPTE-Dolby),15.1 junh1024 (SMPTE-MS),17,18,19,20,21,22,23,22.2 NHK}>Input layout
-slider2:14<0,23,1{x,2.0 Stereo,x,4,5.1 (SMPTE),5.1.2 (SMPTE),7.1 (SMPTE-Dolby),7.1 (SMPTE-MS),5.1.4/5.1.6 Auro-3D (SMPTE),7.1.2/7.1 Atmos Base (SMPTE-Dolby),7.1.4 DTS-X (SMPTE-Dolby),7.1.4 MPEG-H (SMPTE-MS),13,14,9.1.6 Atmos CBA (SMPTE-Dolby),15.1 junh1024 (SMPTE-MS),17 Reserved,18 Reserved,19,20,21 Reserved,22 Reserved,23 Reserved,22.2 NHK}>Output layout
+slider1:15<0,23,1{x,2.0 Stereo,5.1/3.0 (FILM),4.0 Quad,5.1 (SMPTE),5.1.2 (SMPTE),7.1 (SMPTE-Dolby),7.1 (SMPTE-MS),5.1.4/5.1.6 Auro-3D (SMPTE),7.1.2/7.1 Atmos Base (SMPTE-Dolby),7.1.4 DTS-X (SMPTE-Dolby),7.1.4 MPEG-H (SMPTE-MS),13,14,9.1.6 Atmos CBA (SMPTE-Dolby),15.1 junh1024 (SMPTE-MS),17,18,19,20,21,22,23,22.2 NHK}>Input layout
+slider2:14<0,23,1{x,2.0 Stereo,5.1 (FILM),4,5.1 (SMPTE),5.1.2 (SMPTE),7.1 (SMPTE-Dolby),7.1 (SMPTE-MS),5.1.4/5.1.6 Auro-3D (SMPTE),7.1.2/7.1 Atmos Base (SMPTE-Dolby),7.1.4 DTS-X (SMPTE-Dolby),7.1.4 MPEG-H (SMPTE-MS),13,14,9.1.6 Atmos CBA (SMPTE-Dolby),15.1 junh1024 (SMPTE-MS),17 Reserved,18 Reserved,19,20,21 Reserved,22 Reserved,23 Reserved,22.2 NHK}>Output layout
 slider3:75<0,100 ,1>Height height
 slider4:0<0,100 ,1>ELL height
 slider5:0<-100,100,1>Top Side Depth (+ve is front)
@@ -345,13 +345,33 @@ rear_width(R_width_coeff);
 	Top_Side_Depth_71_to_51( (slider5 +100)/ 200 );
 );
 
+
+//51 film
+
+
 //51b
-mode_out==5?
+(mode_out==3||mode_out==5)?
 (
 	downmix_151_71_v1();
 	silence_top_layer_151();
 	spl6=0;
 	spl7=0;
+	
+	mode_out==3?
+	(
+		in1 = spl1 ;
+		in2 = spl2 ;
+		in3 = spl3 ;
+		in4 = spl4 ;
+		in5 = spl5 ;
+
+		spl2=in1 ;
+		spl1=in2 ;
+		spl5=in3 ;
+		spl3=in4 ;
+		spl4=in5 ;
+	);
+	
 	
 );
 
@@ -398,7 +418,7 @@ mode_out==9?
 
 
 //712sh
-mode_out==10?
+(mode_out==10||mode_out==20)?
 (
 	
 	Height_height_adj_v1(Height_height);
@@ -406,6 +426,22 @@ mode_out==10?
 	spl8=heightsL;
 	spl9=heightsR;
 	swap_Side_Back_ELL();
+	
+	//712 film
+	(mode_out==20)?
+	(
+
+		temp_C=spl2;
+		spl2=spl1;
+		spl1=temp_C;
+		temp_LFE=spl3;
+		spl3=spl4;
+		spl4=spl5;
+		spl5=spl6;
+		spl6=spl7;
+	    spl7=temp_LFE;
+	);
+	
 );
 
 //714h
