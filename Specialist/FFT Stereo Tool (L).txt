@@ -353,7 +353,7 @@ spl0 = out0;
 //subtract front from original spl0 to get back
 // spl4=(out4-spl0)*slider8;
 //this gets a bit tricky cuz we output the processed R or the difference
-spl1 = out1*(1-actually_do_difference_output)+(actually_do_difference_output*(out4-   out1 )) ;
+spl1 = out1*(1-actually_do_difference_output)+(actually_do_difference_output*(out4-   out0 )) ;
 
 pos += 2;
 pos2=(pos2+2)%(fftsize*2);
