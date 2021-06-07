@@ -360,6 +360,8 @@ pos >= fftsize ?
 // 15.1 surround visualizer w/bias ball
 // coordinate automation tool (convert btw cubular & circular)
 // lfo automation tool, better than PMOD in RPR cuz it has offset
+// 15.1 GUI pan, 71 snapping
+// export mix project, as YT timecodes & artist - song
 		
 		//more voodoo
 		buf1_a[a]  = left_r - right_i;

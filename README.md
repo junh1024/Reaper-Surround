@@ -6,7 +6,7 @@ A collection of mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). These
 
 Donations
 ---
-Surround is just a hobby for me since 2014. If you use them (especially commercially), you are encouraged to donate. By CC (stripe) or Paypal on https://donorbox.org/junh1024 to encourage further development & lets me know they are genuinely useful for work. Also, contact me for custom development based on my stuff.
+Surround is just a hobby for me since 2014. If you use them (especially commercially), you are encouraged to donate. By CC (securely handled by stripe) on https://donorbox.org/junh1024 to encourage further development & lets me know they are genuinely useful for work. Also, contact me for custom development based on my stuff.
 
 
 ![img](https://i.imgur.com/eDlWKrf.png)

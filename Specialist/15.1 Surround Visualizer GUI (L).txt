@@ -46,13 +46,16 @@ import surroundlib3.txt
 
 samples=0;
 samples_old=16;
+samples_avg=200;
+samples_loudness_display=300;
 
 @slider
-
+scaling=slider3/100;
 Time_Response=(100-slider4)/100;
 
 @sample
 //sample capture
+//orig sample needed for 3D analysis
 samples[0	]=	spl0	;
 samples[1	]=	spl1	;
 samples[2	]=	spl2	;
@@ -70,6 +73,25 @@ samples[13	]=	spl13	;
 samples[14	]=	spl14	;
 samples[15	]=	spl15	;
 
+//abs for loudness
+samples_avg[0	]+=	abs(spl0	);
+samples_avg[1	]+=	abs(spl1	);
+samples_avg[2	]+=	abs(spl2	);
+samples_avg[3	]+=	abs(spl3	);
+samples_avg[4	]+=	abs(spl4	);
+samples_avg[5	]+=	abs(spl5	);
+samples_avg[6	]+=	abs(spl6	);
+samples_avg[7	]+=	abs(spl7	);
+samples_avg[8	]+=	abs(spl8	);
+samples_avg[9	]+=	abs(spl9	);
+samples_avg[10	]+=	abs(spl10	);
+samples_avg[11	]+=	abs(spl11	);
+samples_avg[12	]+=	abs(spl12	);
+samples_avg[13	]+=	abs(spl13	);
+samples_avg[14	]+=	abs(spl14	);
+samples_avg[15	]+=	abs(spl15	);
+
+samples_captured+=1;
 
 @gfx 500 500
 // box_width=16;
@@ -79,29 +101,15 @@ i=0;
 loop(16,
 	
 	
-	samples[i]=pow(abs(samples[i]),1/4);
-	
-	samples[i]>samples_old[i]?samples[i]=(samples[i]+samples_old[i])/2;
-	
-	samples[i]<samples_old[i]?
-	(
-	samples[i]=samples_old[i]*Time_Response;
-	
-	);
+	samples_loudness_display[i]=sqrt(samples_avg[i]/samples_captured)*scaling;
+	samples_avg[i]=0;
 
-	
-		// samples[i]=(samples[i]*Time_Response) + (samples_old[i]*(1-Time_Response));
-
-	
-	samples_old[i]=samples[i];
-
-	
-	
-	// Time_Response
 	
 	i+=1;
 	);
 
+	
+samples_captured=0;
 
 box_width=floor(2.8*sqrt((gfx_w+gfx_h)/2));
 
@@ -117,26 +125,26 @@ gfx_x = 0; gfx_y = 0;
 gfx_g =1;
 gfx_b =1;
 
-gfx_a = samples[0];
+gfx_a = samples_loudness_display[0];
 drawbox(gfx_w*0.25,gfx_h*0.05);
 
-gfx_a = samples[1];
+gfx_a = samples_loudness_display[1];
 drawbox(gfx_w*0.75,gfx_h*0.05);
 
 //center
 gfx_b =0;
-gfx_a = samples[2];
+gfx_a = samples_loudness_display[2];
 drawbox(gfx_w/2,0);
 
 //Surround
-gfx_a = samples[4];
+gfx_a = samples_loudness_display[4];
 drawbox(gfx_w*0.25,gfx_h*0.95);
-gfx_a = samples[5];
+gfx_a = samples_loudness_display[5];
 drawbox(gfx_w*0.75,gfx_h*0.95);
 
-gfx_a = samples[6];
+gfx_a = samples_loudness_display[6];
 drawbox(0,gfx_h/2);
-gfx_a = samples[7];
+gfx_a = samples_loudness_display[7];
 drawbox(gfx_w,gfx_h/2);
 
 //draw height
@@ -149,20 +157,20 @@ slider7>0?
 
 height_toe_in=gfx_w/20;
 
-gfx_a = samples[8];
+gfx_a = samples_loudness_display[8];
 drawbox(gfx_w/3+height_toe_in,gfx_h/3);
-gfx_a = samples[9];
+gfx_a = samples_loudness_display[9];
 drawbox(gfx_w*2/3-height_toe_in,gfx_h/3);
 
 //H S
-gfx_a = samples[12];
+gfx_a = samples_loudness_display[12];
 drawbox(gfx_w/3+height_toe_in,gfx_h*2/3);
-gfx_a = samples[13];
+gfx_a = samples_loudness_display[13];
 drawbox(gfx_w*2/3-height_toe_in,gfx_h*2/3);
 
-gfx_a = samples[14];
+gfx_a = samples_loudness_display[14];
 drawbox(gfx_w/3-height_toe_in/2,gfx_h/2);
-gfx_a = samples[15];
+gfx_a = samples_loudness_display[15];
 drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 
 );
