@@ -358,10 +358,13 @@ pos >= fftsize ?
 // check silence fn test magnitude, cleanup, buf vars
 // surround layout converter
 // 15.1 surround visualizer w/bias ball
-// coordinate automation tool (convert btw cubular & circular)
+// coordinate automation tool (convert btw cubular & circular), or integrate into panner, or send to linker2?
 // lfo automation tool, better than PMOD in RPR cuz it has offset
 // 15.1 GUI pan, 71 snapping
 // export mix project, as YT timecodes & artist - song
+// update my 15.1 tools for 20.1
+// surround gater plugin, to make fdnreverb more directional
+// 20>51 V2 measure LR vs MS dominance for better F/B movement, but might screw front image?
 		
 		//more voodoo
 		buf1_a[a]  = left_r - right_i;
