@@ -22,7 +22,7 @@ Introduction to 15.1
 
 * 15.1 is HQ channel-based system for 3D surround, based on combining the best of NHK's 22.2, and 7.1 surround.
 * It is 7.1.6.2 in Dolby notation.
-* Order as follows for 15.1: L R C LFE BL BR SL SR, TL TR, BtL BtR, TBL TBR TSL TSR (extends SMPTE 5.1)
+* Order as follows for 15.1: L R C LFE BL BR SL SR, HL HR, BtL BtR, HBL HBR HSL HSR (extends SMPTE 5.1)
 * It's intended to be a HQ intermediary for mixing in 3D surround, and "15.1 to 3D Downmix (M).txt" is included to downmix to formats such as Auro3D & AMBEO 5.1.4, Atmos Base 7.1.2, DTS-X Base & MPEG-H 7.1.4, and Atmos 9.1.6
 * Mixing in one of the above formats and converting to another could result in an inferior conversion, hence a format such as my 15.1 is ideal due to a reasonable channel layout.
 * 15.1 Conversion to 3oA is supported for flexible & powerful workflows. FUMA Ambisonics decoders for 3D speaker playback here are included, but are very basic.

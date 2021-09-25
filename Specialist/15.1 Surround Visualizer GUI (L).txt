@@ -6,22 +6,22 @@ slider3:100<0,200 ,1>Scaling
 slider4:10<0,10 ,1}>Time response %
 
 
-in_pin:mono
-in_pin:mono
-in_pin:blank
-in_pin:blank
-in_pin:blank
-in_pin:blank
-in_pin:blank
-in_pin:blank
-in_pin:blank
-in_pin:blank
-in_pin:blank
-in_pin:blank
-in_pin:blank
-in_pin:blank
-in_pin:blank
-in_pin:blank
+in_pin:L
+in_pin:R
+in_pin:C
+in_pin:LFE
+in_pin:BL
+in_pin:BR
+in_pin:SL
+in_pin:SR
+in_pin:HL
+in_pin:HR
+in_pin:BtL
+in_pin:BtR
+in_pin:HBL
+in_pin:HBR
+in_pin:HSL
+in_pin:HSR
 
 out_pin:L
 out_pin:R
@@ -31,14 +31,14 @@ out_pin:BL
 out_pin:BR
 out_pin:SL
 out_pin:SR
-out_pin:TL
-out_pin:TR
+out_pin:HL
+out_pin:HR
 out_pin:BtL
 out_pin:BtR
-out_pin:TBL
-out_pin:TBR
-out_pin:TSL
-out_pin:TSR
+out_pin:HBL
+out_pin:HBR
+out_pin:HSL
+out_pin:HSR
 
 import surroundlib3.txt
 

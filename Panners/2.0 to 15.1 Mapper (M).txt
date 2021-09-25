@@ -17,14 +17,14 @@ out_pin:BL
 out_pin:BR
 out_pin:SL
 out_pin:SR
-out_pin:TL
-out_pin:TR
+out_pin:HL
+out_pin:HR
 out_pin:BtL
 out_pin:BtR
-out_pin:TBL
-out_pin:TBR
-out_pin:TSL
-out_pin:TSR
+out_pin:HBL
+out_pin:HBR
+out_pin:HSL
+out_pin:HSR
 
 in_pin:L
 in_pin:R
