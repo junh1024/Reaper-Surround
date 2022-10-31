@@ -2,7 +2,12 @@
 
 Introduction
 ---
-A collection of mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). These are JSFX so **[CLICK HERE TO DOWNLOAD ZIP](https://github.com/junh1024/Reaper-Surround/archive/master.zip)** & extract them in your Reaper EFFECTS folder. It's suggested to **extract ALL files** since many depend on each other. If you want to cherry-pick FX you need the "Library" folder. It is advised to ENABLE "options > show in FX list > JSFX filename" as I refer to them by name. Bugs/suggestions? File an [issue](https://github.com/junh1024/Reaper-Surround/issues) ,  or contact me on [twitter](https://twitter.com/junh1024/) / [reddit](https://old.reddit.com/user/junh1024) .
+A collection of mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). These are JSFX so **[CLICK HERE TO DOWNLOAD ZIP](https://github.com/junh1024/Reaper-Surround/archive/master.zip)** & extract ALL of the zip into your Reaper EFFECTS folder.
+
+- REAPER/Installdata/Effects (for normal install)
+- REAPER/Effects (for portable install)
+
+It is advised to ENABLE "options > show in FX list > JSFX filename" as I refer to them by name. Bugs/suggestions? File an [issue](https://github.com/junh1024/Reaper-Surround/issues) ,  or contact me on [twitter](https://twitter.com/junh1024/) / [reddit](https://old.reddit.com/user/junh1024) .
 
 Donations
 ---
@@ -105,7 +110,7 @@ Upmixers are considered experimental & are based on matrixes. It's advisable to 
 	- resizable UI which fits on small screens
 - 5.1 to 7.1 Upmix (U).txt:
 - 5.1 to 7.1 Upmix V2 (L).txt: These 2 5>7 upmixers are so rudimentary that they will probably have limited use. Side/Back balance uses the same mid/side detection as the 2>5 upmix. A balance control is provided for convenience, but may be 'bouncy' near the ends. [Note 1](#note-1)
-- 5.1 to 7.1 Upmix V3 (L).txt: Using FFT  [see FFT Notes](#fft-notes) to upmix 51 to 71. Since 71 is downmixed to 51 by combining the back 4,
+- 5.1 to 7.1 Upmix V3 (L).txt: Using FFT [see FFT Notes](#fft-notes) to upmix 51 to 71. Since 71 is downmixed to 51 by combining the back 4,
 	- Square mode isn't downmix compatible since it upscales the corner 4 to the side. For specialist use only.
 	- Circle mode is downmix compatible since it re interprets the back 2 to back 4. Should work well on content downmixed from 61 or 71.
 - 5.1 to 3D Upmix (L).txt: upmixes Using FFT [see FFT Notes](https://github.com/junh1024/Reaper-Surround#fft-notes) to height sounds that are closer to:
@@ -172,9 +177,11 @@ Specialist & Utility
 	- Sustainizer: randomises phase-similar to DtBlkFx's smear mode:
 	- Split-Combine Frequency: Amount controls a log frequency. Splits main & sidechain at the frequency, and combines the lower part of main with the upper part of sidechain.
 
+# Scripts
+	
 Scripts for General Use
 ---
-- Delete item fades under threshold.py: By default, RPR makes small (10ms) fades on item boundaries to  prevent artefacts, which is usually a good thing. But when you're making a continuous edit from pieces, these automatic fades can actually introduce artefacts. This script is useful in this case, as it deletes fades under 20ms, for selected items.
+- Delete item fades under threshold.py: By default, RPR makes small (10ms) fades on item boundaries to prevent artefacts, which is usually a good thing. But when you're making a continuous edit from pieces, these automatic fades can actually introduce artefacts. This script is useful in this case, as it deletes fades under 20ms, for selected items.
 - ProjectSanitizer.py
 - Reaper Stats.py: collects various project statistics and outputs them via a dialog. See script for more details.
 - Set item start to position.py
@@ -189,6 +196,27 @@ Scripts for Remixing
 - Get item BPM.py: This is intended to be used in mixes. You can get the BPM of a single item, but this is intended to be used at the completion of a mix, as you can calculate the WEIGHTED average BPM of multiple items so that you can set a better project BPM.
 
 - Adjust Take Pitch.py: If you're playing around with item pitches in say, a mashup, you might find this useful. If you have items with different pitches, you can adjust them by the same offset.
+
+### REAPER to FFMPEG edit
+Lossless editing of lossy audio. Edit visually using the REAPER DAW, this script generates FFMPEG commands which will perform the editing. REAPER supports many codecs and containers of avi, mp4, mkv. If your audio isn't supported, you can edit a mp3 proxy in REAPER, and change the command yourself afterwards.
+
+You will have FFMPEG in your PATH, REAPER installed, and Python Reascript set up.
+See https://github.com/junh1024/Reaper-Surround#reascript-python-setup-for-windows
+
+Notes:
+- Only simple editing supported. No gain/fades, rate changes, etc
+- You MUST fill in any gaps/silences yourself
+- All clips must be on a single track
+- Multiple different input files may work (as long as they're the same specification), but it's not tested
+- Editing isn't perfectly accurate on lossy codecs. There is a *fudge_factor* which you can adjust to decrease the length of clips .
+- I'm not responsible if commands get corrupted on your clipboard
+
+Instructions:
+1. Open the script window, load the script
+2. Right click and drag around to select the edited clips
+3. Run the script
+4. Copy the commands out of the message box
+5. Run the commands for FFMPEG
 
 
 Reascript Python Setup for Windows
@@ -205,14 +233,15 @@ Then you're ready to go. Run a Reascript by going Actions > Show > Load, Run.
 VST Compatibility for windows is achieved through ReaJS. You can then run some FX in your favorite DAW (surround FX may not work in some hosts) or even live in APO Equalizer.
 
 1. Install Reaplugs 64bit https://www.reaper.fm/reaplugs/ into "C:\Program Files\VSTPlugIns"
-2. Navigate into that directory , and search for "reajs.ini"
-3. Open "reajs.ini" and change the file to these if using surround. Use 8 for 7.1.
+2. Navigate into that directory , and create "reajs.ini" &/ "reajs_64.ini" as instructed by "reajs_info.txt"
+3. Open the ini and change the file to these if using surround. Use 8 for 7.1.
 ```
 inputs=6    ; number of audio inputs (0-64)
 outputs=6    ; number of audio outputs (0-64)
 ```
-4. Extract [this zip](https://github.com/junh1024/Reaper-Surround/archive/master.zip) into "JS\Effects\"
-5. Load ReaJS into your host and select your FX
+4. Extract [this zip](https://github.com/junh1024/Reaper-Surround/archive/master.zip) into your [REAPER Effects](#introduction) folder
+5. add/change rootpath in the ini file to your REAPER Effects folder. Strings must be double quoted.
+5. load reaJS into your host and select the Effects
 
 ### AAX Compatibility
 AAX Compatibility for Pro Tools windows is limited due to the FILM order for channels and limited options for channel count. I haven't tested this.
@@ -226,7 +255,7 @@ AAX Compatibility for Pro Tools windows is limited due to the FILM order for cha
 ### Note 1
 **Block-based effects**
 
-These effects analyse a chunk of audio, then make a decision. The audio is not delayed, but the reaction is delayed by half a blocksize. This is done for performance & audio stability reasons. These are NOT based on FFT. To make it react on time would be a big hassle with PDC due to differing pathes, for small benefit & hence isn't implemented. The minimum blocksize that happens in practice is set in Reaper preferences under Audio Device.
+These effects analyse a chunk of audio, then make a decision. The audio is not delayed, but the reaction is delayed by half a blocksize. This is done for performance & audio stability reasons. These are NOT based on FFT. To make it react on time would be a big hassle with PDC due to differing paths, for small benefit & hence isn't implemented. The minimum blocksize that happens in practice is set in Reaper preferences under Audio Device.
 * A low blocksize makes it change faster, and a high response makes it change more, so these 2 things make it behave quicker. A high blocksize would make reactions happen abruptly, hence blocksize is a suggested 2048 or lower (23+ blocks/sec @48k)
 * A high response allows faster changes, and a low response allows smaller changes. A response that is too high will make the changes unstable, hence response shouldn't go above 0.3
 
@@ -238,7 +267,7 @@ I have tried to set sensible defaults.
 V1 & V2 upmixers are based on matrixes & are rudimentary so you either have:
 - Wide back, no rear delay (downmix-compatible, but sounds bad cuz a wide back is distracting)
 - Wide back, rear delay (NOT downmix-compatible, due to delay, stil sounds bad)
-- Narrow back, no rear delay (VERY NOT downmix-compatible, due to polarity, stil sounds bad)
+- Narrow back, no rear delay (VERY NOT downmix-compatible, due to polarity, still sounds bad)
 - Narrow back, rear delay  (NOT downmix-compatible, due to delay, sounds acceptable)
 
 To totally avoid this dilemma, please use the V3 series FFT-based upmixers made in 2020.
@@ -259,10 +288,9 @@ FFT Notes
 
 **General FFT controls**
 - Amount: to apply. Sometimes like a wet knob. >100% may not be unity.
-- Cutoff: lowpass the processing, % of SR.
+- Cutoff: lowpass the processing, % of SR. May save CPU.
 - Time Response: speed that the algorithm can respond from 1 (unrestricted) to 0 (frozen, may cause glitches). TR-- = artefacts--, but bleed++. Set to 0.5 @4K FFT Size, decreases with FFT Size for "2.0 to 5.0 Upmix V3 (L).txt", but adjustable in most other FX. Sensible values 0.5-1.
-- Overlap: % of overlap of FFT segments. Overlap++ = CPU++ but artefacts--, % is approximate. See overlap_sel in surroundlibf.txt for exactl amount. It's fixed to 39.0625% in "2.0 to 5.0 Upmix V3 (L).txt", but adjustable in most other FX.
-- FFT Size: length of FFT segments. In terms of 2^n, so 12 = 2^12 = 4096 (default). Size++ = artefacts--, frequency resolution/separation++, temporal resolution--, but has little effect on CPU.
+- FFT Size: length of FFT segments. In terms of 2^n, so 12 = 2^12 = 4096 (default). Size++ = artefacts--, frequency resolution/separation++, temporal resolution--, PDC++ (latency), but has little effect on CPU.
 
 **Why is CPU so low?**
 
@@ -274,7 +302,6 @@ Reduction figures are approximate.
 - Measuring less channels: For typical audio, what's happening in L is also happening in R, so measuring only 1 ch will get similar results. Mainly applies to "FFT Multi Tool (L).txt" -10%
 - Linear-phase/unity design: Half the channels are processed, and the other half are obtained via subtraction of the result. This means the output MUST add up to the original. This saves some FFT & iFFT operations. Commercial vendors put whatever they want in any channel, and sometimes downmix- incompatible sounds, and it doesn't have to add up to the original. -20%
 - Reduced bandwidth processing: up to 16-18k is processed by default. What's not processed may be moved to the secondary outputs in accordance with unity (above). You can ofc increase this to full. -15%
-- Reduced overlap: New flexible architecture by [Tale](https://www.taletn.com/reaper/mono_synth/) in June. the default overlap (with a bell-shaped window) for nice-sounding FFT is 50%, but 40% (or less) with a trapezium window sounds just as good in many cases. -10%
 - using memcpy & memset: -5%
 - CPU gating during silence: functions are disabled as much as reasonable & not give artefacts during silence (only selected FX atm) -20% (depends on project)
 
@@ -282,11 +309,11 @@ Reduction figures are approximate.
 
 - Not C++: JSFX is slow. +100%
 - Conditionals: checks do take up CPU. +10%
-- More buffers: the additional buffers for adjustable/reduced overlap. +5%
 - GUI: +10%
 - Functions: converting common snippets to functions in accordance with the [DRY principle](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) makes for neater & maintainable code, but adds a measurable CPU increase with languages like JSFX +15%
 
 **And?**
 
 Conclusion: performance or quality is roughly on par with commercial implementations, but not necessarily simultaneously as you may need to make adjustments which increase CPU. My FFT FX typically use 10-15% of a 3Ghz core. If you're exporting long projects on a laptop on power-save mode, they'll do fine. Latency is also higher at a default of 4096sa compared with a typical 2048sa. Performance is balanced with quality, and if you want choice, you have ample control over otherwise "internal" or "unimportant" decisions which commercial vendors decide for you.
+
 
