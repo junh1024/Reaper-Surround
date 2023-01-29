@@ -5,7 +5,7 @@ desc: FFT Multi Tool. Read docs. in ALPHA
 slider1:3<0,9,1{Max,Min (Denoise),Align (FPA) A,Subtract AR,Noise Control/GF3 ARF,Transient control,Sustain control,Min2 A (deprecated)}>Mode
 slider2:100<0,200,1>Amount (%)
 slider3:100<0,200,2>Frequency Selection
-slider4:75<0,100,1>Cutoff (%)
+slider4:80<0,100,1>Cutoff (%)
 slider5:50<0,100,2>Time Response 
 slider6:40<0,50,5>FFT Overlap (%)
 slider7:12<10,14,1>FFT size (pow2)

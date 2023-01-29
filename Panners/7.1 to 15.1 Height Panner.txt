@@ -5,6 +5,33 @@ slider2:-6<-6,-3,3>Pan law (dB)
 
 import surroundlib1.txt
 
+
+in_pin:L
+in_pin:R
+in_pin:C
+in_pin:LFE
+in_pin:BL
+in_pin:BR
+in_pin:SL
+in_pin:SR
+
+out_pin:L
+out_pin:R
+out_pin:C
+out_pin:LFE
+out_pin:BL
+out_pin:BR
+out_pin:SL
+out_pin:SR
+out_pin:HL
+out_pin:HR
+out_pin:BtL
+out_pin:BtR
+out_pin:HBL
+out_pin:HBR
+out_pin:HSL
+out_pin:HSR
+
 @init
 
 @slider

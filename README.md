@@ -18,7 +18,7 @@ Surround is just a hobby for me since 2014. If you use them (especially commerci
 
 Disclaimer
 ---
-NO warranty is provided, and these are provided as-is. Although I have been using these since 2014, I reserve the right to make changes, including backwards-incompatible changes, although I try not to as I also have projects to keep working. Tools may be added, changed, or deleted at ANY time. Although old versions of this repo are available in the worst case. Alpha/beta tools are especially prone to change  tools in /Old are deprecated.
+NO warranty is provided, and these are provided as-is. Although I have been using these since 2014, I reserve the right to make changes, including backwards-incompatible changes, although I try not to as I also have projects to keep working. Tools may be added, changed, or deleted at ANY time. Although old versions of this repo are available in the worst case. Alpha/beta tools are especially prone to change, tools in /Old are deprecated.
 
 Introduction to 15.1
 ---
@@ -190,9 +190,9 @@ Scripts for General Use
 
 Scripts for Remixing
 ---
-- Set item [BPM](#bpm).py: This is intended for *mashups & mixes*. In the case of your item BPM differing from your project BPM you want to strech the item to fit your project. This script makes it quick, just input the BPM of selected item(s), and it will handle the maths. REAPER actually has no concept of item BPM so this is done via play rate & timebase.
+- Set item [BPM](#bpm).py: This is intended for *mashups & mixes*. In the case of your item BPM differing from your project BPM you want to stretch the item to fit your project. This script makes it quick, just input the BPM of selected item(s), and it will handle the maths. REAPER actually has no concept of item BPM so this is done via play rate & timebase.
 - Set item BPM_sequential.py: Sets the BPM of multiple items sequentially, with individual user input
-- Round item BPM.py: Rounds the BPM of a clip. After sevaral project BPM changes, the BPM/playrate can become approximate (like 127.999) due to the imprecision of floating point. This rounds them. NB: deliberate BPMs like 128.2 will also get rounded so be careful which clips to apply it.
+- Round item BPM.py: Rounds the BPM of a clip. After several project BPM changes, the BPM/playrate can become approximate (like 127.999) due to the imprecision of floating point. This rounds them. NB: deliberate BPMs like 128.2 will also get rounded so be careful which clips to apply it.
 - Get item BPM.py: This is intended to be used in mixes. You can get the BPM of a single item, but this is intended to be used at the completion of a mix, as you can calculate the WEIGHTED average BPM of multiple items so that you can set a better project BPM.
 
 - Adjust Take Pitch.py: If you're playing around with item pitches in say, a mashup, you might find this useful. If you have items with different pitches, you can adjust them by the same offset.
@@ -208,20 +208,29 @@ Notes:
 - You MUST fill in any gaps/silences yourself
 - All clips must be on a single track
 - Multiple different input files may work (as long as they're the same specification), but it's not tested
-- Editing isn't perfectly accurate on lossy codecs. There is a *fudge_factor* which you can adjust to decrease the length of clips .
+- Editing isn't perfectly accurate on lossy codecs. There is a *fudge_factor* which you can adjust to decrease the length of clips
+- If FFMPEG produces a broken file, try downgrading your FFMPEG
 - I'm not responsible if commands get corrupted on your clipboard
 
 Instructions:
-1. Open the script window, load the script
-2. Right click and drag around to select the edited clips
-3. Run the script
-4. Copy the commands out of the message box
-5. Run the commands for FFMPEG
+
+We are going to kill 2 birds with 1 stone, and install FFMPEG for [REAPER](https://www.reaper.fm/download.php) (so that you can open arbitrary video files in REAPER) and Windows (so that you can run FFMPEG commands in windows). I've not tested this exact version or process, as I've already got the equivalent set up via other means.
+
+1. Download [FFMPEG](https://github.com/GyanD/codexffmpeg/releases/download/4.4/ffmpeg-4.4-full_build-shared.zip)
+2. Inside the zip, there is a bin folder with exes & DLLs. Extract these to your REAPER Plugins folder, which might be C:\Program Files\REAPER\Plugins or C:\Program Files\REAPER\Installdata\Plugins . Whichever exists, depending on how & where you installed REAPER
+3. Add the REAPER Plugins folder to your [Windows User Path Environment Variable](https://windowsloop.com/install-ffmpeg-windows-10/) . Start from step 3.3 of the guide
+4. Open REAPER , and edit your clips as necessary
+5. Press shift-? to open the actions pallete
+5. New action > Load Reascript , and choose the [script](https://raw.githubusercontent.com/junh1024/Reaper-Surround/master/Scripts/REAPER%20to%20FFMPEG%20edit.py) , which you will have saved on your PC.
+6. Right click and drag around to select the edited clips
+7. Choose the "REAPER to FFMPEG edit" script, and Run the script
+8. Copy the commands out of the message box
+9. Run the commands for FFMPEG in the windows command prompt
 
 
 Reascript Python Setup for Windows
 ---
-To install Python for Windows, go to https://www.python.org/downloads/windows/  and download a 3.x version of Python. I suggest using a [version of Python](https://en.wikipedia.org/wiki/History_of_Python#Table_of_versions) that is around the time that your version of REAPER was released. REAPER 4.52 has been tested with python 3.1 & 3.5. If you're using REAPER 64bit you'll probably want a 64bit version of Python & vice versa. Afterwards, open the Reascript panel in REAPER preferences, and set the path & use to:
+To install Python for Windows, go to https://www.python.org/downloads/windows/  and download a 3.x version of Python. I suggest using a [version of Python](https://en.wikipedia.org/wiki/History_of_Python#Table_of_versions) that is around the time that your version of REAPER was released, or 3.1-3.9. REAPER 4.52 has been tested with python 3.1 & 3.5. If you're using REAPER 64bit you'll probably want a 64bit version of Python & vice versa. Afterwards, open the Reascript panel in REAPER preferences, and set the path & use to:
 
 - python 3.1 x86 on Windows x64: C:\Windows\SysWOW64\ , python31.dll
 - python 3.5 x86 on Windows x64: C:\Program Files (x86)\Python35 (or wherever you installed it), python35.dll
@@ -266,7 +275,7 @@ I have tried to set sensible defaults.
 
 V1 & V2 upmixers are based on matrixes & are rudimentary so you either have:
 - Wide back, no rear delay (downmix-compatible, but sounds bad cuz a wide back is distracting)
-- Wide back, rear delay (NOT downmix-compatible, due to delay, stil sounds bad)
+- Wide back, rear delay (NOT downmix-compatible, due to delay, still sounds bad)
 - Narrow back, no rear delay (VERY NOT downmix-compatible, due to polarity, still sounds bad)
 - Narrow back, rear delay  (NOT downmix-compatible, due to delay, sounds acceptable)
 

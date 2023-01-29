@@ -1,7 +1,7 @@
 
-desc:mapper
+desc:15.1 Surround Mapper
 
-slider1:0<0,4,1{1+2   Front,3+4   C/LFE,5+6   Back,7+8   Side,9+10  Height Front,11+12 Bottom,13+14 Height Back,15+16 Height Side}>Output
+slider1:0<0,4,1{1+2   Front,3+4   C/LFE,5+6   Back,7+8   Side,9+10  Height Front,11+12 Bottom,13+14 Height Back,15+16 Height Side,17+18 Front Wide (15.1 EX only),19+20 Front Center (15.1 EX only)}>Output
 slider2:100<0,100 ,1>Amount
 slider3:0<-3,3,0.1>Volume dB
 slider4:0<-100,100,1>Pan
@@ -25,6 +25,10 @@ out_pin:HBL
 out_pin:HBR
 out_pin:HSL
 out_pin:HSR
+out_pin:WL
+out_pin:WR
+out_pin:CL
+out_pin:CR
 
 in_pin:L
 in_pin:R

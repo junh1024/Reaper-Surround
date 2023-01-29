@@ -104,6 +104,9 @@ slider5%2==0?(main_gain=coeff_B):(main_gain=1;);
 slider5<2?(LFE_mode_gain=0.316):(LFE_mode_gain=1;);
 
 
+//new 
+
+calculate_10_to_71_coeffs (slider1);
 
 @sample 
 in0=(spl0+spl1)*0.7071; //loudness compensation
@@ -297,7 +300,7 @@ drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 	drawbox(mouse_x,mouse_y );
 	
 ):
-(	//no mouse activity, displ automation
+(     //no mouse activity, displ automation
 	gfx_g =  0.8; //yellow due to set red previously
 
 

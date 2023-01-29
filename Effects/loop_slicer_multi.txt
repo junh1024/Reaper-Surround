@@ -8,14 +8,17 @@ slider5:4<1,32,1> loop length (beats)
 slider6:0<0,1,0.01> position (beats)
 
 
-// out_pin:out_1
-// out_pin:out_1
-// out_pin:out_2
-// out_pin:out_2
-// out_pin:out_3
-// out_pin:out_3
-// out_pin:out_4
-// out_pin:out_4
+in_pin:in_L
+in_pin:in_R
+
+out_pin:out_1_L
+out_pin:out_1_R
+out_pin:out_2_L
+out_pin:out_2_R
+out_pin:out_3_L
+out_pin:out_3_R
+out_pin:out_4_L
+out_pin:out_4_R
 
 @slider
 loop_length=slider5;
