@@ -1,0 +1,214 @@
+desc:Goniometer V2 [LOSER, junh1024]
+//tags: analysis visualization
+//author: LOSER, junh1024
+
+slider1:1<0,1,1{Dots,Lines}>Display
+
+in_pin:left input
+in_pin:right input
+out_pin:none
+
+@init
+gfx_clear=-1;
+off = 500000;
+rot=-45*0.017453292;
+DOTS = 0;
+LINES = 1;
+RAYS = 2;
+MAXDRAWSPLS = 10000;
+PHASEUPDATERATE = srate/8;
+
+n = 0;
+phC = 0;
+ph = 0;
+ph_old = 0;
+
+ph_hist_factor=0.1;
+pan_hist_factor=0.2;
+spl_hist_factor=0.001;
+scaling_hist_factor=1;
+
+@slider
+
+@block
+
+@sample
+
+// add volume normalization - junh1024
+
+
+
+spl_avg_dc=(spl0+spl1)/2;
+spl_avg_dc*=sign(spl_avg_dc);
+
+spl_avg_dc=spl_avg_dc*spl_hist_factor + spl_avg_dc_old*(1-spl_hist_factor);
+spl_avg_dc_old=spl_avg_dc;
+
+scaling = 0.2 / spl_avg_dc ; //scale
+scaling=min(scaling,5);//clamp  & x5
+
+scaling = scaling * scaling_hist_factor + scaling_old * (1-scaling_hist_factor);
+scaling_old=scaling;
+
+// scaling=4;
+
+spl0*=scaling;
+spl1*=scaling;
+
+s0 = sign(spl0);
+s1 = sign(spl1);
+angle = atan( spl0 / spl1 );
+(s0 == 1 && s1 == -1) || (s0 == -1 && s1 == -1) ? angle += 3.141592654;
+s0 == -1 && s1 == 1 ? angle += 6.283185307;
+spl1 == 0 ? spl0 > 0 ? angle = 1.570796327 : angle = 4.71238898;
+spl0 == 0 ? spl1 > 0 ? angle = 0 : angle = 3.141592654;
+radius = sqrt( sqr(spl0)+sqr(spl1) ) ;
+angle -= rot;
+vert = 0[b] = cos(angle)*radius;
+horiz = off[b] = sin(angle)*radius;
+b<MAXDRAWSPLS ? b += 1;
+
+
+L_stat		=abs(spl0)*spl_hist_factor+L_stat*(1-spl_hist_factor);
+R_stat		=abs(spl1)*spl_hist_factor+R_stat*(1-spl_hist_factor);
+
+L_stat_old	=L_stat;
+R_stat_old	=R_stat;
+
+s0 != s1 ? phC-=1:phC+=1;
+(n+=1) > PHASEUPDATERATE ? (
+	//calculate phase
+	ph = (phC/n);
+	ph = ph*ph_hist_factor + ph_old*(1-ph_hist_factor);
+	ph_old=ph;
+	phC = n = 0;
+);
+
+@gfx 450 450
+
+size = min(gfx_w,gfx_h*.95)|0;
+
+// override drawing functions to center
+gxo = gfx_w*.5 - size*.5;
+function gfx_lineto(x,y,aa) ( gfx_x+=gxo; gfx_lineto(x+gxo,y,aa); gfx_x-=gxo; );
+function gfx_setpixel(r,g,b) ( gfx_x+=gxo; gfx_setpixel(r,g,b); gfx_x-=gxo; );
+function gfx_drawnumber(y,x) ( gfx_x+=gxo; gfx_w<200||gfx_drawnumber(y,x); gfx_x-=gxo; );
+function gfx_drawchar(x) (gfx_x+=gxo; gfx_w<200||gfx_drawchar(x); gfx_x-=gxo;);
+
+sizeH = size/2;
+sizeDSqr05 = sizeH * 0.70710681;
+sizeQ = sizeH/2;
+size3Q = 3*sizeQ;
+
+(mouse_cap) ? (
+	gfx_r=gfx_g=gfx_b=0; gfx_a=1;
+	gfx_x=gfx_y=0;
+	gfx_rectto(gfx_w,gfx_h);
+);
+
+gfx_r=gfx_g=gfx_b=0; gfx_a=0.5; // falloff rate
+gfx_x=gfx_y=0;
+gfx_rectto(gfx_w,gfx_h);
+
+x = y = sizeH;
+
+i = min(b,MAXDRAWSPLS);
+while (
+	slider1 == DOTS ? (
+	// gfx_a=1;
+	gfx_a=0.8;
+	gfx_x=sizeH+0[i]*sizeDSqr05;
+	gfx_y=sizeH-off[i]*sizeDSqr05;
+	gfx_setpixel(0.5,1,0);
+	):(
+		slider1 == LINES ? (
+			gfx_x=x; gfx_y=y;
+			x=sizeH+0[i]*sizeDSqr05;
+			y=sizeH-off[i]*sizeDSqr05;
+		):(
+			gfx_x=sizeH+0[i]*sizeDSqr05;
+			gfx_y=sizeH-off[i]*sizeDSqr05;
+		);
+			gfx_r=0.5; gfx_g=1; gfx_b=0; gfx_a=0.6;
+	gfx_lineto(x,y,0);
+	);
+	(i-=1)>0;
+);
+b=0;
+
+gfx_r=gfx_g=gfx_b=0.8; gfx_a=1;
+
+gfx_x=sizeQ; gfx_y=sizeQ;
+gfx_lineto(size3Q,size3Q,0);
+
+gfx_x=sizeQ; gfx_y=size3Q;
+gfx_lineto(size3Q,sizeQ,0);
+
+gfx_x = gfx_y = sizeQ;
+gfx_drawchar($'L');
+gfx_x = size3Q; gfx_y = sizeQ;
+gfx_drawchar($'R');
+gfx_x = sizeH; gfx_y = 0;
+gfx_drawchar($'M');
+gfx_x = 0; gfx_y = sizeH;
+gfx_drawchar($'+');
+gfx_drawchar($'S');
+gfx_x = size-20; gfx_y = sizeH;
+gfx_drawchar($'-');
+gfx_drawchar($'S');
+
+metrics_indent=10;
+phase_y_offs=-30;
+
+// draw phase box
+gfx_r=gfx_g=gfx_b=0; gfx_a=0.1;
+gfx_x=0+gxo; gfx_y=size-60;
+gfx_rectto(size+1+gxo,size+20);
+
+// draw phase number
+gfx_r=0.8; gfx_g=0.6; gfx_b=0; gfx_a=1;
+gfx_x = sizeH-8; gfx_y = size+-40;
+gfx_drawnumber(ph*100,0);
+
+// draw phase line
+gfx_r=1; gfx_g=0.6; gfx_b=0; gfx_a=1;
+gfx_x=1+(ph+1)*0.5*(size-1); gfx_y=size+1-40;
+gfx_lineto(gfx_x,size+phase_y_offs+10,0);
+
+
+// draw phase labels
+gfx_r=gfx_g=gfx_b=0.8; gfx_a=1;
+gfx_x = 0; gfx_y = size+phase_y_offs;
+gfx_drawnumber(-1,0);
+// gfx_x = sizeH-8; gfx_y = size+phase_y_offs;
+// gfx_drawnumber(0,0);
+gfx_x = size-25; gfx_y = size+phase_y_offs;
+gfx_drawnumber(1,0);
+
+
+// calculate pan
+pan_temp= (R_stat-L_stat)/(R_stat+L_stat);
+pan=pan_temp*pan_hist_factor+pan_old*(1-pan_hist_factor);
+pan_old=pan;
+
+// draw pan number
+gfx_r=0.4; gfx_g=0.6; gfx_b=0.8; gfx_a=1;
+gfx_x = sizeH-8; gfx_y = size+pan_y_offs-10;
+gfx_drawnumber(pan*100,0);
+
+// draw pan line
+gfx_r=0.4; gfx_g=0.6; gfx_b=1; gfx_a=1;
+gfx_x=1+(pan+1)*0.5*(size-1); gfx_y=size-10;
+gfx_lineto(gfx_x,size+10,0);
+
+// draw pan labels
+pan_y_offs=-1;
+gfx_r=gfx_g=gfx_b=0.8; gfx_a=1;
+gfx_x = 0+10; gfx_y = size+pan_y_offs;
+gfx_drawchar($'L');
+// gfx_x = sizeH-8; gfx_y = size+pan_y_offs;
+// gfx_drawchar($'C');
+gfx_x = size-25; gfx_y = size+pan_y_offs;
+gfx_drawchar($'R');
+
+
