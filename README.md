@@ -28,7 +28,7 @@ Introduction to 15.1
 * 15.1 is HQ channel-based system for 3D surround, based on combining the best of NHK's 22.2, and 7.1 surround.
 * It is 7.1.6.2 in Dolby notation.
 * Order as follows for 15.1: L R C LFE BL BR SL SR, HL HR, BtL BtR, HBL HBR HSL HSR (extends SMPTE 5.1)
-* It's intended to be a HQ intermediary for mixing in 3D surround, and "15.1 to 3D Downmix (M).txt" is included to downmix to formats such as Auro3D & AMBEO 5.1.4, Atmos Base 7.1.2, DTS-X Base & MPEG-H 7.1.4, and Atmos 9.1.6
+* It's intended to be a HQ intermediary for mixing in 3D surround, and "Multi Mix Convert (L).txt" is included to downmix to formats such as Auro3D 5.1.4, DTS-X Base & MPEG-H 7.1.4, and Atmos CBA 9.1.6
 * Mixing in one of the above formats and converting to another could result in an inferior conversion, hence a format such as my 15.1 is ideal due to a reasonable channel layout.
 * 15.1 Conversion to 3oA is supported for flexible & powerful workflows. FUMA Ambisonics decoders for 3D speaker playback here are included, but are very basic.
 * Use mono panners for dynamic panning of sounds (Mono panners are preferred as there is improved directivity with speaker playback)
@@ -38,7 +38,7 @@ Quick start/Example workflow tools
 ---
 ### 2D workflow:
 * 1.0 to 5.1 Panner GUI (L).txt
-* 2.0 to 5.0 Upmix V3 (L).txt
+* 2.0 to 5.0 Upmix V3 (S).txt
 * < 5.1 Effects & manipulators >
 * 5.1 to 2.0 Downmix (L).txt
 
@@ -86,7 +86,7 @@ Decoders are provided for your convenience but they're not that great.
 
 Panners
 ---
-- 3.1 Panner (M).txt: 3.0 front surround panner, with width control. Move & Copy actions are supported for LFE use, and  Mixing & Monitoring modes for a total of 4 combinations. The specification for LFE in digital mixes, is to gain it by 10dB on playback. Hence while mixing, it is gained by -10dB. For monitoring, this is not applied.
+- 1.0 to 3.1 Panner (M).txt: 3.0 front surround panner, with width control. Move & Copy actions are supported for LFE use, and  Mixing & Monitoring modes for a total of 4 combinations. The specification for LFE in digital mixes, is to gain it by 10dB on playback. Hence while mixing, it is gained by -10dB. For monitoring, this is not applied.
 - 1.0 to 5.1 Panner GUI (L).txt
 - 1.0 to 15.1 Panner GUI (L).txt
 - 2.0 to 15.1 Mapper (M).txt
@@ -96,23 +96,23 @@ Upmixers
 ---
 Upmixers are considered experimental & are based on matrixes. It's advisable to use DTS Neural upmix (DTS edition like http://i54.tinypic.com/xq9xt5.png , NOT waves edition - waves has a bug with LFE). I've also tried about 10 other upmixers and they're all deficient in some way.
 
-- 2.0 to 3.0 Upmix (C).txt
-- 2.0 to 4.0 Upmix (M).txt: [Note 2](#note-2)
+- 2.0 to 3.0 Upmix (C).txt (manual upmixer, all the others are automatic)
 - 2.0 to 5.0 Upmix V2 (L).txt: 80% feature-complete DPL1-like surround upmixer, with more controls. [Note 1](#note-1), [Note 2](#note-2)
-- 2.0 to 5.0 Upmix V3 (L).txt: (ALPHA) New upmix based on FFT for maximum separation. [see FFT Notes](#fft-notes) for controls & explanation. It's Competitive with commercial upmixers. Features:
+- 2.0 to 5.0 Upmix V3 (S).txt: Upmix based on FFT for maximum separation. [see FFT Notes](#fft-notes) for controls & explanation. It's Competitive with commercial upmixers. Features:
 	- Basic image controls
-	- Useful threshold controls which control the core algorithm, not 15 redundant controls that you can recreate in your DAW
 	- Doesn't lie about PDC
 	- Doesn't have an incorrect/downmix-incompatible bass level (bass is not moved/copied to LFE. It's blank.)
 	- CPU optimized (CPU use depends on channel output)
-	- 3 adjustable filters to increase rear separation, make it sound nicer, less distracting
-	- mandatory 100% phase accuracy by design. No "faux phase accurate" mode which isn't even close
+	- Mandatory 100% phase accuracy by design. No "faux phase-accurate" mode which doesn't add to unity
+- 2.0 to 5.0 Upmix V3 (L).txt: Above, plus
+	- Threshold controls which control the core algorithm, not 10 redundant controls that you can recreate in your DAW
+	- Adjustable filters to increase rear separation, make it sound nicer, less distracting
 	- resizable UI which fits on small screens
 - 5.1 to 7.1 Upmix (U).txt:
 - 5.1 to 7.1 Upmix V2 (L).txt: These 2 5>7 upmixers are so rudimentary that they will probably have limited use. Side/Back balance uses the same mid/side detection as the 2>5 upmix. A balance control is provided for convenience, but may be 'bouncy' near the ends. [Note 1](#note-1)
 - 5.1 to 7.1 Upmix V3 (L).txt: Using FFT [see FFT Notes](#fft-notes) to upmix 51 to 71. Since 71 is downmixed to 51 by combining the back 4,
-	- Square mode isn't downmix compatible since it upscales the corner 4 to the side. For specialist use only.
 	- Circle mode is downmix compatible since it re interprets the back 2 to back 4. Should work well on content downmixed from 61 or 71.
+	- Square mode isn't downmix compatible since it upscales the corner 4 to the side. For specialist use only.
 - 5.1 to 3D Upmix (L).txt: upmixes Using FFT [see FFT Notes](https://github.com/junh1024/Reaper-Surround#fft-notes) to height sounds that are closer to:
 	- Ambience: 90*
 	- Ambience +: 180*

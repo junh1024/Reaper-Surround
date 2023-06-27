@@ -1,11 +1,11 @@
 desc: 
-//includes code from stock lowpass, delay JSFX.
+//includes code from stock lowpass,
 
 slider1:0<0,100,2>Width
 slider2:0<-100,100,2>Depth
-slider3:0<0,1,{Reverse (Narrow), Normal (Wide)}>Polarity of SR (Rear width)
-slider4:15000<2000,18000,500>rear LP freq  (Hz)
-slider5:10<0,100,1>delay ms
+slider3:1<0,1,{Reverse (Narrow), Normal (Wide)}>Polarity of SR (Rear width)
+slider4:15000<2000,18000,500>rear LP (Hz, 18k=off)
+slider5:0<0,100,1>delay ms
 slider6:0<0,1,0.01>Pan
 slider7:1024<512,8192,512>Blocksize
 slider8:0.1<0.05,1,0.05>Responsiveness
@@ -88,30 +88,28 @@ spl2=mid*1.4*(1-slider6);
 spl4 = 0.5*side; //preupscale
 
 //lopass
-// slider4<18000?
-// (
-fd0l = (fk*spl4) - (fa1*fd1l) - (fa0*fd2l);
-spl4 = fd0l + fd1l + fd1l + fd2l;
-fd2l = fd1l;
-fd1l = fd0l;
-// );
+slider4<18000?
+(
+	fd0l = (fk*spl4) - (fa1*fd1l) - (fa0*fd2l);
+	spl4 = fd0l + fd1l + fd1l + fd2l;
+	fd2l = fd1l;
+	fd1l = fd0l;
+);
 
-spl5=spl4*-1;
 
 //depth
 do_depth(depth_coeff);
 
 // delay
-delay_2ch(4); //delay ch4-5
+delaylen>0?
+(
+	out2 = buf3_org[pos2]  ;
+	buf3_org[pos2]	=  spl4;
+	spl4=out2;
+	pos2=(pos2+1)%(delaylen);
+);
 
-// dpintA[0] = spl4;
-// dpintB[1] = spl5;
-
-// (delayposA+=1) >= delaylen ? delayposA=0;
-// (delayposB+=1) >= delaylen ? delayposB=0;
-
-// spl4 = os0;
-// spl5 = os1;
+spl5=spl4*-1;
 	
 // polarity
 spl5 *=polarity; 
