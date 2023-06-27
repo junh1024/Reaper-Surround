@@ -264,12 +264,11 @@ AAX Compatibility for Pro Tools windows is limited due to the FILM order for cha
 ## mcfx_convolver presets
 The convolver_presets folder goes in "C:\Users\USERNAME\AppData\Roaming\mcfx\" where USERNAME is your user folder, and can be loaded by mcfx_convolver16 in your DAW, using the [mcfx](https://www.matthiaskronlachner.com/?p=1910) suite.
 
-- HSV_Testbench.conf is a template for loading IRs in the Hesuvi order. Please modify it according to the used filename of your IR.
+- HSV_A_Testbench.conf is a template for loading IRs in the Hesuvi 7ch order. Please modify it according to the filename of your IR. The input is 7.1 SMPTE-Microsoft order.
+- HSV_B_Testbench.conf same, except 14ch
 - SADIE2-KEMAR-DFC-714SD-48K.conf is in the SMPTE-Dolby order, according to the Dolby document [Additional Audio Channels and Soundfields for Immersive Audio](https://developer.dolby.com/globalassets/technology/atmos/additional-channels-for-immersive-audio.pdf) p4
 - SADIE2-KEMAR-DFC-714SM-PC-48K.conf is in the SMPTE-Microsoft order, according to Microsoft [WAVEFORMATEXTENSIBLE](https://learn.microsoft.com/en-us/windows/win32/api/mmreg/ns-mmreg-waveformatextensible)
 - SADIE2-KEMAR samples are courtesy of the [SADIE 2 database](https://www.york.ac.uk/sadie-project/database.html) . These IRs [are](https://www.mdpi.com/2076-3417/8/11/2029) , [DFC equalized](https://github.com/kcat/openal-soft/issues/806#issuecomment-1377034577) , and use Phantom Center, but [aren't tightly synced](https://cdn.discordapp.com/attachments/547440061478862850/1107489215811432578/image.png) . This shouldn't pose a problem unless you're using DS/DPL1-like upmixing.
-
-Please use the correct one for your workflow.
 
 ### Note 1
 **Block-based effects**
