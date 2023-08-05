@@ -56,40 +56,40 @@ Time_Response=(100-slider4)/100;
 @sample
 //sample capture
 //orig sample needed for 3D analysis
-samples[0	]=	spl0	;
-samples[1	]=	spl1	;
-samples[2	]=	spl2	;
-samples[3	]=	spl3	;
-samples[4	]=	spl4	;
-samples[5	]=	spl5	;
-samples[6	]=	spl6	;
-samples[7	]=	spl7	;
-samples[8	]=	spl8	;
-samples[9	]=	spl9	;
-samples[10	]=	spl10	;
-samples[11	]=	spl11	;
-samples[12	]=	spl12	;
-samples[13	]=	spl13	;
-samples[14	]=	spl14	;
-samples[15	]=	spl15	;
+samples[0     ]=     spl0     ;
+samples[1     ]=     spl1     ;
+samples[2     ]=     spl2     ;
+samples[3     ]=     spl3     ;
+samples[4     ]=     spl4     ;
+samples[5     ]=     spl5     ;
+samples[6     ]=     spl6     ;
+samples[7     ]=     spl7     ;
+samples[8     ]=     spl8     ;
+samples[9     ]=     spl9     ;
+samples[10     ]=     spl10     ;
+samples[11     ]=     spl11     ;
+samples[12     ]=     spl12     ;
+samples[13     ]=     spl13     ;
+samples[14     ]=     spl14     ;
+samples[15     ]=     spl15     ;
 
 //abs for loudness
-samples_avg[0	]+=	abs(spl0	);
-samples_avg[1	]+=	abs(spl1	);
-samples_avg[2	]+=	abs(spl2	);
-samples_avg[3	]+=	abs(spl3	);
-samples_avg[4	]+=	abs(spl4	);
-samples_avg[5	]+=	abs(spl5	);
-samples_avg[6	]+=	abs(spl6	);
-samples_avg[7	]+=	abs(spl7	);
-samples_avg[8	]+=	abs(spl8	);
-samples_avg[9	]+=	abs(spl9	);
-samples_avg[10	]+=	abs(spl10	);
-samples_avg[11	]+=	abs(spl11	);
-samples_avg[12	]+=	abs(spl12	);
-samples_avg[13	]+=	abs(spl13	);
-samples_avg[14	]+=	abs(spl14	);
-samples_avg[15	]+=	abs(spl15	);
+samples_avg[0     ]+=     abs(spl0     );
+samples_avg[1     ]+=     abs(spl1     );
+samples_avg[2     ]+=     abs(spl2     );
+samples_avg[3     ]+=     abs(spl3     );
+samples_avg[4     ]+=     abs(spl4     );
+samples_avg[5     ]+=     abs(spl5     );
+samples_avg[6     ]+=     abs(spl6     );
+samples_avg[7     ]+=     abs(spl7     );
+samples_avg[8     ]+=     abs(spl8     );
+samples_avg[9     ]+=     abs(spl9     );
+samples_avg[10     ]+=     abs(spl10     );
+samples_avg[11     ]+=     abs(spl11     );
+samples_avg[12     ]+=     abs(spl12     );
+samples_avg[13     ]+=     abs(spl13     );
+samples_avg[14     ]+=     abs(spl14     );
+samples_avg[15     ]+=     abs(spl15     );
 
 samples_captured+=1;
 
@@ -149,7 +149,7 @@ drawbox(gfx_w,gfx_h/2);
 
 //draw height
 
-slider7>0?
+slider1>0?
 (
 	gfx_g = gfx_b = 0;
 	gfx_r = 0.8;

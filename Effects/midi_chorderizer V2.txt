@@ -1,0 +1,94 @@
+desc:MIDI Chorderizer
+//tags: MIDI processing
+
+slider1:5<0,24,1>Voice 1 Offset (st)
+slider2:0<0,24,1>Voice 2 Offset (st)
+slider3:0<0,24,1>Voice 3 Offset (st)
+slider4:0<0,24,1>Voice 4 Offset (st)
+slider5:1<0,1>Velocity Scale @ 1
+slider6:1<0,1>Velocity Scale @ 4
+slider7:0<0,127,1>Lowest Key (MIDI Note #)
+slider8:127<0,127,1>Highest Key (MIDI Note #)
+
+in_pin:none
+out_pin:none
+
+@init 
+
+@slider
+slider1=slider1;
+
+
+@block
+
+while (
+midirecv(ts,msg1,msg23) ? 
+(
+  m=msg1&240;
+  note=msg23&127;
+
+  (m == 8*16 || m==9*16) && note >= slider7 && note <= slider8 ? 
+  (
+
+    slider1 > 0 ? (
+      note2 = note+slider1;
+    ) : note2=-1;
+
+    slider2 > 0 ?  (
+      note3 = note+slider2;
+    ) : note3=-1;
+
+    slider3 > 0 ? (
+      note4 = note+slider3;
+    ) : note4=-1;
+
+    slider4 > 0 ? (
+      note5 = note+slider4;
+    ) : note5=-1;
+
+    (m == 9*16 && msg23>=256) ? 
+    (
+      vel=(msg23/256)|0;
+      vel<0?vel=0:vel>=127?vel=127:vel|=0;
+      ov=vel;
+      vel *= 256.0;
+     
+   
+      note >= 0 && note < 128 ? midisend(ts,9*16,note+vel); // send note on
+      note2 >= 0 && note2 < 128 ? (
+        sc=slider5;  vel2=ov*sc; vel2<0?vel2=0:vel2>=127?vel2=127:vel2|=0; vel2 *= 256.0;
+		// vel2=127;
+        midisend(ts,9*16,note2+vel2); // send note on
+      );
+      note3 >= 0 && note3 < 128 ? (
+        sc=slider5*0.75  +  slider6*0.25;  vel2=ov*sc; vel2<0?vel2=0:vel2>=127?vel2=127:vel2|=0; vel2 *= 256.0;
+        midisend(ts,9*16,note3+vel2); // send note on
+      );
+      note4 >= 0 && note4 < 128 ? (
+        sc=slider5*0.25   + slider6*0.75;  vel2=ov*sc; vel2<0?vel2=0:vel2>=127?vel2=127:vel2|=0; vel2 *= 256.0;
+        midisend(ts,9*16,note4+vel2); // send note on
+      );
+      note5 >= 0 && note5 < 128 ? (
+        sc=slider6;  vel2=ov*sc; vel2<0?vel2=0:vel2>=127?vel2=127:vel2|=0; vel2 *= 256.0;
+        midisend(ts,9*16,note5+vel2); // send note on
+      );
+    ) : (m == 8*16 || m == 9*16) ? (
+      note >= 0 && note < 128 ? midisend(ts,8*16,note); // send note off
+      note2 >= 0 && note2 < 128 ? midisend(ts,8*16,note2); // send note off
+      note3 >= 0 && note3 < 128 ? midisend(ts,8*16,note3); // send note off
+      note4 >= 0 && note4 < 128 ? midisend(ts,8*16,note4); // send note off
+      note5 >= 0 && note5 < 128 ? midisend(ts,8*16,note5); // send note off    
+    );
+  ) : 
+  (
+    midisend(ts,msg1,msg23);
+  );
+  bla=1;
+);
+);
+
+
+@sample
+
+
+
