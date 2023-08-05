@@ -1,0 +1,65 @@
+desc: Channel Correlator Tool
+
+slider1:10<0,100,1> Amount (%)
+slider2:0<-30,0,0.1> Automatic Gain (dB)
+slider3:0<-10,10,1>Manual Gain (dB)
+slider4:0<0,2,1{Normal,LFE Mute,C&LFE Mute}>Mode
+slider5:1<1,16,1>In chans
+slider6:6<1,16,1>Out chans
+
+@init
+lfe_mute_coefficient=1;
+c_mute_coefficient=1;
+
+@slider
+
+//assignments
+amount=slider1/100;
+manual_gain=slider3;
+
+bypass_compensation=slider4;
+mode=slider4;
+mode>=1?lfe_mute_coefficient=0:1;
+mode>=2?c_mute_coefficient=0:1;
+
+//checks
+slider5>3?in_chans=slider5-bypass_compensation:in_chans=slider5; //apply bypass_compensation only if input ch>3
+out_chans=slider6-bypass_compensation;
+slider6<slider5?slider6=slider5; // out_chans can't be smaller than in_chans
+(slider6<4)?slider4=0; //disable bypass if not 4ch
+
+//perform gains
+auto_gain_db=( (out_chans-in_chans)*-3 )*amount; //decrease gain by 3dB for every added channel
+auto_gain_db=min(auto_gain_db,0); //limit in case of boost
+// auto_gain_scalar=min(auto_gain_scalar,1);
+
+slider2=auto_gain_db;
+
+auto_gain_scalar = 2^( auto_gain_db /6); // convert from dB to a multiplier
+manual_gain_scalar = 2^( manual_gain/6);
+
+final_gain_scalar=auto_gain_scalar*manual_gain_scalar;
+
+
+@sample
+spl2*=c_mute_coefficient; //mute C
+spl3*=lfe_mute_coefficient; //mute LFE
+
+// For all out_chans, add it to W
+W=i=0;
+loop(slider5,
+	W+=spl(i);
+	i+=1;
+);
+W/=in_chans;
+
+i=0;
+
+loop(slider6,
+	//weight amount of original channel spl with the W avg depending on amount, and scale it.
+	spl(i) =  ( (1-amount)*spl(i) + (amount*W)  )*final_gain_scalar  ;
+	i+=1;
+);
+
+spl2*=c_mute_coefficient; //mute C
+spl3*=lfe_mute_coefficient; //mute LFE

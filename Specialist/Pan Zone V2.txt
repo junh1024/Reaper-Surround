@@ -1,0 +1,166 @@
+desc: Pan Zone V2
+// original by Keith Handy https://forum.cockos.com/showthread.php?t=206624
+// modified by junh1024
+
+slider1:0<-1,1,0.01>Center position
+slider2:0.5<0,2,0.01>Center width
+slider3:0<0,1,0.01>-Frequency low
+slider4:1<0,1,0.01>-Frequency high
+slider5:0<0,1,0.01>-Unused
+slider6:0<0,1,0.01>-Unused
+slider7:100<0,200,1>Center Level (%)
+slider8:100<0,200,1>Sides Level (%)
+slider9:1<0,1,0.01>Time response
+slider10:0<0,1,0.01>-Unused
+slider11:12<10,12,1>FFT size (pow2)
+slider12:0<0,1,1{No,Yes (on 5+6)}>-Difference output (currently broken)
+
+import surroundlibf.txt
+import surroundlib3.txt
+
+in_pin:in
+in_pin:in
+
+out_pin:Center L
+out_pin:Center R
+out_pin:blank
+out_pin:blank
+out_pin:Sides L
+out_pin:Sides R
+
+@init
+
+//see surroundlibf.txt
+
+pos2=0;
+pdc_bot_ch = 0;
+pdc_top_ch = 2;
+
+@slider
+
+center_pos=slider1;
+center_width=slider2;
+time_constant=slider9;
+
+center_lev=slider7/100;
+sides_lev=slider8/100;
+
+sliderfft = (2^(slider11))|0;
+
+fftsize != sliderfft?
+(
+	fftsize = sliderfft;
+	bufpos=bi1=0; 
+	bi2=fftsize*2;
+	bi3=fftsize*4;
+	bi4=fftsize*6;
+	halfsize=fftsize*0.5;
+	
+	//new stuff
+	pdc_delay = fftsize;
+	magnitudes_array=fftsize*8;
+	pan_array=fftsize*10;
+	buf1_org=fftsize*12;
+)
+
+@sample
+t=bi1+bufpos;
+p0=t[0];
+t[0]=spl0;
+t=bi2+halfsize+bufpos;
+p1=t[0];
+t[0]=spl0;
+t=bi3+bufpos; 
+p2=t[0];
+t[0]=spl1;
+t=bi4+halfsize+bufpos;
+p3=t[0];
+t[0]=spl1;
+
+// spl0_org = spl0;
+// spl1_org = spl1;
+
+spl0 = p0 + p1;
+spl1 = p2 + p3;
+
+slider12==1?
+(
+	//buffer the original spl0
+	out4 = buf1_org[pos2]  ;
+	out5 = buf1_org[pos2+1];
+
+	buf1_org[pos2] =  spl0;
+	buf1_org[pos2+1] =  spl1;
+
+	//subtract front from original spl0 to get back
+	spl4=out4-spl0;
+	spl5=out5-spl1;
+
+	pos2=(pos2+2)%(fftsize*2);
+);
+
+bufpos+=1;
+
+bufpos >= halfsize ? (
+	
+	t=bi1; bi1=bi2; bi2=t;
+	t=bi3; bi3=bi4; bi4=t; 
+
+	mdct(bi1,fftsize);
+	mdct(bi3,fftsize); 
+	posL=bi1;
+	posR=bi3;
+	i=0;
+	loop(fftsize,
+		l = abs(posL[0]);
+		r = abs(posR[0]);
+
+		// pan = (r-l)/(r+l);
+		pan= ((r-l)/(r+l))*time_constant + (  pan_array[i] *(1-time_constant) ) ;
+		pan_array[i]=pan;
+		
+		//user controls level independently of center position which is more intuitive
+		//rather than center pan controlling levels
+		pan > center_pos-(center_width/2) && pan  <   center_pos+(center_width/2) ?
+		(
+			adj=center_lev;
+		)
+		:
+		(
+			adj=sides_lev;
+		);
+		
+		magnitudes_array[i]=(l+r)*adj/2;
+		// pan_for_gfx=(pan+1)/2;
+		// pan_array[i]=(pan_for_gfx*time_constant) + (pan_array[i]*(1-time_constant)); //time average
+		
+		posL[0]*=adj;
+		posR[0]*=adj;     
+		posL+=1;
+		posR+=1;
+		i+=1;
+	);
+	imdct(bi1,fftsize);
+	imdct(bi3,fftsize);
+	
+	bufpos=0; 
+);
+
+@gfx 500 50
+
+g=2;//counter for gfx
+box_width=floor(0.7*sqrt((gfx_w+gfx_h)/2));
+
+
+while
+( 
+	set_color(g/(fftsize/2.5)); //update color according to frequency
+	gfx_a = min(sqrt(magnitudes_array[g])*(fftsize/400),1); //set alpha to volume
+	// inspector1=pan_array[g]*gfx_w;
+	
+	drawbox( (pan_array[g] + 1) / 2 *gfx_w,gfx_h-    sqrt (g ) *gfx_h/( sqrt (fftsize)/1.5)     ); //draw position for each bin, log scale using sqrt, approx
+	// g=ceil(g^1.2);
+	g+=8;
+	g<fftsize/2 - 1;
+
+);
