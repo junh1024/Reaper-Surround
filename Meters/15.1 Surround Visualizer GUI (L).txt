@@ -1,9 +1,10 @@
-desc: desc
+desc: 15.1 & 7.1.4 Surround Visualizer
 
-slider1:1<0,1,1{x,x}>Input layout
-slider2:1<0,1,1{x,x}>Mode
-slider3:100<0,200 ,1>Scaling
-slider4:10<0,10 ,1}>Time response %
+slider1:0<0,2,1{15.1 junh1024 (SMPTE-MS),5.1s/7.1/7.1.4 (SMPTE-Dolby),5.1b/7.1/7.1.4 (SMPTE-MS),For other layouts use "Multi Mix Convert (L)"}>Input layout
+slider2:0<0,1,1{Speakers,x}>Mode
+slider3:10<0,15 ,1>Boost (dB)
+slider4:2<0,10 ,1}>Time response %
+slider5:0<0,100 ,1}>-3D view %
 
 
 in_pin:L
@@ -22,6 +23,10 @@ in_pin:HBL
 in_pin:HBR
 in_pin:HSL
 in_pin:HSR
+in_pin:WL
+in_pin:WR
+in_pin:CL
+in_pin:CR
 
 out_pin:L
 out_pin:R
@@ -39,6 +44,10 @@ out_pin:HBL
 out_pin:HBR
 out_pin:HSL
 out_pin:HSR
+out_pin:WL
+out_pin:WR
+out_pin:CL
+out_pin:CR
 
 import surroundlib3.txt
 
@@ -49,11 +58,36 @@ samples_old=16;
 samples_avg=200;
 samples_loudness_display=300;
 
+UI_SLIDER_MASK=(1<<4)-1;
+
+
+
 @slider
-scaling=slider3/100;
+
+slider3>20?slider3=20; // limit slider3 since before it was a %
+scaling=2^(slider3/6);
+
 Time_Response=(100-slider4)/100;
 
+view_adjustment=slider5/100;
+
+mode_in=slider1+1;
+
+
 @sample
+
+//convert
+//714
+mode_in==2||mode_in==3?
+(
+	spl12 =spl10;
+	spl13 =spl11;
+	
+	spl10=	spl11=0	;
+	
+	mode_in==2?swap_Side_Back_ELL();
+);
+
 //sample capture
 //orig sample needed for 3D analysis
 samples[0     ]=     spl0     ;
@@ -72,6 +106,10 @@ samples[12     ]=     spl12     ;
 samples[13     ]=     spl13     ;
 samples[14     ]=     spl14     ;
 samples[15     ]=     spl15     ;
+samples[16     ]=     spl16     ;
+samples[17     ]=     spl17     ;
+samples[18     ]=     spl18     ;
+samples[19     ]=     spl19     ;
 
 //abs for loudness
 samples_avg[0     ]+=     abs(spl0     );
@@ -90,6 +128,10 @@ samples_avg[12     ]+=     abs(spl12     );
 samples_avg[13     ]+=     abs(spl13     );
 samples_avg[14     ]+=     abs(spl14     );
 samples_avg[15     ]+=     abs(spl15     );
+samples_avg[16     ]+=     abs(spl16     );
+samples_avg[17     ]+=     abs(spl17     );
+samples_avg[18     ]+=     abs(spl18     );
+samples_avg[19     ]+=     abs(spl19     );
 
 samples_captured+=1;
 
@@ -98,10 +140,11 @@ samples_captured+=1;
 //box size scales with window size, hits 16 at 500x500
 //while not being too small for smaller sizes, like MCP embedding
 i=0;
-loop(16,
+loop(20,
 	
 	
 	samples_loudness_display[i]=sqrt(samples_avg[i]/samples_captured)*scaling;
+	samples_loudness_display[i]=min(samples_loudness_display[i],1); //clamp to 1 to avoid wierd colors
 	samples_avg[i]=0;
 
 	
@@ -119,20 +162,44 @@ gfx_r = gfx_g = gfx_b = 0;
 gfx_x = 0; gfx_y = 0;
 
 
-//draw ELL speakers
-
-//LR = cyan = includes bottom
+//Bottom = cyan
 gfx_g =1;
 gfx_b =1;
+gfx_a = samples_loudness_display[10];
+drawbox(gfx_w*0.30,gfx_h*0.20);
+
+gfx_a = samples_loudness_display[11];
+drawbox(gfx_w*0.70,gfx_h*0.20);
+
+
+//draw ELL speakers = green
+//LR
+gfx_b =0;
 
 gfx_a = samples_loudness_display[0];
-drawbox(gfx_w*0.25,gfx_h*0.05);
+drawbox(gfx_w*0.25,gfx_h*(0.05+view_adjustment/2.5 ) );
 
 gfx_a = samples_loudness_display[1];
-drawbox(gfx_w*0.75,gfx_h*0.05);
+drawbox(gfx_w*0.75,gfx_h*(0.05+view_adjustment/2.5 ));
+
+
+//Wides
+gfx_a = samples_loudness_display[16];
+drawbox(gfx_w*0.12,gfx_h*(0.26+view_adjustment/2.5 ) );
+
+gfx_a = samples_loudness_display[17];
+drawbox(gfx_w*0.88,gfx_h*(0.26+view_adjustment/2.5 ));
+
+
+//Centers
+gfx_a = samples_loudness_display[18];
+drawbox(gfx_w*0.38,gfx_h*(0.05+view_adjustment/2.5 ) );
+
+gfx_a = samples_loudness_display[19];
+drawbox(gfx_w*0.62,gfx_h*(0.05+view_adjustment/2.5 ));
+
 
 //center
-gfx_b =0;
 gfx_a = samples_loudness_display[2];
 drawbox(gfx_w/2,0);
 
@@ -147,12 +214,12 @@ drawbox(0,gfx_h/2);
 gfx_a = samples_loudness_display[7];
 drawbox(gfx_w,gfx_h/2);
 
-//draw height
+// draw height
 
-slider1>0?
-(
-	gfx_g = gfx_b = 0;
-	gfx_r = 0.8;
+// slider1>0?
+// (
+gfx_g = gfx_b = 0;
+gfx_r = 0.8;
 
 
 height_toe_in=gfx_w/20;
@@ -173,5 +240,13 @@ drawbox(gfx_w/3-height_toe_in/2,gfx_h/2);
 gfx_a = samples_loudness_display[15];
 drawbox(gfx_w*2/3+height_toe_in/2,gfx_h/2);
 
-);
+// );
 
+// code modified from cockos loudness_meter to toggle sliders
+has_click = (mouse_cap&1) && !(last_cap&1) ? 1 : 0;
+last_cap=mouse_cap;
+
+  has_click ? (
+    sliders_showing = slider_show(UI_SLIDER_MASK,-1) > 0;
+    has_click=0;
+  );

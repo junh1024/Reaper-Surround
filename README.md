@@ -4,10 +4,18 @@ Introduction
 ---
 A collection of mostly surround JSFX for the REAPER DAW ( www.reaper.fm ). These are JSFX so **[CLICK HERE TO DOWNLOAD ZIP](https://github.com/junh1024/Reaper-Surround/archive/master.zip)** & extract ALL of the zip into your Reaper EFFECTS folder.
 
-- REAPER/Installdata/Effects (for normal install)
+You can find the containing folder in REAPER by going **Options > Show REAPER resource path**. Alternatively, the direct paths:
+
+Windows:
+
+- C:/Users/USERNAME/AppData/Roaming/REAPER/Effects (for normal install)
 - REAPER/Effects (for portable install)
 
-It is advised to ENABLE "options > show in FX list > JSFX filename" as I refer to them by name. Bugs/suggestions? File an [issue](https://github.com/junh1024/Reaper-Surround/issues) ,  or contact me on [twitter](https://twitter.com/junh1024/) / [reddit](https://old.reddit.com/user/junh1024) .
+Mac:
+
+- HOMEFOLDER/Library/Application Support/REAPER/Effects
+
+It is advised to ENABLE **"options > show in FX list > JSFX filename"** in your FX browser, as I refer to them by name. Bugs/suggestions? File an [issue](https://github.com/junh1024/Reaper-Surround/issues) ,  or contact me on [twitter](https://twitter.com/junh1024/) .
 
 Donations
 ---
@@ -134,7 +142,7 @@ Downmixers
 - 7.1 to 5.1 Downmix (M).txt
 - 15.1 to 5.1 Downmix (M).txt
 - 15.1 to 7.1 Downmix (S).txt
-- Multi Mix Convert (L).txt for 5.1, 7.1, 5.1.2, Auro3D & AMBEO 5.1.4, Atmos Base 7.1.2, DTS-X Base & MPEG-H 7.1.4, Atmos 9.1.6, and 22.2 NHK. It internally converts to 15.1 so speakers which aren't in 15.1 will get downmixed.
+- **Multi Mix Convert (L).txt** can convert between many surround formats like 5.1, 7.1, 5.1.2, Auro3D & AMBEO 5.1.4, Atmos Base 7.1.2, DTS-X Base & MPEG-H 7.1.4, Atmos 9.1.6, and 22.2 NHK. It internally converts to 15.1, so speakers which aren't in 15.1 will get downmixed.
 - 15.1 to 8.0 Speaker Tool (M).txt (8.0h Order: L R, HL HR, BL BR, SL SR, which is similar & backwards compatible with SMPTE-MS 7.1, for 3D surround playback using commonly available 7.1 sound cards)
 
 ![8.0sh](https://i.imgur.com/1nivgkz.png)
@@ -144,7 +152,7 @@ Effects (Audio)
 - dc_remove_6: DC remover for 6ch
 - limiter_6: limiter (or clipper) for 6ch
 - compressor_6.txt: multichannel compressor, intended as a long-term compressor (ie, leveler). Works for 16ch, but you can type in more. As the key & affector are all selected channels, it's suitable for holistic compression of ambisonics. [Note 1](#note-1)
-- loop_slicer_6.txt: beat-synced realtime loop slicer, which sequentially splits slices up to 4x stereo, according to split length
+- loop_slicer_multi.txt: beat-synced realtime loop slicer, which sequentially splits slices up to 4x stereo, according to split length
 
 Effects (MIDI)
 ---
@@ -160,7 +168,6 @@ Effects (Third-Party, external)
 Specialist & Utility
 ---
 - DifferenceMaker.txt: subtracts Sidechain (3+4) from  Main (1+2). Useful for getting the difference after an effect.
-- Peak_Extender_SC.txt: Extends the peaks of Main (1+2) with the Sidechain (3+4). Use case: combining a lossless low-DR song with a lossy high-DR song. Clipping artefacts? Verify both songs are aligned & levels set correctly.
 - MSEDDouble.txt: Double Mid/Side Codec (1+2) & (5+6)
 - Simple Crossfade.txt: Fade between 2 sets of inputs, like a DJ mixer.
 - Surcode Fixer: Fixes delay &/ PDC, width adjustments of Surcode DPL.
@@ -217,7 +224,7 @@ Instructions:
 We are going to kill 2 birds with 1 stone, and install FFMPEG for [REAPER](https://www.reaper.fm/download.php) (so that you can open arbitrary video files in REAPER) and Windows (so that you can run FFMPEG commands in windows). I've not tested this exact version or process, as I've already got the equivalent set up via other means.
 
 1. Download [FFMPEG](https://github.com/GyanD/codexffmpeg/releases/download/4.4/ffmpeg-4.4-full_build-shared.zip)
-2. Inside the zip, there is a bin folder with exes & DLLs. Extract these to your REAPER Plugins folder, which might be C:\Program Files\REAPER\Plugins or C:\Program Files\REAPER\Installdata\Plugins . Whichever exists, depending on how & where you installed REAPER
+2. Inside the zip, there is a bin folder with exes & DLLs. Extract these to your REAPER User Plugins folder, which might be C:\Program Files\REAPER\UserPlugins or C:\Program Files\REAPER\Installdata\Plugins . Whichever exists, depending on how & where you installed REAPER
 3. Add the REAPER Plugins folder to your [Windows User Path Environment Variable](https://windowsloop.com/install-ffmpeg-windows-10/) . Start from step 3.3 of the guide
 4. Open REAPER , and edit your clips as necessary
 5. Press shift-? to open the actions pallete
@@ -262,7 +269,8 @@ AAX Compatibility for Pro Tools windows is limited due to the FILM order for cha
 10. If a 5.1 surround FX was selected previously, load another ReaJS, select "Multi Mix Convert (L).txt", and select 5.1 SMPTE input, 5.1 FILM output.
 
 ## mcfx_convolver presets
-The convolver_presets folder goes in "C:\Users\USERNAME\AppData\Roaming\mcfx\" where USERNAME is your user folder, and can be loaded by mcfx_convolver16 in your DAW, using the [mcfx](https://www.matthiaskronlachner.com/?p=1910) suite.
+The convolver_presets folder goes in "C:\Users\USERNAME\AppData\Roaming\mcfx\", or "~/Library/mcfx/" on Mac OS X. You may need to [unhide]( https://osxdaily.com/2011/07/22/access-user-library-folder-in-os-x-lion/
+) your library folder on Mac. The presets can now be opened by mcfx_convolver16 in your DAW, from the [mcfx](https://www.matthiaskronlachner.com/?p=1910) suite.
 
 - HSV_A_Testbench.conf is a template for loading IRs in the Hesuvi 7ch order. Please modify it according to the filename of your IR. The input is 7.1 SMPTE-Microsoft order.
 - HSV_B_Testbench.conf same, except 14ch

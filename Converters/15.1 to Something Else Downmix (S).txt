@@ -1,0 +1,8 @@
+desc:15.1 to Something Else Downmix
+
+slider1:0<0,0,1{Please use "Multi Mix Convert (L).txt"}>msg1
+slider2:0<0,0,1{It can convert between surround layouts}>msg2
+slider3:0<0,0,1{msg}>-msg3
+
+
+
