@@ -121,9 +121,9 @@ Upmixers are considered experimental & are based on matrixes. It's advisable to 
 - 5.1 to 7.1 Upmix V3 (L).txt: Using FFT [see FFT Notes](#fft-notes) to upmix 51 to 71. Since 71 is downmixed to 51 by combining the back 4,
 	- Circle mode is downmix compatible since it re interprets the back 2 to back 4. Should work well on content downmixed from 61 or 71.
 	- Square mode isn't downmix compatible since it upscales the corner 4 to the side. For specialist use only.
-- 5.1 to 3D Upmix (L).txt: upmixes Using FFT [see FFT Notes](https://github.com/junh1024/Reaper-Surround#fft-notes) to height sounds that are closer to:
-	- Ambience: 90*
-	- Ambience +: 180*
+- 5.1 to 3D Upmix (L).txt: upmixes Using FFT [see FFT Notes](#fft-notes) to height sounds that are closer to:
+	- Ambience: 90*. Sounds are reflected downwards after that. Sounds are more evenly upmixed.
+	- Ambience +: 180*. Wider sounds are upmixed more.
 	- Discrete SFX: the absolute center
 	- Pan Slice: the pan slider
 	- Function Designer: view the shape of the above mode
@@ -169,6 +169,7 @@ Specialist & Utility
 ---
 - DifferenceMaker.txt: subtracts Sidechain (3+4) from  Main (1+2). Useful for getting the difference after an effect.
 - MSEDDouble.txt: Double Mid/Side Codec (1+2) & (5+6)
+- Pan Zone V2.txt: Freeform FFT stereo imager (originally by Keith Handy). V2 adds more controls, more intuition, GUI, and PDC.
 - Simple Crossfade.txt: Fade between 2 sets of inputs, like a DJ mixer.
 - Surcode Fixer: Fixes delay &/ PDC, width adjustments of Surcode DPL.
 - Surround Fixer.txt

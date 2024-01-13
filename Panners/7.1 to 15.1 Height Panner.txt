@@ -1,7 +1,7 @@
 desc:Makes 15.1 height by shifting the side 6 of 7.1 upwards
 
 slider1:0<-100,100,2>Height (%)
-slider2:-6<-6,-3,3>Pan law (dB)
+slider2:-6<-6,-3,0.5>Pan law (dB)
 
 import surroundlib1.txt
 
@@ -35,10 +35,8 @@ out_pin:HSR
 @init
 
 @slider
-slider2==-6?calculate_71_to_151_coeffs_npc(slider1):calculate_71_to_151_coeffs_pc(slider1);
-
+calculate_71_to_151_coeffs_vari(slider1,slider2);
 
 @sample 
 do_71_to_151_pan(slider1);
-
 

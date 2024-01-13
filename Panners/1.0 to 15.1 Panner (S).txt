@@ -2,6 +2,8 @@ desc: mono to 15.1 panner. (phantom center)
 
 slider1:0<-180,180>the pan (deg)
 slider2:0<-100,100,5>Height (+ve up, -ve down)
+slider3:0<-3,3,0.5>Gain
+slider4:-3<-6,-3,0.5>Pan law (dB)
 
 import surroundlib1.txt
 
@@ -9,12 +11,13 @@ import surroundlib1.txt
 
 @slider
 
-pan=slider1;//pan, from clockwise, degrees
-calculate_10_to_71_coeffs (pan);
-calculate_71_to_151_coeffs_pc(slider2);
+gain=2^(slider3/6); // dB to linear
+// pan=slider1;//pan, from clockwise, degrees
+calculate_10_to_71_coeffs_vari (slider1,slider4);
+calculate_71_to_151_coeffs_vari(slider2,slider4);
 
 @sample 
-in0=(spl0+spl1)*0.7071; //loudness compensation
+in0=(spl0+spl1)*0.7071*gain; //loudness compensation
 
 do_10_to_71_pan(in0);
 do_71_to_151_pan(slider2);

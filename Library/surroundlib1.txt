@@ -73,7 +73,52 @@ function calculate_10_to_71_coeffs (pan)
 	(  pan  >=spk6pos-W && pan <=spk6pos+W )? spl6_coeff = abs(cos( ( (1.5* (pan - spk6pos )) )*($pi/180)  )) : spl6_coeff=0;
 	(  pan  >=spk7pos-W && pan <=spk7pos+W )? spl7_coeff = abs(cos( ( (1.5* (pan - spk7pos )) )*($pi/180)  )) : spl7_coeff=0;
 
+	
+	// inspector1= ( 60-  abs (  ( pan + 30) %120 - 30 )) ;
+	// inspector1=  abs(60-pan)+30;
+	
+	// inspector1=  ( 60- abs(((pan+30)%120)-60) )/60 ;
+	
 );
+
+
+function calculate_10_to_71_coeffs_vari(pan, pan_law)
+(
+	// calculate coefficients for -3dB pan law
+	(  pan  >=spk0pos-W && pan <=spk0pos+W )? spl0_coeff_3 = abs(cos( ( (1.5* (pan - spk0pos )) )*($pi/180)  )) : spl0_coeff_3=0;
+	(  pan  >=spk1pos-W && pan <=spk1pos+W )? spl1_coeff_3 = abs(cos( ( (1.5* (pan - spk1pos )) )*($pi/180)  )) : spl1_coeff_3=0;
+	(( pan  >=spk4pos-W && pan <=spk4pos+W )||(pan>150))?spl4_coeff_3 = abs(cos( ( (1.5* (pan - spk4pos )) )*($pi/180)  )) : spl4_coeff_3=0;//special handling
+	(( pan  >=spk5pos-W  ||  pan< -spk5pos ))?spl5_coeff_3 = abs(cos( ( (1.5* (pan - spk5pos )) )*($pi/180)  )) : spl5_coeff_3=0;//for rear wraparound
+	(  pan  >=spk6pos-W && pan <=spk6pos+W )? spl6_coeff_3 = abs(cos( ( (1.5* (pan - spk6pos )) )*($pi/180)  )) : spl6_coeff_3=0;
+	(  pan  >=spk7pos-W && pan <=spk7pos+W )? spl7_coeff_3 = abs(cos( ( (1.5* (pan - spk7pos )) )*($pi/180)  )) : spl7_coeff_3=0;
+	
+	// calculate coefficients for -6dB pan law
+	(  pan  >=spk0pos-W && pan <=spk0pos+W )?				spl0_coeff_6 = ( 60- abs(((pan+spk0pos)%120)-60) )/60 : spl0_coeff_6=0;
+	(  pan  >=spk1pos-W && pan <=spk1pos+W )?				spl1_coeff_6 = ( 60- abs(((pan+spk1pos)%120)-60) )/60 : spl1_coeff_6=0;
+	(( pan  >=spk4pos-W && pan <=spk4pos+W )||(pan>150))?	spl4_coeff_6 = ( 60- abs(((pan+spk4pos)%120)-60) )/60 : spl4_coeff_6=0;//special handling
+	(( pan  >=spk5pos-W  ||  pan< -spk5pos ))?				spl5_coeff_6 = ( 60- abs(((pan+spk5pos)%120)-60) )/60 : spl5_coeff_6=0;//for rear wraparound
+	(  pan  >=spk6pos-W && pan <=spk6pos+W )? 				spl6_coeff_6 = ( 60- abs(((pan+spk6pos)%120)-60) )/60 : spl6_coeff_6=0;
+	(  pan  >=spk7pos-W && pan <=spk7pos+W )? 				spl7_coeff_6 = ( 60- abs(((pan+spk7pos)%120)-60) )/60 : spl7_coeff_6=0;
+
+	blend_coeff=(pan_law+6)/3; //map pan law to 0-1
+	
+	// ell_coeff_pan=(ell_temp_6*(1-blend_coeff))+(ell_temp_3*blend_coeff);
+	
+	// apply variable pan law
+	spl0_coeff=(spl0_coeff_6*(1-blend_coeff))+(spl0_coeff_3*blend_coeff);
+	spl1_coeff=(spl1_coeff_6*(1-blend_coeff))+(spl1_coeff_3*blend_coeff);
+	spl4_coeff=(spl4_coeff_6*(1-blend_coeff))+(spl4_coeff_3*blend_coeff);
+	spl5_coeff=(spl5_coeff_6*(1-blend_coeff))+(spl5_coeff_3*blend_coeff);
+	spl6_coeff=(spl6_coeff_6*(1-blend_coeff))+(spl6_coeff_3*blend_coeff);
+	spl7_coeff=(spl7_coeff_6*(1-blend_coeff))+(spl7_coeff_3*blend_coeff);
+
+	// pan law of 3dB for front & back always, since 90% time people will have at least LR channels
+	(  pan  >=spk0pos && pan <=spk1pos ) ? (  spl0_coeff = spl0_coeff_3 ; spl1_coeff = spl1_coeff_3 ; ) ;
+	(  pan  <=spk4pos || pan >=spk5pos ) ? (  spl4_coeff = spl4_coeff_3 ; spl5_coeff = spl5_coeff_3 ; ) ;
+);
+
+
+
 
 function do_10_to_71_pan(in0)
 (
@@ -85,9 +130,9 @@ function do_10_to_71_pan(in0)
 	spl7 = spl7_coeff * in0;
 );
 
-function calculate_71_to_151_coeffs_pc(theslider1)
+function calculate_71_to_151_coeffs_pc(height)
 (	//pan compensated
-	temp1 = theslider1*0.9 ; //map 0-100 to 0-90deg
+	temp1 = height*0.9 ; //map 0-100 to 0-90deg
 	temp2 = temp1*$pi /180 ; //convert from degrees to rads
 	top_coeff_pan = sin(temp2)  ; //top coefficient
 
@@ -97,15 +142,34 @@ function calculate_71_to_151_coeffs_pc(theslider1)
 );
 
 
-function calculate_71_to_151_coeffs_npc(theslider1)
+function calculate_71_to_151_coeffs_npc(height)
 (	//non pan compensated
-	top_coeff_pan = ( theslider1/100);  //vert coefficient
-	ell_coeff_pan = 1-( abs(theslider1/100));
+	top_coeff_pan = ( height/100);  //vert coefficient
+	ell_coeff_pan = 1-( abs(height/100));
 );
-	
-function do_71_to_151_pan(theslider1)
+
+function calculate_71_to_151_coeffs_vari(height,pan_law)
 (
-	(  theslider1 >= 0 )?  (
+	blend_coeff=(pan_law+6)/3; //map pan law to 0-1
+	
+	//compute coefficients for pan_law s of -3 & -6
+	top_temp_3=(height/100)* ($pi/2); // map to 0-90deg then convert to rad
+	top_temp_3=sin(top_temp_3);
+	
+	ell_temp_3=(1-(height/100)) *($pi/2);
+	ell_temp_3=sin(ell_temp_3);
+	
+	ell_temp_6=(100-height)/100;
+	top_temp_6=height/100;
+	
+	//final coefficients according to pan law
+	ell_coeff_pan=(ell_temp_6*(1-blend_coeff))+(ell_temp_3*blend_coeff);
+	top_coeff_pan=(top_temp_6*(1-blend_coeff))+(top_temp_3*blend_coeff);
+);
+
+function do_71_to_151_pan(height)
+(
+	(  height >= 0 )?  (
 	//need top first otherwise it gets silenced
 	spl8 = spl0 * top_coeff_pan;
 	spl9 = spl1 * top_coeff_pan;
@@ -131,5 +195,5 @@ function do_71_to_151_pan(theslider1)
 	spl1 = spl1 * ell_coeff_pan; 
 	);
 );
-// function calculate_71_to_151_coeffs_npc(theslider1)
+// function calculate_71_to_151_coeffs_npc(height)
 // ();

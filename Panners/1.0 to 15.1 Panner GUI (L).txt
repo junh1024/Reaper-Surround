@@ -107,6 +107,8 @@ slider5<2?(LFE_mode_gain=0.316):(LFE_mode_gain=1;);
 //new 
 
 calculate_10_to_71_coeffs (slider1);
+calculate_71_to_151_coeffs_pc(slider2);
+
 
 @sample 
 in0=(spl0+spl1)*0.7071; //loudness compensation
