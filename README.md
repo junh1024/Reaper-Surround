@@ -149,21 +149,28 @@ Downmixers
 
 Effects (Audio)
 ---
+- compressor_6.txt: multichannel compressor, intended as a long-term compressor (ie, leveler). Works for 16ch, but you can type in more. As the key & affector are all selected channels, it's suitable for holistic compression of ambisonics. [Note 1](#note-1)
 - dc_remove_6: DC remover for 6ch
 - limiter_6: limiter (or clipper) for 6ch
-- compressor_6.txt: multichannel compressor, intended as a long-term compressor (ie, leveler). Works for 16ch, but you can type in more. As the key & affector are all selected channels, it's suitable for holistic compression of ambisonics. [Note 1](#note-1)
 - loop_slicer_multi.txt: beat-synced realtime loop slicer, which sequentially splits slices up to 4x stereo, according to split length
+- Pitch Tracker 2 (X).txt:  Compared to the original, adds PDC, off mode, automation out, removes MIDI out & gfx
+- StereoField V2.txt: Compared to the original, the rotation is expanded to +- 180 deg, and width is processed before rotation, so DPL and SFR is now much easier
 
 Effects (MIDI)
 ---
 - KeyTracker 2 (M).txt: shows current MIDI note via slider. Use with PMOD for adding movement/width to a song.
-- Octaver (S).txt
+- midi_chorderizer V2.txt: Compared to the original, a 0 offset mutes the note, and fixes the velocity bug. Replaces my earlier buggy "Octaver (S).txt"
 
 Effects (Third-Party, external)
 ---
 - EQ 16ch: please use the mcfx suite from http://www.matthiaskronlachner.com/?p=1910
 - Reverb 64ch:  please use fdnReverb from https://plugins.iem.at/
 - Sonic Anomaly's other JSFX are available https://github.com/Sonic-Anomaly/Sonic-Anomaly-JSFX/tree/master/Plugins or in ReaPack
+
+Meters & Analysis
+---
+- Channel Similarity Meter (S).txt: Analysis of channel similarity based on FFT. Selection of 2/16ch input available.
+- gfxGoniometer V2.txt: Compared to the original, automatic scaling of input, add pan analysis and selection of 2/16ch input, removes rays.
 
 Specialist & Utility
 ---
@@ -194,7 +201,8 @@ Scripts for General Use
 - Reaper Stats.py: collects various project statistics and outputs them via a dialog. See script for more details.
 - Set item start to position.py
 - SetPanAccordingToName.py: Useful for implementing directional dialogue for films.
-- Bitperfect Take Gain.py: You can set the gain of items directly, in a bitperfect way with this (not an adjustment/offset). Note that 1 bit = 6.02 dB (approx). 
+- Bitperfect Take Gain.py: You can set the gain of items directly, in a bitperfect way with this (not an adjustment/offset). Note that 1 bit = 6.02 dB (approx).
+- Set Envelope Points.py: this script sets the value for all selected envelope points, not just the 1st one
 
 Scripts for Remixing
 ---

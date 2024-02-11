@@ -1,0 +1,340 @@
+// from https://forum.cockos.com/showthread.php?t=190168#30 by Tale, geraintluff, junh1024
+
+desc: Channel Similarity Analyzer (uses FFT)
+
+slider1:1<1,16,1>Input (channel)
+slider2:2<1,16,1>Compare to (channel)
+slider3:0<0,100,1>-Rear threshold
+slider4:0<0,100,1>-Crossover width
+slider5:0<0,100,1>-Ch corrrelation%
+slider6:0<0,100,1>Ch similarity %
+slider7:0<0,100,1>-Rear transients
+slider8:13<10,14,1>FFT size (pow2)
+
+import surroundlib2.txt
+import surroundlib3.txt
+import surroundlibf.txt
+
+in_pin:in
+in_pin:in
+in_pin:in
+in_pin:in
+in_pin:in
+in_pin:in
+
+out_pin:L
+out_pin:R
+out_pin:C
+out_pin:blank
+out_pin:BL
+out_pin:BR
+
+@init
+
+//see surroundlibf.txt
+
+
+
+// pdc_bot_ch = 0;
+// pdc_top_ch = 6;
+
+
+chan_A_prev=chan_A =chan_B_prev=chan_B =corr_numerator=corr_denominator=this=that=0;
+
+
+@slider
+sliderfft = (2^(slider8))|0;
+fftsize != sliderfft ? fft_initialize();
+
+// Rear_threshold= slider3*pi/180;
+// Crossover_width=max(slider4*pi/180,0.1);//min of 0.1 since don't want an infinite slope/div 0
+// width_coeff=slider1/100; 
+
+// depth_coeff=(slider2*$pi)/200; //depth scaled from 0-100 to 0>half pi
+// calculate_depth_coeffs(depth_coeff);
+// R_width_coeff=slider5/100;
+// depth2=abs(slider2);
+
+// slider6=max(slider6,10);
+// cutoff=slider6/100;
+// cutoff_bins=floor(cutoff*(fftsize));
+// transient_amount=slider7/100;
+
+Time_Response=min(fftsize/8192,1); //clamp to 1, 0.5 @ 4k fft
+
+@block
+slider6=abs(corr_stat-0.5)*2*100;
+
+@sample
+
+sum_all_spl+=abs(spl0)+abs(spl1);	//silence detector
+
+// Buffer input
+pos >= fftsize ?
+(
+	tmp = buf1_a;
+	buf1_a = buf1_b;
+	buf1_b = tmp;
+
+	tmp = buf2_a;
+	buf2_a = buf2_b;
+	buf2_b = tmp;
+
+	// check_silence_set_fftsize(0); //reduce CPU
+	
+	// FFT
+	fft(buf1_a, fftsize);
+	fft_permute(buf1_a, fftsize);
+	
+	i = 0;
+	
+	//analyze up to 12k for 48k input
+	loop(fftsize / 4 + 1,
+	
+
+		a = i;
+		b = a+1;
+		a2 = 2*fftsize-i;
+		b2 = a2+1;
+ 
+
+		x =	buf1_a[a];
+		y =	buf1_a[b];
+		x2=	buf1_a[a2];
+		y2=	buf1_a[b2];
+
+		
+		//we have 2 sets cuz  L&R are modified for LRC, but we want to measure the phase of the original LR
+		 left_r = (x + x2)*0.5;
+		 left_i = (y - y2)*0.5;
+		right_r = (y + y2)*0.5;
+		right_i = (x2 - x)*0.5;
+		//completely rewritten in Complex instead of Polar for more performance & no fiddly phase compensation
+
+		left_i>1?get_signal=1;
+		
+		//convert to M/S, center content
+		
+		
+		// inspector1=fftsize-ceil((fftsize-cutoff_bins)/2);
+		
+		// width_coeff<1?
+		// width_coeff<1&&i<fftsize-ceil((fftsize-cutoff_bins)/1.5)?
+		(
+		// ms_encode_complex();
+		
+		
+		// calculate magnitudes
+		chan_A=sqrt(left_r^2+left_i^2);
+		chan_B=sqrt(right_r^2+right_i^2);
+		
+		//default case is no correlation
+		corr_temp=0;
+		
+		//calculate correlation of the FFT spectrum
+		
+		(( chan_A>chan_A_prev && chan_B>chan_B_prev)		|| (chan_A<chan_A_prev && chan_B<chan_B_prev) 		|| (chan_A==chan_A_prev && chan_B==chan_B_prev))?(corr_temp=1;this=1;);
+		
+		// ( (chan_A>chan_A_prev && chan_B<chan_B_prev )		|| (chan_A<chan_A_prev && chan_B>chan_B_prev  )		)?(corr_temp = -1; that =1;);
+
+		//correlation stat is integrated for all time like LUFS-I
+		corr_numerator += corr_temp;
+		corr_denominator+=1;
+		
+		corr_stat=corr_numerator/corr_denominator;
+		
+		chan_A_prev=chan_A ;
+		chan_B_prev=chan_B ;
+
+		
+		// ms_complex_set_sideness_center();
+		
+		// Sideness1[i]=1;
+	
+
+		// abs(1);
+		
+		// M/S decode LR
+		// left_r =  (mid_r*Sideness1[i]) + (side_r);
+		// left_i =  (mid_i*Sideness1[i]) + (side_i);
+		// right_r = (mid_r*Sideness1[i]) - (side_r);
+		// right_i = (mid_i*Sideness1[i]) - (side_i);	
+		
+		
+		);
+		// :(center_r=center_i=0;);
+
+		
+
+		  //rear lowpass depends on slider6, rear hipass at a max of 1% SR when slider6=50%
+		// (i> floor (0.01*fftsize* ( 1- max (cutoff-0.5,0)*2)		) && i<cutoff_bins && abs(slider2)<100)? //rear lowpass		
+		// (depth2<=99)? //activate only as needed
+		// (
+		// Angles1[i]=an1=atan2(left_r_two,left_i_two); //radians, normalize to 0,2pi
+		// Angles2[i]=an2=atan2(right_r_two,right_i_two);	
+		// Angle_Difference[i]=abs(an1-an2);
+
+		// ad=Angle_Difference[i];
+		// Angle_Difference[i]>pi?Angle_Difference[i]=2*pi-Angle_Difference[i];//fix angle difference cuz should be under 180*
+		
+		// Angle_Difference[i]=(Angle_Difference[i]*(Time_Response))+(Angle_Difference_old[i]*(1-Time_Response));
+		// Angle_Difference_old[i]=Angle_Difference[i];
+		
+		// T_scaling=1;
+		
+		
+		// Magnitudes1[i]=(left_r^2+left_i^2);// only analysing L for transient & no sqrt cuz it's faster
+		//remove transients from top half of rear, copied from FFT Multi Tool
+		// ((i>cutoff_bins/2) && (Magnitudes1[i]>Magnitudes1_old[i]))?
+		// (
+			// T_scaling=(((Magnitudes1[i]*(transient_amount^2))+(Magnitudes1_old[i]*(1-(transient_amount^2))))/Magnitudes1[i]);
+		// );
+		
+		
+		//remove from front if wide, but scale it according to how transient it is, so transients get rmv from rear when subtraction happens later.
+		
+		// P_scaling=1-((Angle_Difference[i]/pi)*T_scaling);
+		// P_scaling=1-((Angle_Difference[i]/pi));
+		// P_scaling=min(max(1-((((Angle_Difference[i])+Rear_threshold)/pi)*T_scaling),0),1); 
+		// P_scaling=min(max(1-(   (  ((+-h_pi)/(Crossover_width/pi))+h_pi  )    *T_scaling ) ,0)     ,1) ; 
+		
+
+
+		// P_scaling= min(max( ( 1-(Angle_Difference[i]-Rear_threshold+(Crossover_width/2))*T_scaling*(1/Crossover_width) )   ,0)     ,1)  ;
+		
+		// P_scaling=1;
+		// P_scaling*=T_scaling;
+		// P_scaling=1;
+		// Angle_Difference[i]>Rear_threshold?(P_scaling=0);
+		
+		// lr_complex_apply_1_scaling(P_scaling);
+		
+
+		// Magnitudes1_old[i]=Magnitudes1[i];
+		
+		// );
+		
+		//BUG: upscales to rear when 100% hard panned
+
+
+		//rear stuff
+		
+		// (Angle_Difference[i]>Rear_threshold-Crossover_width&&Angle_Difference[i]<Rear_threshold+Crossover_width)?
+		// (Angle_Difference[i]>Rear_threshold)?
+
+		//more voodoo
+		// buf1_a[a]  = left_r - right_i;
+		// buf1_a[b]  = left_i + right_r;
+		// buf1_a[a2] = left_r + right_i;
+		// buf1_a[b2] = right_r - left_i;
+
+		//prepare c
+
+		// buf2_a[a] = center_r;
+		// buf2_a[b] = center_i;
+		// buf2_a[a2]= center_r;
+		// buf2_a[b2]=-center_i;
+		
+		i += 2
+	);
+
+	// fft_ipermute(buf1_a, fftsize);
+	// ifft(buf1_a, fftsize);
+	
+	// width_coeff<1?(
+	// fft_ipermute(buf2_a, fftsize);
+	// ifft(buf2_a, fftsize);
+// );
+
+	// check_silence_restore_fftsize();
+
+	pos=0;
+	
+	
+	
+);
+
+
+//windowing?
+w1 = window[pos/2];
+w2 = window[(fftsize-pos)/2-1];
+sw = (w1+w2)*fftsize;
+
+// out0 = (buf1_a[pos]+buf1_b[fftsize+pos])/sw;
+// out1 = (buf1_a[pos+1]+buf1_b[fftsize+pos+1])/sw;
+// out2 = (buf2_a[pos]+buf2_b[fftsize+pos])/sw;
+// out3 = (buf2_a[pos+1]+buf1_b[fftsize+pos+1])/sw;
+
+// select channels
+in0=spl(slider1-1);
+in1=spl(slider2-1);
+
+buf1_a[pos] = w1*in0;
+buf1_a[pos+1] = w1*in1;
+buf1_b[fftsize+pos] = w2*in0;
+buf1_b[fftsize+pos+1] = w2*in1;
+
+//more stuff for 2nd input
+// buf2_a[pos] = w1*spl2;
+// buf2_a[pos+1] = w1*spl3;
+// buf2_b[fftsize+pos] = w2*spl2;
+// buf2_b[fftsize+pos+1] = w2*spl3;
+
+//buffer the original spl0
+// out4 = buf1_org[pos2]  ;
+// out5 = buf1_org[pos2+1];
+
+// buf1_org[pos2] =  spl0;
+// buf1_org[pos2+1] =  spl1;
+
+
+//output and FFT stuffs is disabled but doesn't save much CPU
+
+// spl4=out4;
+// spl5=out5;
+
+// spl0 = out0;
+// spl1 = out1;
+// spl2= out2;
+
+//subtract front from original spl0 to get back
+// spl4=out4-out0-(h_sqrt_2*out2);
+// spl5=out5-out1-(h_sqrt_2*out2);
+
+
+pos += 2;
+pos2=(pos2+2)%(fftsize*2);
+
+
+// do_width(width_coeff);
+// do_depth(depth_coeff);
+// do_cross_width(R_width_coeff);
+
+
+@gfx 500 50
+/*
+gfx_r = gfx_g = gfx_b = 1;
+gfx_a = 0.5; 
+// box_width=8;
+box_width=floor(0.7*sqrt((gfx_w+gfx_h)/2));
+
+// draw guides
+drawbox(Rear_threshold*gfx_w/pi,gfx_h/2);
+drawbox((Rear_threshold+Crossover_width/2)*gfx_w/pi,gfx_h*1/4);
+drawbox((Rear_threshold-Crossover_width/2)*gfx_w/pi,gfx_h*3/4);
+
+// gfx_mode=1.0;
+
+g=2;//counter for gfx
+
+while
+( 
+	set_color(g/(fftsize/2.5)); //update color according to frequency
+	gfx_a = min(sqrt(Magnitudes1[g])*fftsize/4,1); //set alpha to magnitude , a >1 looks weird
+	drawbox(Angle_Difference[g]*gfx_w/pi,gfx_h-g*gfx_h/(fftsize/2) ); //draw position for each bin
+	// g=ceil(g^1.2);
+	g+=8;
+	g<fftsize/2 - 1;
+
+);
+*/

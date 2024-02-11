@@ -2,7 +2,15 @@ desc:Goniometer V2 [LOSER, junh1024]
 //tags: analysis visualization
 //author: LOSER, junh1024
 
-slider1:1<0,1,1{Dots,Lines}>Display
+
+slider1:1<1,16,1>Input (channel)
+slider2:2<1,16,1>Compare to (channel)
+slider3:0<0,100,1>-Unused
+slider4:0<0,100,1>-Unused
+slider5:0<0,100,1>-Ch corrrelation%
+slider6:0<0,100,1>-Ch Pan %
+slider7:0<0,100,1>-Unused
+slider8:1<0,1,1{Dots,Lines}>Display
 
 in_pin:left input
 in_pin:right input
@@ -36,6 +44,10 @@ scaling_hist_factor=1;
 
 // add volume normalization - junh1024
 
+
+// select channels
+spl0=spl(slider1-1);
+spl1=spl(slider2-1);
 
 
 spl_avg_dc=(spl0+spl1)/2;
@@ -114,14 +126,14 @@ x = y = sizeH;
 
 i = min(b,MAXDRAWSPLS);
 while (
-	slider1 == DOTS ? (
+	slider8 == DOTS ? (
 	// gfx_a=1;
 	gfx_a=0.8;
 	gfx_x=sizeH+0[i]*sizeDSqr05;
 	gfx_y=sizeH-off[i]*sizeDSqr05;
 	gfx_setpixel(0.5,1,0);
 	):(
-		slider1 == LINES ? (
+		slider8 == LINES ? (
 			gfx_x=x; gfx_y=y;
 			x=sizeH+0[i]*sizeDSqr05;
 			y=sizeH-off[i]*sizeDSqr05;
