@@ -4,8 +4,8 @@ desc:
 slider1:0<0,100,2>Width
 slider2:0<-100,100,2>Depth
 slider3:1<0,1,{Reverse (Narrow), Normal (Wide)}>Polarity of SR (Rear width)
-slider4:15000<2000,18000,500>rear LP (Hz, 18k=off)
-slider5:0<0,100,1>delay ms
+slider4:15000<5000,15000,500>Rear LP (Hz, 15k=off)
+slider5:0<0,100,1>Rear Delay (ms)
 slider6:0<0,1,0.01>Pan
 slider7:1024<512,8192,512>Blocksize
 slider8:0.1<0.05,1,0.05>Responsiveness
@@ -81,24 +81,20 @@ Side_abs=side*sign(side) ;
 sumMid+=Mid_abs;
 sumSide+=Side_abs;
 
-spl0 = (0.70*mid*(slider6)) + (side*0.2); 
-spl1 = (0.70*mid*(slider6)) - (side*0.2); 
-spl2=mid*1.4*(1-slider6);
+spl0 = (0.7071*mid*(slider6)) + (side*0.2); 
+spl1 = (0.7071*mid*(slider6)) - (side*0.2); 
+spl2=mid*1.414*(1-slider6);
 
-spl4 = 0.5*side; //preupscale
+spl4 = 0.5071*side; //preupscale
 
 //lopass
-slider4<18000?
+slider4<15000?
 (
 	fd0l = (fk*spl4) - (fa1*fd1l) - (fa0*fd2l);
 	spl4 = fd0l + fd1l + fd1l + fd2l;
 	fd2l = fd1l;
 	fd1l = fd0l;
 );
-
-
-//depth
-do_depth(depth_coeff);
 
 // delay
 delaylen>0?
@@ -109,9 +105,10 @@ delaylen>0?
 	pos2=(pos2+1)%(delaylen);
 );
 
-spl5=spl4*-1;
-	
 // polarity
-spl5 *=polarity; 
+spl5=spl4*polarity*-1;
+	
+//depth
+do_depth(depth_coeff);
 
 do_width(slider1/100);

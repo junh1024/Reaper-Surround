@@ -1,0 +1,60 @@
+// (C) 2006-2007, Michael Gruhn.
+
+// NO WARRANTY IS GRANTED. THIS PLUG-IN IS PROVIDED ON AN "AS IS" BASIS, WITHOUT
+// WARRANTY OF ANY KIND. NO LIABILITY IS GRANTED, INCLUDING, BUT NOT LIMITED TO,
+// ANY DIRECT OR INDIRECT,  SPECIAL,  INCIDENTAL OR CONSEQUENTIAL DAMAGE ARISING
+// OUT OF  THE  USE  OR INABILITY  TO  USE  THIS PLUG-IN,  COMPUTER FAILTURE  OF
+// MALFUNCTION INCLUDED.  THE USE OF THE SOURCE CODE,  EITHER  PARTIALLY  OR  IN
+// TOTAL, IS ONLY GRANTED,  IF USED IN THE SENSE OF THE AUTHOR'S INTENTION,  AND
+// USED WITH ACKNOWLEDGEMENT OF THE AUTHOR. FURTHERMORE IS THIS PLUG-IN A  THIRD
+// PARTY CONTRIBUTION,  EVEN IF INCLUDED IN REAPER(TM),  COCKOS INCORPORATED  OR
+// ITS AFFILIATES HAVE NOTHING TO DO WITH IT.  LAST BUT NOT LEAST, BY USING THIS
+// PLUG-IN YOU RELINQUISH YOUR CLAIM TO SUE IT'S AUTHOR, AS WELL AS THE CLAIM TO
+// ENTRUST SOMEBODY ELSE WITH DOING SO.
+
+desc:Stereo Field Manipulator [LOSER, junh1024]
+//tags: processing stereo
+//author: LOSER, junh1024
+
+slider1:0<-180,180,1>Rotate (deg)
+slider2:100<0,200,1>Width (%)
+slider3:0<-100,100,1>Center (%)
+slider4:0<-100,100,1>Left/Right (%)
+
+in_pin:left input
+in_pin:right input
+out_pin:left output
+out_pin:right output
+
+@slider
+rot=slider1*0.017453292;
+width = slider2 / 200;
+center = min(slider3/100+1,1);
+side = (1-slider3/100);
+left = -min(slider4/100,0);
+left1 = -max(slider4/100-1,-1);
+right = max(slider4/100,0);
+right1 = min(1+slider4/100,1);
+
+update = 0;
+
+@sample
+
+// 3 Way Balancer + Enhancer
+mono = (spl0 + spl1)/2 * center;
+stereo = (spl0 - spl1) * side;
+spl0 = (mono + (stereo*left1 - stereo*right )* width) / max(width,1);
+spl1 = (mono + (-stereo*right1 + stereo*left )* width) / max(width,1);
+
+// Rotation
+s0 = sign(spl0);
+s1 = sign(spl1);
+angle = atan( spl0 / spl1 );
+(s0 == 1 && s1 == -1) || (s0 == -1 && s1 == -1) ? angle += 3.141592654;
+s0 == -1 && s1 == 1 ? angle += 6.283185307;
+spl1 == 0 ? spl0 > 0 ? angle = 1.570796327 : angle = 4.71238898;
+spl0 == 0 ? spl1 > 0 ? angle = 0 : angle = 3.141592654;
+angle -= rot;
+radius = sqrt( sqr(spl0)+sqr(spl1) ) ;
+spl0 = sin(angle)*radius;
+spl1 = cos(angle)*radius;
