@@ -2,19 +2,47 @@ desc:Goniometer V2 [LOSER, junh1024]
 //tags: analysis visualization
 //author: LOSER, junh1024
 
-
 slider1:1<1,16,1>Input (channel)
 slider2:2<1,16,1>Compare to (channel)
 slider3:0<0,100,1>-Unused
 slider4:0<0,100,1>-Unused
-slider5:0<0,100,1>-Ch corrrelation%
-slider6:0<0,100,1>-Ch Pan %
+slider5:0<0,100,1>Corrrelation %
+slider6:0<-100,100,1>Pan %
 slider7:0<0,100,1>-Unused
 slider8:1<0,1,1{Dots,Lines}>Display
 
-in_pin:left input
-in_pin:right input
-out_pin:none
+in_pin:input
+in_pin:input
+in_pin:input
+in_pin:input
+in_pin:input
+in_pin:input
+in_pin:input
+in_pin:input
+in_pin:input
+in_pin:input
+in_pin:input
+in_pin:input
+in_pin:input
+in_pin:input
+in_pin:input
+in_pin:input
+out_pin:output
+out_pin:output
+out_pin:output
+out_pin:output
+out_pin:output
+out_pin:output
+out_pin:output
+out_pin:output
+out_pin:output
+out_pin:output
+out_pin:output
+out_pin:output
+out_pin:output
+out_pin:output
+out_pin:output
+out_pin:output
 
 @init
 gfx_clear=-1;
@@ -44,6 +72,8 @@ scaling_hist_factor=1;
 
 // add volume normalization - junh1024
 
+spl0_old=spl0;
+spl1_old=spl1;
 
 // select channels
 spl0=spl(slider1-1);
@@ -80,7 +110,7 @@ vert = 0[b] = cos(angle)*radius;
 horiz = off[b] = sin(angle)*radius;
 b<MAXDRAWSPLS ? b += 1;
 
-
+// collect stats for pan
 L_stat		=abs(spl0)*spl_hist_factor+L_stat*(1-spl_hist_factor);
 R_stat		=abs(spl1)*spl_hist_factor+R_stat*(1-spl_hist_factor);
 
@@ -89,12 +119,29 @@ R_stat_old	=R_stat;
 
 s0 != s1 ? phC-=1:phC+=1;
 (n+=1) > PHASEUPDATERATE ? (
-	//calculate phase
+	// calculate phase
 	ph = (phC/n);
 	ph = ph*ph_hist_factor + ph_old*(1-ph_hist_factor);
 	ph_old=ph;
 	phC = n = 0;
 );
+
+// restore original values for output. Needed for YSFX compat
+spl0=spl0_old;
+spl1=spl1_old;
+
+
+@block
+
+// calculate pan
+pan_temp= (R_stat-L_stat)/(R_stat+L_stat);
+pan=pan_temp*pan_hist_factor+pan_old*(1-pan_hist_factor);
+pan_old=pan;
+
+// connect phase & pan to sliders
+slider5=ph*100;
+slider6=pan*100;
+
 
 @gfx 450 450
 
@@ -197,11 +244,6 @@ gfx_drawnumber(-1,0);
 gfx_x = size-25; gfx_y = size+phase_y_offs;
 gfx_drawnumber(1,0);
 
-
-// calculate pan
-pan_temp= (R_stat-L_stat)/(R_stat+L_stat);
-pan=pan_temp*pan_hist_factor+pan_old*(1-pan_hist_factor);
-pan_old=pan;
 
 // draw pan number
 gfx_r=0.4; gfx_g=0.6; gfx_b=0.8; gfx_a=1;

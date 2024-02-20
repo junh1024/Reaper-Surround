@@ -255,23 +255,36 @@ Then you're ready to go. Run a Reascript by going Actions > Show > Load, Run.
 
 
 ## VST Compatibility
-VST Compatibility for windows is achieved through ReaJS. You can then run some FX in your favorite DAW (surround FX may not work in some hosts) or even live in APO Equalizer.
 
-1. Install Reaplugs 64bit https://www.reaper.fm/reaplugs/ into "C:\Program Files\VSTPlugIns"
-2. Navigate into that directory , and create "reajs.ini" &/ "reajs_64.ini" as instructed by "reajs_info.txt"
-3. Open the ini and change the file to these if using surround. Use 8 for 7.1.
+### Windows VST2 users
+
+VST2 Compatibility for windows is achieved through ReaJS. You can then run some FX in your favorite DAW (surround FX may not work in some hosts) or perhaps live in Equalizer APO.
+
+1. Install Reaplugs 64bit https://www.reaper.fm/reaplugs/ into your VST2 folder, Example: "C:\Program Files\VSTPlugIns"
+2. Navigate into the Reaplugs directory, and download [this file](https://github.com/junh1024/Reaper-Surround/releases/download/0.2105/reajs.ini) in there. Example: the downloaded reajs.ini , goes into C:\Program Files\VSTPlugIns\Reaplugs\
+3. Open reajs.ini and change the rootpath to where the ReaPlugs JS folder is. Example:  "C:\Program Files\VSTPlugIns\Reaplugs\JS" . If you're using exactly the path as per step 1, this is already set.
+4. Change the file to these if using surround. Use 8 for 7.1. If you want exactly 7.1, this is already set.
 ```
-inputs=6    ; number of audio inputs (0-64)
-outputs=6    ; number of audio outputs (0-64)
+inputs=8    ; number of audio inputs (0-64)
+outputs=8    ; number of audio outputs (0-64)
 ```
-4. Extract [this zip](https://github.com/junh1024/Reaper-Surround/archive/master.zip) into your [REAPER Effects](#introduction) folder
-5. add/change rootpath in the ini file to your REAPER Effects folder. Strings must be double quoted.
-5. load reaJS into your host and select the Effects
+5. Extract [this zip](https://github.com/junh1024/Reaper-Surround/archive/master.zip) into your ReaPlugs JS Effects folder, such that it sits beside other Effects folders. Example: C:\Program Files\VSTPlugIns\Reaplugs\JS\Effects\Reaper-Surround Master\
+6. Load the ReaJS plugin into your host, and press "Load" to select the Effects under Reaper-Surround
+
+### Mac/VST3 users
+
+You will need to use [**YSFX**](https://github.com/JoepVanlier/ysfx/releases/tag/v0.0.2) and extract the VST3 into:
+
+- Windows: C:\Program Files\Common Files\VST3
+- Mac: Library\Audio\Plug-ins\VST
+
+Unfortunately, YSFX has [FFT issues](https://github.com/jpcima/ysfx/issues/66) so it rules out most of the interesting ones, and has trouble finding dependencies. I've made a small archive of 2 interesting FX & their dependancies for YSFX users [**here**](https://github.com/junh1024/Reaper-Surround/releases/download/0.2105/Reaper-Surround-YSFX.zip) .
+
 
 ### AAX Compatibility
-AAX Compatibility for Pro Tools windows is limited due to the FILM order for channels and limited options for channel count. I haven't tested this.
+AAX Compatibility for Pro Tools Windows is limited due to the FILM order for channels and limited options for channel count. I haven't tested this.
 
-6. Follow steps 1-4 as above
+6. Follow steps 1-5 as for "Windows VST2 users"
 7. Insert ReaJS in a VST to AAX loader like DDMF metaplugin
 8. Insert the loader into a 2 or 6ch track
 9. Load ReaJS into your loader and select your FX
@@ -351,5 +364,3 @@ Reduction figures are approximate.
 **And?**
 
 Conclusion: performance or quality is roughly on par with commercial implementations, but not necessarily simultaneously as you may need to make adjustments which increase CPU. My FFT FX typically use 10-15% of a 3Ghz core. If you're exporting long projects on a laptop on power-save mode, they'll do fine. Latency is also higher at a default of 4096sa compared with a typical 2048sa. Performance is balanced with quality, and if you want choice, you have ample control over otherwise "internal" or "unimportant" decisions which commercial vendors decide for you.
-
-
