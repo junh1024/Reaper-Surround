@@ -2,7 +2,7 @@ desc:
 //includes code from stock lowpass,
 
 slider1:0<0,100,2>Width
-slider2:0<-100,100,2>Depth
+slider2:100<-100,100,2>Depth
 slider3:1<0,1,{Reverse (Narrow), Normal (Wide)}>Polarity of SR (Rear width)
 slider4:15000<5000,15000,500>Rear LP (Hz, 15k=off)
 slider5:0<0,100,1>Rear Delay (ms)
