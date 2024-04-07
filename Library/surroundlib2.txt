@@ -191,10 +191,10 @@ sumMid=0+delta;
 sumSide=0;
 
 
-function MidSide_stats_collect(ch_offs_ms)
+function MidSide_stats_collect(ch_offs_ms,ch_offs_ms2)
 (
-	Mid=( spl(ch_offs_ms)+spl(ch_offs_ms+1))*0.5;//compute Mid/Side
-	Side=(spl(ch_offs_ms)-spl(ch_offs_ms+1))*0.5;
+	Mid=( spl(ch_offs_ms)+spl(ch_offs_ms2))*0.5;//compute Mid/Side
+	Side=(spl(ch_offs_ms)-spl(ch_offs_ms2))*0.5;
 
 	Mid_abs =Mid*sign(Mid) ; //get magnitude
 	Side_abs=Side*sign(Side) ;

@@ -17,6 +17,8 @@ Mac:
 
 It is advised to ENABLE **"options > show in FX list > JSFX filename"** in your FX browser, as I refer to them by name. Bugs/suggestions? File an [issue](https://github.com/junh1024/Reaper-Surround/issues) ,  or contact me on [twitter](https://twitter.com/junh1024/) .
 
+Alternatively, [this video](https://www.youtube.com/watch?v=9EegrN-gF5o) shows how to install JSFX.
+
 Donations
 ---
 Surround is just a hobby for me since 2014. If you use them (especially commercially), you are encouraged to donate. By CC (securely handled by stripe) on https://donorbox.org/junh1024 to encourage further development & lets me know they are genuinely useful for work. Also, contact me for custom development based on my stuff.
@@ -102,16 +104,16 @@ Panners
 
 Upmixers
 ---
-Upmixers are considered experimental & are based on matrixes. It's advisable to use DTS Neural upmix (DTS edition like http://i54.tinypic.com/xq9xt5.png , NOT waves edition - waves has a bug with LFE). I've also tried about 10 other upmixers and they're all deficient in some way.
+Upmixers are considered experimental, based on matrix or FFT.
 
 - 2.0 to 3.0 Upmix (C).txt (manual upmixer, all the others are automatic)
-- 2.0 to 5.0 Upmix V2 (L).txt: 80% feature-complete DPL1-like surround upmixer, with more controls. [Note 1](#note-1), [Note 2](#note-2)
+- 2.0 to 5.0 Upmix V2 (L).txt: 80% feature-complete DPL1-like surround upmixer with 0 audio latency, but a behavioral latency [Note 1](#note-1) . It works best as LCR upmixer [Note 2](#note-2), and that's the new default as of 2024.
 - 2.0 to 5.0 Upmix V3 (S).txt: Upmix based on FFT for maximum separation. [see FFT Notes](#fft-notes) for controls & explanation. It's Competitive with commercial upmixers. Features:
 	- Basic image controls
 	- Doesn't lie about PDC
 	- Doesn't have an incorrect/downmix-incompatible bass level (bass is not moved/copied to LFE. It's blank.)
 	- CPU optimized (CPU use depends on channel output)
-	- Mandatory 100% phase accuracy by design. No "faux phase-accurate" mode which doesn't add to unity
+	- Mandatory phase-accurate by design. No "faux phase-accurate" mode which doesn't add to unity
 - 2.0 to 5.0 Upmix V3 (L).txt: Above, plus
 	- Threshold controls which control the core algorithm, not 10 redundant controls that you can recreate in your DAW
 	- Adjustable filters to increase rear separation, make it sound nicer, less distracting
@@ -170,7 +172,7 @@ Effects (Third-Party, external)
 Meters & Analysis
 ---
 - Channel Similarity Meter (S).txt: Analysis of channel similarity based on FFT. Selection of 2/16ch input available.
-- gfxGoniometer V2.txt: Compared to the original, automatic scaling of input, add pan analysis and selection of 2/16ch input, removes rays.
+- gfxGoniometer V2.txt: A traditional phase vectorscope for stereo analysis. Compared to the original, adds automatic scaling of input, pan analysis, 2/16ch input selector for analysing surround, removes rays.
 
 Specialist & Utility
 ---
@@ -279,7 +281,6 @@ You will need to use [**YSFX**](https://github.com/JoepVanlier/ysfx/releases/tag
 - Mac: Library\Audio\Plug-ins\VST
 
 Unfortunately, YSFX has [FFT issues](https://github.com/jpcima/ysfx/issues/66) so it rules out most of the interesting ones, and has trouble finding dependencies. I've made a small archive of 2 interesting FX & their dependancies for YSFX users [**here**](https://github.com/junh1024/Reaper-Surround/releases/download/0.2105/Reaper-Surround-YSFX.zip) .
-
 
 ### AAX Compatibility
 AAX Compatibility for Pro Tools Windows is limited due to the FILM order for channels and limited options for channel count. I haven't tested this.

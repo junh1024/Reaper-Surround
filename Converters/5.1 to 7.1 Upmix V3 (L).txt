@@ -4,11 +4,11 @@ desc: 5.1 to 7.1 FFT upmix. in BETA
 
 slider1:1<0,1,1{Square (Cine-auto thresholds),Circle (ITU),Circle+ (ITU)}>Mode
 slider2:100<0,200,1>Amount (%)
-slider3:50<0,100,1>Side threshold
-slider4:100<0,100,1>Crossover width
-slider5:75<0,100,1>Cutoff (%)
+slider3:50<0,100,1>Side threshold (66=even power)
+slider4:100<0,150,1>Crossover width and diffusion (%)
+slider5:75<0,100,1>Frequency Cutoff (%)
 slider6:50<0,100,2>Time Response 
-slider7:25<0,50,5>FFT Overlap (%)
+slider7:25<0,50,5>FFT Overlap (disabled)
 slider8:12<10,14,1>FFT size (pow2)
 
 import surroundlib2.txt
@@ -44,7 +44,11 @@ out0=out1=out4=out5=0;
 @slider
 
 Side_threshold= slider3/100;
-Crossover_width=max(slider4/100,0.1);//min of 0.1 since don't want an infinite slope/div 0
+
+
+slider4=min(max(0, slider4),200);
+Crossover_width=min(max(slider4/100,0.1),1);//min of 0.1 since don't want an infinite slope/div 0
+diffuse_amount=max( (slider4/100) -1,0); //clamp to >0
 
 
 //parameter migration from old version, which had Frequency & Time response 0-1 instead of 0-100
@@ -312,5 +316,19 @@ mode==1?
 
 pos += 2;
 pos2=(pos2+2)%(fftsize*2);
+
+mode > 1 ?
+(
+L_diff=(spl6-spl4)*0.5;
+R_diff=(spl7-spl5)*0.5;
+
+spl6-=L_diff*(diffuse_amount);
+spl4+=L_diff*(diffuse_amount);
+
+spl7-=R_diff*(diffuse_amount);
+spl5+=R_diff*(diffuse_amount);
+
+
+)
 
 @gfx 500 500

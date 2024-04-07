@@ -65,7 +65,7 @@ response=slider5;
 @sample
 
 
-MidSide_stats_collect(4);
+MidSide_stats_collect(4,5);
 
 //Reversed order is important
 spl6 = side_coeff*spl4;

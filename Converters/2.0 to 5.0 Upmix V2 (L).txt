@@ -3,7 +3,7 @@ desc:
 
 slider1:0<0,100,2>Width
 slider2:100<-100,100,2>Depth
-slider3:1<0,1,{Reverse (Narrow), Normal (Wide)}>Polarity of SR (Rear width)
+slider3:1<0,1,{Reverse (Narrow),Normal (Wide)}>Polarity of SR (Rear width)
 slider4:15000<5000,15000,500>Rear LP (Hz, 15k=off)
 slider5:0<0,100,1>Rear Delay (ms)
 slider6:0<0,1,0.01>Pan
@@ -71,8 +71,9 @@ count+=samplesblock;
 
 @sample
 
-mid = 0.5*(spl0+spl1);
-side= 0.5*(spl0-spl1);
+//changed from 0.5 to 0.7171 in 2024
+mid = 0.7071*(spl0+spl1);
+side= 0.7071*(spl0-spl1);
 
 //collect stats
 Mid_abs =mid*sign(mid) ; //get magnitude
@@ -83,7 +84,7 @@ sumSide+=Side_abs;
 
 spl0 = (0.7071*mid*(slider6)) + (side*0.2); 
 spl1 = (0.7071*mid*(slider6)) - (side*0.2); 
-spl2=mid*1.414*(1-slider6);
+spl2=mid*1*(1-slider6); //changed from 1.41 to 1.00 in 2024
 
 spl4 = 0.5071*side; //preupscale
 
@@ -100,7 +101,7 @@ slider4<15000?
 delaylen>0?
 (
 	out2 = buf3_org[pos2]  ;
-	buf3_org[pos2]	=  spl4;
+	buf3_org[pos2]     =  spl4;
 	spl4=out2;
 	pos2=(pos2+1)%(delaylen);
 );
