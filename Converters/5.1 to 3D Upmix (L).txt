@@ -1,12 +1,12 @@
 // from https://forum.cockos.com/showthread.php?t=190168#30 by Tale, geraintluff, junh1024
 
-desc: 5.1 to 9.1 (padded 15.1) upmix. in ALPHA
+desc: 5.1 to 5.1.4 (padded to 15.1) upmix
 
 slider1:1<0,4,1{Ambience,Ambience +,Discrete SFX,Discrete SFX + (N/A),Pan Slice,Function Designer}>Mode
 slider2:100<0,200,1>Amount (%)
 slider3:0<-1,1,0.05>Threshold/Pan
 slider4:0.2<0,1,0.05>Crossover/Width
-slider5:75<0,100,1>Cutoff (%)
+slider5:75<0,100,1>Frequency Cutoff (%)
 slider6:50<0,100,2>Time Response 
 slider7:25<0,50,5>FFT Overlap (%)
 slider8:12<10,14,1>FFT size (pow2)

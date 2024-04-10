@@ -121,13 +121,13 @@ Upmixers are considered experimental, based on matrix or FFT.
 - 5.1 to 7.1 Upmix (U).txt:
 - 5.1 to 7.1 Upmix V2 (L).txt: These 2 5>7 upmixers are so rudimentary that they will probably have limited use. Side/Back balance uses the same mid/side detection as the 2>5 upmix. A balance control is provided for convenience, but may be 'bouncy' near the ends. [Note 1](#note-1)
 - 5.1 to 7.1 Upmix V3 (L).txt: Using FFT [see FFT Notes](#fft-notes) to upmix 51 to 71. Since 71 is downmixed to 51 by combining the back 4,
-	- Circle mode is downmix compatible since it re interprets the back 2 to back 4. Should work well on content downmixed from 61 or 71.
-	- Square mode isn't downmix compatible since it upscales the corner 4 to the side. For specialist use only.
+	- Circle mode is summation downmix compatible since it re-interprets the back 2 to back 4. Circle+ also analyses the front channels for more accurate interpretation of the soundfield.
+	- Square mode isn't summation downmix compatible since it upscales the corner 4 to the side by extracting content panned midway.
 - 5.1 to 3D Upmix (L).txt: upmixes Using FFT [see FFT Notes](#fft-notes) to height sounds that are closer to:
 	- Ambience: 90*. Sounds are reflected downwards after that. Sounds are more evenly upmixed.
 	- Ambience +: 180*. Wider sounds are upmixed more.
-	- Discrete SFX: the absolute center
-	- Pan Slice: the pan slider
+	- Discrete SFX: the absolute center. The visualizer shows the soundfield.
+	- Pan Slice: the pan slider. The visualizer shows the front/back balance of the frequencies.
 	- Function Designer: view the shape of the above mode
 - 6.1 to 7.1 Upmix (M).txt
 
@@ -176,6 +176,7 @@ Meters & Analysis
 
 Specialist & Utility
 ---
+- Bitutils V2 can be used to change the volume of a signal in small or large amounts using the volume & shift sliders respectively. Shift should be bitperfect. The bitdepth can also be reduced to reduce size when encoding to compressed lossless codecs. The channels slider goes up to 16 by you can type in any number.
 - DifferenceMaker.txt: subtracts Sidechain (3+4) from  Main (1+2). Useful for getting the difference after an effect.
 - MSEDDouble.txt: Double Mid/Side Codec (1+2) & (5+6)
 - Pan Zone V2.txt: Freeform FFT stereo imager (originally by Keith Handy). V2 adds more controls, more intuition, GUI, and PDC.
@@ -293,7 +294,7 @@ AAX Compatibility for Pro Tools Windows is limited due to the FILM order for cha
 
 ## mcfx_convolver presets
 After installing mcfx_convolver16 from the [mcfx](https://www.matthiaskronlachner.com/?p=1910) suite, and **[the zip of my repo](https://github.com/junh1024/Reaper-Surround/archive/master.zip)** , my convolver_presets folder goes in "C:\Users\USERNAME\AppData\Roaming\mcfx\", or "~/Library/mcfx/" on Mac OS X. You may need to [unhide]( https://osxdaily.com/2011/07/22/access-user-library-folder-in-os-x-lion/
-) your library folder on Mac. The presets can now be opened by mcfx_convolver16 in your DAW.
+) your library folder on Mac. The presets can now be opened by mcfx_convolver16 in your DAW. It's recommended to uncheck "save preset within project" in mcfx_convolver, and then "save preset as default" in RPR so projects don't grow unnecessarily large.
 
 - HSV_A_Testbench.conf is a template for loading IRs in the Hesuvi 7ch order. Please modify it according to the filename of your IR. The input is 7.1 SMPTE-Microsoft order.
 - HSV_B_Testbench.conf same, except 14ch
