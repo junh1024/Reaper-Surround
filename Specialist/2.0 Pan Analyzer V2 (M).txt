@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc:
 
 slider1:0.1<-1,1,0.1>Threshold

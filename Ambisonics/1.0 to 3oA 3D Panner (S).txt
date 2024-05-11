@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc: FuMa
 
 // http://web.archive.org/web/20160313102859/http://www.blueripplesound.com/b-format

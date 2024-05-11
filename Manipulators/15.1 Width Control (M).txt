@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc:15.1 Width Control
 
 slider1:100<0,100,1>ELL Width

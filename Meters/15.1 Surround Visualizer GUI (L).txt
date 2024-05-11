@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc: 15.1 & 7.1.4 Surround Visualizer
 
 slider1:0<0,2,1{15.1 junh1024 (SMPTE-MS),5.1s/7.1/7.1.4 (SMPTE-Dolby),5.1b/7.1/7.1.4 (SMPTE-MS),For other layouts use "Multi Mix Convert (L)"}>Input layout

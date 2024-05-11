@@ -1,5 +1,7 @@
-// from https://forum.cockos.com/showthread.php?t=190168#30 by Tale, geraintluff, junh1024
+// Part of the Reaper-Surround suite by junh1024
+// framework from https://forum.cockos.com/showthread.php?t=190168#30 by Tale, geraintluff, junh1024
 
+desc:
 desc: Channel Similarity Analyzer (uses FFT)
 
 slider1:1<1,16,1>Input (channel)

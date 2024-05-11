@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc:Mixes front/back into side of 7.1
 
 slider1:100<0,100,2>Depth

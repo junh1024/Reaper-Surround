@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc: What width is reduced from the rear gets added to the front.
 
 slider1:100<0,100,5>Rear Width

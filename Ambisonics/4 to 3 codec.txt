@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc: codec test
 
 slider1:0<0,1,1{Encode,Decode}>Mode

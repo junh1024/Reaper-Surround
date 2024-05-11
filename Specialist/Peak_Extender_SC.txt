@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc: Extends the peaks of Main (1+2) with the sidechain (3+4). Bar flashing = working.
 //gfx section modified from Liteon's deesser (GPL)
 

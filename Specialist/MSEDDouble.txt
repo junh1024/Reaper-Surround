@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc:Double M/S Encoder/Decoder (Works on ch1+2,5+6)
 
 slider1:0<0,1,1{Encode,Decode}>Operation Mode

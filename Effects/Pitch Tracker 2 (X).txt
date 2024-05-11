@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc: Pitch Tracker 2 (for automation)
 /*
 Original https://stash.reaper.fm/v/30507/pitch-follower by aparker127

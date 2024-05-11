@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc: 15.1 to 3oA Fuma downmixer. LFE is moved to C, so gain -10dB or silence it.
 //Generated from ambi_encoder.py , comments there.
 

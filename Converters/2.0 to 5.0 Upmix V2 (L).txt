@@ -1,4 +1,5 @@
-desc: 
+// Part of the Reaper-Surround suite by junh1024
+desc:
 //includes code from stock lowpass,
 
 slider1:0<0,100,2>Width

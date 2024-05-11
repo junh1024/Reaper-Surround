@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc: Selects the maximum of main or sidechain. Flashing = Working
 //gfx section modified from Liteon's deesser (GPL)
 

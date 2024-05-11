@@ -1,5 +1,7 @@
-// from https://forum.cockos.com/showthread.php?t=190168#30 by Tale
+// framework from https://forum.cockos.com/showthread.php?t=190168#30 by Tale
 
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc:FFT 6ch example with settings
 slider1:100<0,200,1>Unused
 slider2:0<-180,180,1>Unused

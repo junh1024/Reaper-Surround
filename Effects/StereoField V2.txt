@@ -12,6 +12,8 @@
 // PLUG-IN YOU RELINQUISH YOUR CLAIM TO SUE IT'S AUTHOR, AS WELL AS THE CLAIM TO
 // ENTRUST SOMEBODY ELSE WITH DOING SO.
 
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc:Stereo Field Manipulator [LOSER, junh1024]
 //tags: processing stereo
 //author: LOSER, junh1024

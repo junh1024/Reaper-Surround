@@ -25,6 +25,8 @@
 
 
 
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc:Multi-format surround converter. Internal format is 15.1 EX w/o BC
 
 // s1	input

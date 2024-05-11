@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc: mono to 7.1 panner (phantom center)
 
 slider1:0<-180,180,1>the pan (deg)

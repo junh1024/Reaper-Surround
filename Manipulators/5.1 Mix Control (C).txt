@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc: (Common-sized). Useful after upscalers that don't have controls of DTS Neural Upmix.
 
 slider1:0<-100,100,1>Depth

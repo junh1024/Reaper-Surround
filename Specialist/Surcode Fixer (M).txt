@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc: Fixes PDC, rear delay, and width flaws of Surcode DPL2 by Minnetoka.
 
 slider1:100<0,100,10>Rear Width

@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc:Downmix 15.1 to FuMa 1.2oA (WXYZR Fuma)
 //Really, this is a big hack, but there's nothing free that does remotely the same thing.
 //thx Bruce Wiggins for 1oA Hex & Aaron Heller (ADT) for 2oA R coefficients

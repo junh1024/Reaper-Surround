@@ -1,5 +1,7 @@
-// from https://forum.cockos.com/showthread.php?t=190168#30 by Tale, geraintluff, junh1024
+// Part of the Reaper-Surround suite by junh1024
+// framework from https://forum.cockos.com/showthread.php?t=190168#30 by Tale, geraintluff, junh1024
 
+desc:
 desc: FFT Stereo Tool. Read docs. in ALPHA
 
 slider1:5<0,7,1{Max,Min (Denoise),Align N/A,Subtract AR,Phase limit,Phase reflect,Sustainizer A,bass boost}>Mode

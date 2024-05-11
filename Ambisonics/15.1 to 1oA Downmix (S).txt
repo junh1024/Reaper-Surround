@@ -1,4 +1,6 @@
- desc:Downmix 15.1 to 1oA
+ // Part of the Reaper-Surround suite by junh1024
+desc:
+desc:Downmix 15.1 to 1oA
 
 slider1:0<0,1,1{Furse-Malham,ACN}>Channel Order
 

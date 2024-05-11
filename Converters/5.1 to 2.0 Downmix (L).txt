@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc: Downmix surround to stereo, 7.1 aware.
 
 slider1:100<0,100,10>Front Width

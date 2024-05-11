@@ -1,3 +1,4 @@
+// Part of the Reaper-Surround suite by junh1024
 desc: Pan Zone V2 (Keith Handy, junh1024)
 // original by Keith Handy https://forum.cockos.com/showthread.php?t=206624
 // modified by junh1024

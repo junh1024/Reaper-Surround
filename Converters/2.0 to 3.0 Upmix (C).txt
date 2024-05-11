@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc: Upmix to 3.0 by M/S
 
 slider1:100<0,100,2>Center Level Control

@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc: based on http://www.blueripplesound.com/decoding v1
 @init
 gain=4;

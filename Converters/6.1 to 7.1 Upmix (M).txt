@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc:Upmix 6.1 to 7.1. Assumes L R C LFE CS LS RS. 70% level = equal power (-3dB) spread to 2 speakers each
 
 slider1:70<0,100,1>Center Level (%)

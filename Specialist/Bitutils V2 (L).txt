@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc: multichannel gain, bit reduction & shifter w/ GUI.
 
 slider1:0<0,2,1{Manual,Auto MQ (-1 bit),Auto HQ (+-1 bit)}>Mode

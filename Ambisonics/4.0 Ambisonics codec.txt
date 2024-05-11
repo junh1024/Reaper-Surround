@@ -1,4 +1,5 @@
-desc: 
+// Part of the Reaper-Surround suite by junh1024
+desc:
 //based on http://www.blueripplesound.com/decoding
 
 slider1:0<0,1,1{Encode,Decode}>Mode

@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc: slow symmetrical surround compressor
 //named according to https://dictionary.cambridge.org/grammar/british-grammar/about-adjectives-and-adverbs/adjectives-order
 //gfx section modified from Liteon's deesser (GPL)

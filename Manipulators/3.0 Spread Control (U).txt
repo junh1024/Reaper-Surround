@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc: Spread the front 3 into each other.
 
 slider1:30<0,100,2>Spread

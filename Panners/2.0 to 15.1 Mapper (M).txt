@@ -1,4 +1,6 @@
 
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc:15.1 Surround Mapper
 
 slider1:0<0,4,1{1+2   Front,3+4   C/LFE,5+6   Back,7+8   Side,9+10  Height Front,11+12 Bottom,13+14 Height Back,15+16 Height Side,17+18 Front Wide (15.1 EX only),19+20 Front Center (15.1 EX only)}>Output

@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc: This is a 2-band splitter. 7.1 in, 15.1 out.
 //Original author: (C) 2006, Michael Gruhn.
 //License excerpt:...USE OF...CODE... IS ONLY GRANTED, IF USED IN ... THE AUTHOR'S INTENTION,  AND...ACKNOWLEDGEMENT

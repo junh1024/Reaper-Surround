@@ -1,3 +1,5 @@
+// Part of the Reaper-Surround suite by junh1024
+desc:
 desc: mono to 5.1 panner in BETA
 
 slider1:0<-100,100,1>Pan X

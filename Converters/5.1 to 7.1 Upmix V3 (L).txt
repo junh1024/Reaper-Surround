@@ -1,5 +1,7 @@
-// from https://forum.cockos.com/showthread.php?t=190168#30 by Tale, geraintluff, junh1024
+// Part of the Reaper-Surround suite by junh1024
+// framework from https://forum.cockos.com/showthread.php?t=190168#30 by Tale, geraintluff, junh1024
 
+desc:
 desc: 5.1 to 7.1 FFT upmix. in BETA
 
 slider1:1<0,1,1{Square (Cine-auto thresholds),Circle (ITU),Circle+ (ITU)}>Mode
