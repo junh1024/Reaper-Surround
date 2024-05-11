@@ -319,8 +319,24 @@ mode==1?
 pos += 2;
 pos2=(pos2+2)%(fftsize*2);
 
-mode > 1 ?
+
+mode == 0?
 (
+// blend corners & sides
+L_diff=((spl0+spl4)*0.5)-spl6;
+spl0-=L_diff*(diffuse_amount);
+spl4-=L_diff*(diffuse_amount);
+spl6+=L_diff*(diffuse_amount)*1.414; // sqrt2 needed for SL since it's only a single channel
+
+R_diff=((spl1+spl5)*0.5)-spl7;
+spl1-=R_diff*(diffuse_amount);
+spl5-=R_diff*(diffuse_amount);
+spl7+=R_diff*(diffuse_amount)*1.414;
+
+)
+:
+(
+// blend sides & back
 L_diff=(spl6-spl4)*0.5;
 R_diff=(spl7-spl5)*0.5;
 

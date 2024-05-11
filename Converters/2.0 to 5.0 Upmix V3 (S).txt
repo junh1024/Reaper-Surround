@@ -7,7 +7,7 @@ desc: 2.0 to 5.0 Surround upscale (Small) BETA
 slider1:0<0,100,2>Width
 slider2:0<-100,100,1>Depth
 slider3:90<0,180,2>-Rear threshold
-slider4:90<0,180,2>-Crossover width
+slider4:180<0,240,2>Crossover and diffusion (deg)
 slider5:50<0,100,2>-Rear Width
 slider6:50<0,100,1>Rear LP
 slider7:0 <0,100,2>-Rear transients
@@ -45,7 +45,17 @@ sliderfft = (2^(slider8))|0;
 fftsize != sliderfft ? fft_initialize();
 
 Rear_threshold= slider3*pi/180;
-Crossover_width=max(slider4*pi/180,0.1);//min of 0.1 since don't want an infinite slope/div 0
+
+// crossover & diffusion
+
+Crossover_width=min(max(slider4*pi/180,0.1),pi);//min of 0.1 since don't want an infinite slope/div 0
+// cap to pi to separate crossover & diffusion
+
+diffusion_amount=max( (slider4/180) -1,0); //clamp to >0
+
+slider4<180?slider4=180; // map old slider
+
+
 width_coeff=slider1/100; 
 
 depth_coeff=(slider2*$pi)/200; //depth scaled from 0-100 to 0>half pi
@@ -272,6 +282,25 @@ spl5=out5-out1-(h_sqrt_2*out2);
 
 pos += 2;
 pos2=(pos2+2)%(fftsize*2);
+
+
+
+
+// crossover & diffusion
+// blend front & back channels
+L_diff=(spl0-spl4)*0.5;
+R_diff=(spl1-spl5)*0.5;
+
+spl0-=L_diff*(diffusion_amount);
+spl4+=L_diff*(diffusion_amount);
+
+spl1-=R_diff*(diffusion_amount);
+spl5+=R_diff*(diffusion_amount);
+// blend phantom C & real C
+C_diff=((spl0+spl1)*0.5)-spl2;
+spl0-=C_diff*(diffusion_amount);
+spl1-=C_diff*(diffusion_amount);
+spl2+=C_diff*(diffusion_amount)*1.414; // sqrt2 needed for c since it's only a single channel
 
 
 do_width(width_coeff);
