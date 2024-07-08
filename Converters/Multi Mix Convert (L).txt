@@ -384,8 +384,8 @@ mode_in==17?
 mode_out==2?
 (
 	//faster than a loop
-	spl0+=(spl2*0.71)+spl4+spl6+spl8+spl10+spl12+spl14+spl16+spl18*0.71+spl19*0.4;
-	spl1+=(spl2*0.71)+spl5+spl7+spl9+spl11+spl13+spl15+spl17+spl19*0.71+spl18*0.4;
+	spl0+=(spl2*0.71)+spl4+spl6+spl8+spl10+spl12+spl14+spl16+spl18*0.9+spl19*0.4;
+	spl1+=(spl2*0.71)+spl5+spl7+spl9+spl11+spl13+spl15+spl17+spl19*0.9+spl18*0.4;
 	
 	// i=4;
 	

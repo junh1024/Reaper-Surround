@@ -1,4 +1,4 @@
-desc=""
+desc="Adjust item start offset"
 by="junh1024"
 
 from reaper_python import *
@@ -23,18 +23,30 @@ def msg(m):
 with undoable(desc):
 	# RPR_ShowConsoleMsg(BPM_proj)
 	
-	#get file BPM
-	dialogstring="amount"
-	theoffset = RPR_GetUserInputs("Adjust take by how much secs",1,dialogstring,"",64)[4]
+	multiply=None
+	
+	#get desired offset
+	ds="Adjust by secs (* to multiply)"
+	theoffset = RPR_GetUserInputs("Adjust Start Offset",1,ds,"",64)[4]
+	
+	#account for multiply, and trim off star
+	if theoffset[0]=='*':
+		multiply=True
+		theoffset=theoffset[1:]
 	theoffset = float(theoffset.strip())
-	# RPR_ShowConsoleMsg(new_gain_bits)
+
 	
 	#get items
 	for i in range (RPR_CountSelectedMediaItems( 0)):
 		MI=RPR_GetSelectedMediaItem(0,i)
 	
-		# set gain
+		# get original offset
 		take=RPR_GetActiveTake(MI)
 		original=RPR_GetMediaItemTakeInfo_Value( take, "D_STARTOFFS" )
-		RPR_SetMediaItemTakeInfo_Value( take, "D_STARTOFFS", original+ theoffset  )
+		
+		# could use reflection, but more insecure
+		if multiply:
+			RPR_SetMediaItemTakeInfo_Value( take, "D_STARTOFFS", original* theoffset  )
+		else:
+			RPR_SetMediaItemTakeInfo_Value( take, "D_STARTOFFS", original+ theoffset  )
 		 

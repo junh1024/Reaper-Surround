@@ -15,7 +15,7 @@ Mac:
 
 - HOMEFOLDER/Library/Application Support/REAPER/Effects
 
-It is advised to ENABLE **"options > show in FX list > JSFX filename"** in your FX browser, as I refer to them by name. Bugs/suggestions? File an [issue](https://github.com/junh1024/Reaper-Surround/issues) ,  or contact me on [twitter](https://twitter.com/junh1024/) .
+Bugs/suggestions? File an [issue](https://github.com/junh1024/Reaper-Surround/issues) ,  or contact me on [twitter](https://twitter.com/junh1024/) .
 
 Alternatively, [this video](https://www.youtube.com/watch?v=9EegrN-gF5o) shows how to install JSFX.
 
@@ -109,7 +109,8 @@ Upmixers are considered experimental, based on matrix or FFT.
 - 2.0 to 3.0 Upmix (C).txt (manual upmixer, all the others are automatic)
 - 2.0 to 5.0 Upmix V2 (L).txt: 80% feature-complete DPL1-like surround upmixer with 0 audio latency, but a behavioral latency [Note 1](#note-1) . It works best as LCR upmixer [Note 2](#note-2), and that's the new default as of 2024.
 - 2.0 to 5.0 Upmix V3 (S).txt: Upmix based on FFT for maximum separation. [see FFT Notes](#fft-notes) for controls & explanation. It's Competitive with commercial upmixers. Features:
-	- Basic image controls
+	- Basic image controls (Width & Depth)
+	- Diffusion (to descrase artefacts)
 	- Doesn't lie about PDC
 	- Doesn't have an incorrect/downmix-incompatible bass level (bass is not moved/copied to LFE. It's blank.)
 	- CPU optimized (CPU use depends on channel output)
@@ -276,12 +277,14 @@ outputs=8    ; number of audio outputs (0-64)
 
 ### Mac/VST3 users
 
-You will need to use [**YSFX**](https://github.com/JoepVanlier/ysfx/releases/tag/v0.0.2) and extract the VST3 into:
+You will need to use YSFX. Unfortunately, YSFX has [FFT issues](https://github.com/jpcima/ysfx/issues/66) so it rules out most of the interesting ones, and has trouble finding dependencies. I've made a small archive of a few interesting FX & their dependancies for YSFX users below. Includes a small selection incl V2 & V3 upmix. More plugins are possible, as long as YSFX can see dependancies (dependancies in same folder, or subfolder of JSFX)
 
-- Windows: C:\Program Files\Common Files\VST3
-- Mac: Library\Audio\Plug-ins\VST
-
-Unfortunately, YSFX has [FFT issues](https://github.com/jpcima/ysfx/issues/66) so it rules out most of the interesting ones, and has trouble finding dependencies. I've made a small archive of 2 interesting FX & their dependancies for YSFX users [**here**](https://github.com/junh1024/Reaper-Surround/releases/download/0.2105/Reaper-Surround-YSFX.zip) .
+1. Install [**YSFX**](https://github.com/JoepVanlier/ysfx/releases) (see *Assets*) and extract the AU &/ VST3 into:
+- Mac VST3: Library\Audio\Plug-ins\VST
+- Mac AU: Library\Audio\Plug-ins\Components
+- Windows VST3: C:\Program Files\Common Files\VST3
+2. Extract ALL files from  [**here**](https://github.com/junh1024/Reaper-Surround/releases/download/0.2105/YSFX-FX.zip) into a folder.
+3. Open your DAW, insert YSFX-S FX, and load the effects in YSFX.
 
 ### AAX Compatibility
 AAX Compatibility for Pro Tools Windows is limited due to the FILM order for channels and limited options for channel count. I haven't tested this.
