@@ -15,7 +15,7 @@ Mac:
 
 - HOMEFOLDER/Library/Application Support/REAPER/Effects
 
-It is advised to ENABLE **"options > show in FX list > JSFX filename"** in your FX browser, as I refer to them by name. Bugs/suggestions? File an [issue](https://github.com/junh1024/Reaper-Surround/issues) ,  or contact me on [twitter](https://twitter.com/junh1024/) .
+Bugs/suggestions? File an [issue](https://github.com/junh1024/Reaper-Surround/issues) ,  or contact me on [twitter](https://twitter.com/junh1024/) .
 
 Alternatively, [this video](https://www.youtube.com/watch?v=9EegrN-gF5o) shows how to install JSFX.
 
@@ -109,7 +109,8 @@ Upmixers are considered experimental, based on matrix or FFT.
 - 2.0 to 3.0 Upmix (C).txt (manual upmixer, all the others are automatic)
 - 2.0 to 5.0 Upmix V2 (L).txt: 80% feature-complete DPL1-like surround upmixer with 0 audio latency, but a behavioral latency [Note 1](#note-1) . It works best as LCR upmixer [Note 2](#note-2), and that's the new default as of 2024.
 - 2.0 to 5.0 Upmix V3 (S).txt: Upmix based on FFT for maximum separation. [see FFT Notes](#fft-notes) for controls & explanation. It's Competitive with commercial upmixers. Features:
-	- Basic image controls
+	- Basic image controls (Width & Depth)
+	- Diffusion (to descrase artefacts)
 	- Doesn't lie about PDC
 	- Doesn't have an incorrect/downmix-incompatible bass level (bass is not moved/copied to LFE. It's blank.)
 	- CPU optimized (CPU use depends on channel output)
